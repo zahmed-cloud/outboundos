@@ -526,8 +526,12 @@ tr.flash td{animation:rowflash 1.1s ease}
 #authov{position:fixed;inset:0;z-index:60;display:flex;justify-content:center;
   align-items:center;background:rgba(246,246,249,.65);backdrop-filter:blur(10px)}
 .auth-card{background:#fff;border:1px solid var(--line);border-radius:20px;
-  padding:38px 40px;max-width:420px;width:calc(100% - 32px);
+  padding:38px 40px;max-width:420px;width:calc(100% - 32px);position:relative;
   box-shadow:0 24px 70px rgba(0,0,0,.14)}
+.auth-x{position:absolute;top:14px;right:16px;width:30px;height:30px;display:flex;
+  align-items:center;justify-content:center;border-radius:8px;font-size:15px;
+  color:var(--ink3);transition:background .15s,color .15s}
+.auth-x:hover{background:var(--line);color:var(--ink)}
 .auth-brand{font-family:var(--serif);font-size:22px;font-weight:700;margin-bottom:22px;
   color:var(--ink);display:inline-block;transition:opacity .15s}
 .auth-brand:hover{opacity:.65}
