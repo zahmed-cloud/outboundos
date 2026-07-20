@@ -16,23 +16,44 @@ const ov=document.createElement("div");
 ov.id="authov";
 ov.innerHTML=`<div class="auth-card">
   <div class="auth-brand">Ascent<i>.</i> <small>OUTBOUND OS</small></div>
-  <h2>Your OS is ready.</h2>
-  <p class="auth-sub">Free account, two minutes. Your pipeline saves to your
-  account and follows you between devices.</p>
-  <div id="auth-form">
-    <input id="auth-email" type="email" placeholder="you@company.com" autocomplete="email">
-    <input id="auth-pass" type="password" placeholder="password, 8 or more characters" autocomplete="current-password">
+  <h2 id="auth-h">Welcome back.</h2>
+  <p class="auth-sub" id="auth-sub">Log in to pick up your pipeline where you left off.</p>
+
+  <div id="view-login">
+    <input class="auth-in" id="li-email" type="email" placeholder="you@company.com" autocomplete="email">
+    <input class="auth-in" id="li-pass" type="password" placeholder="your password" autocomplete="current-password">
+    <button id="auth-go">LOG IN</button>
+    <div class="auth-note">Forgot it, or hate passwords?
+    <a href="#" id="auth-otp">Email me a login link.</a></div>
+    <div class="auth-note auth-switch">Don't have an account?
+    <a href="#" id="to-signup">Create a free account.</a></div>
+  </div>
+
+  <div id="view-signup" class="hidden">
+    <input class="auth-in" id="su-name" type="text" placeholder="Your name" autocomplete="name">
+    <input class="auth-in" id="su-email" type="email" placeholder="you@company.com" autocomplete="email">
+    <input class="auth-in" id="su-pass" type="password" placeholder="password, 8 or more characters" autocomplete="new-password">
+    <input class="auth-in" id="su-biz" type="text" placeholder="Business name" autocomplete="organization">
+    <input class="auth-in" id="su-loc" type="text" placeholder="Location — city, country">
+    <select class="auth-in" id="su-type">
+      <option value="">What kind of business?</option>
+      <option>Agency</option>
+      <option>Recruitment</option>
+      <option>SaaS / Software</option>
+      <option>Consulting</option>
+      <option>Freelancer / Solo</option>
+      <option>Other</option>
+    </select>
     <div class="auth-note auth-savage">Make up a fresh password, don't reuse your
     bank one. We're a lean free tool — we don't exactly have the budget for Z+ data security.</div>
     <button id="auth-new">CREATE FREE ACCOUNT</button>
-    <button id="auth-go">LOG IN</button>
-    ${AUTH_CFG.google?`<button id="auth-google">CONTINUE WITH GOOGLE</button>`:""}
-    <div class="auth-note">Forgot it, or hate passwords?
-    <a href="#" id="auth-otp">Email me a login link instead.</a></div>
-    <div class="auth-note" style="margin-top:8px">Creating an account means you're
-    good with the <a href="https://getascent.co/terms" target="_blank" rel="noopener">terms</a>
+    <div class="auth-note">Creating an account means you're good with the
+    <a href="https://getascent.co/terms" target="_blank" rel="noopener">terms</a>
     and <a href="https://getascent.co/privacy" target="_blank" rel="noopener">privacy policy</a>.</div>
+    <div class="auth-note auth-switch">Already have an account?
+    <a href="#" id="to-login">Log in.</a></div>
   </div>
+
   <div id="auth-sent" class="hidden">
     <div class="auth-sent-t">Check your inbox.</div>
     <p class="auth-sub" id="auth-sent-p">Click the link we sent and you're in.
@@ -45,37 +66,60 @@ document.documentElement.classList.add("auth-locked");
 
 const $a=q=>ov.querySelector(q);
 const err=m=>{const e=$a("#auth-err");e.textContent=m;e.classList.remove("hidden")};
-const okEmail=()=>{const em=($a("#auth-email").value||"").trim();
-  if(!/^\S+@\S+\.\S+$/.test(em)){err("That email doesn't look right, check it once more.");return null}
-  return em};
-const showSent=t=>{if(t)$a("#auth-sent-p").firstChild.textContent=t;
-  $a("#auth-form").classList.add("hidden");$a("#auth-sent").classList.remove("hidden")};
+const emailOK=v=>/^\S+@\S+\.\S+$/.test((v||"").trim());
 const busy=(id,on,lbl)=>{const b=$a(id);b.disabled=on;b.textContent=on?"ONE SEC…":lbl};
+const showSent=t=>{if(t)$a("#auth-sent-p").firstChild.textContent=t;
+  $a("#view-login").classList.add("hidden");$a("#view-signup").classList.add("hidden");
+  $a("#auth-sent").classList.remove("hidden")};
+function showView(which){
+  const s=which==="signup";
+  $a("#view-login").classList.toggle("hidden",s);
+  $a("#view-signup").classList.toggle("hidden",!s);
+  $a("#auth-h").textContent=s?"Your OS is ready.":"Welcome back.";
+  $a("#auth-sub").textContent=s
+    ?"Free account, two minutes. Tell us a bit about you and your pipeline follows you between devices."
+    :"Log in to pick up your pipeline where you left off.";
+  $a("#auth-err").classList.add("hidden");}
+/* which form opens first: the landing 'Sign up free' link carries #signup, 'Log in' carries #login */
+showView(/signup/i.test(location.hash)?"signup":"login");
+$a("#to-signup").onclick=e=>{e.preventDefault();showView("signup")};
+$a("#to-login").onclick=e=>{e.preventDefault();showView("login")};
+
 async function login(){
-  const em=okEmail();if(!em)return;
-  const pw=$a("#auth-pass").value;
+  const em=($a("#li-email").value||"").trim();
+  if(!emailOK(em)){err("That email doesn't look right, check it once more.");return}
+  const pw=$a("#li-pass").value;
   if(pw.length<8){err("Password needs 8 or more characters.");return}
-  $a("#auth-err").classList.add("hidden");
-  busy("#auth-go",true,"LOG IN");
+  $a("#auth-err").classList.add("hidden");busy("#auth-go",true,"LOG IN");
   const {error}=await sb.auth.signInWithPassword({email:em,password:pw});
   busy("#auth-go",false,"LOG IN");
   if(error)err(/invalid/i.test(error.message)
-    ?"No luck. Wrong password, or no account yet — hit CREATE FREE ACCOUNT."
+    ?"No luck — wrong password, or no account yet. Try 'Create a free account'."
     :error.message);}
 async function signup(){
-  const em=okEmail();if(!em)return;
-  const pw=$a("#auth-pass").value;
+  const name=($a("#su-name").value||"").trim();
+  const em=($a("#su-email").value||"").trim();
+  const pw=$a("#su-pass").value;
+  const biz=($a("#su-biz").value||"").trim();
+  const loc=($a("#su-loc").value||"").trim();
+  const type=$a("#su-type").value;
+  if(!name){err("Add your name so we know who you are.");return}
+  if(!emailOK(em)){err("That email doesn't look right, check it once more.");return}
   if(pw.length<8){err("Password needs 8 or more characters. Not your bank one, remember.");return}
-  $a("#auth-err").classList.add("hidden");
-  busy("#auth-new",true,"CREATE FREE ACCOUNT");
+  if(!biz){err("Add your business name.");return}
+  if(!loc){err("Add your location.");return}
+  if(!type){err("Pick what kind of business you run.");return}
+  $a("#auth-err").classList.add("hidden");busy("#auth-new",true,"CREATE FREE ACCOUNT");
   const {data,error}=await sb.auth.signUp({email:em,password:pw,
-    options:{emailRedirectTo:location.origin+location.pathname}});
+    options:{data:{full_name:name,business_name:biz,business_location:loc,business_type:type},
+      emailRedirectTo:location.origin+location.pathname}});
   busy("#auth-new",false,"CREATE FREE ACCOUNT");
   if(error){err(/already registered/i.test(error.message)
-    ?"That email already has an account — use LOG IN.":error.message);return}
+    ?"That email already has an account — log in instead.":error.message);return}
   if(!data.session)showSent("Confirm your email to finish. ");}
 async function sendLink(){
-  const em=okEmail();if(!em)return;
+  const em=($a("#li-email").value||"").trim();
+  if(!emailOK(em)){err("Enter your email first, then I'll send the link.");return}
   $a("#auth-err").classList.add("hidden");
   const {error}=await sb.auth.signInWithOtp({email:em,
     options:{emailRedirectTo:location.origin+location.pathname}});
@@ -83,12 +127,11 @@ async function sendLink(){
   showSent();}
 $a("#auth-go").onclick=login;
 $a("#auth-new").onclick=signup;
-$a("#auth-pass").addEventListener("keydown",e=>{if(e.key==="Enter")login()});
+$a("#li-pass").addEventListener("keydown",e=>{if(e.key==="Enter")login()});
+$a("#su-loc").addEventListener("keydown",e=>{if(e.key==="Enter")signup()});
 $a("#auth-otp").onclick=e=>{e.preventDefault();sendLink()};
 const ag=$a("#auth-again");ag&&(ag.onclick=e=>{e.preventDefault();
-  $a("#auth-sent").classList.add("hidden");$a("#auth-form").classList.remove("hidden")});
-const gg=$a("#auth-google");gg&&(gg.onclick=()=>sb.auth.signInWithOAuth({provider:"google",
-  options:{redirectTo:location.origin+location.pathname}}));
+  $a("#auth-sent").classList.add("hidden");showView(/signup/i.test(location.hash)?"signup":"login")});
 
 /* ---- sync ---- */
 let user=null,pushT=null,lastHash="";
