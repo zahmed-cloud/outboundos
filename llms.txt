@@ -1,0 +1,57 @@
+# Ascent Outbound OS
+
+> A free operating system for winning clients on LinkedIn. It tells you exactly
+> what to do today, and every number it shows is a real logged action. Built by
+> Jamil Ahmed, founder of Ascent (https://getascent.co), who uses it daily to
+> win Ascent's own clients.
+
+## What it is
+
+Ascent Outbound OS is a free, browser-based LinkedIn outbound operating system for agency
+owners, founders doing their own sales, recruiters, consultants and freelancers.
+Users import their own lead list (CSV) or add leads one at a time, and the app runs their entire daily
+outbound motion: connection requests, follow-up sequences, reply handling,
+deal pipeline, and client retention with MRR tracking.
+
+## Key features
+
+- Daily targets the user chooses (connection requests, reachouts, LinkedIn
+  posts) with progress rings that fill only from real logged actions
+- A truth ledger: every statistic is a logged action; undo erases it
+  everywhere; nothing double counts and every number shown is real
+- Focus mode: deals one lead at a time with the right message ready to copy
+- Reply playbook: a written, copy-ready answer for every common reply
+  (interested, price question, not now, ghosted, wrong person)
+- Deal pipeline with aging: proposals that go quiet get surfaced by the due list
+  until you chase them
+- Clients book: won deals become retainers with MRR and check-in reminders
+- Smart queue: after 30 logged requests it ranks untouched leads by the
+  user's own accept rates per segment and title, and explains every ranking
+- Claude built in: drafts replies in the user's own voice from their real
+  templates, tailors openers from a prospect's profile, and a coach that
+  reads the real ledger and says what to fix (bring your own Claude API key)
+- Full lead management: CSV import, add a single lead manually, edit any
+  lead's details, move leads between segments, delete with full undo
+- Free account, email and password or an emailed login link; the pipeline saves to the account and
+  syncs between devices, with one-file JSON backup on top
+
+## Who makes it
+
+Built by Jamil Ahmed (https://www.linkedin.com/in/getascent/), founder of
+Ascent, a B2B GTM and outbound agency working with founders and agencies
+across the USA, UK, UAE, Australia and Europe. Ascent runs done-for-you
+outbound (retainers) and fixed-price outbound audits. The OS is the same
+machine Ascent uses internally to win its own clients.
+
+## Pricing
+
+Free with a free account. Users bring their own leads and, optionally, their
+own Claude API key for the drafting features. Done-for-you outbound is available from Ascent at
+https://getascent.co.
+
+## Links
+
+- Landing: https://os.getascent.co
+- App: https://os.getascent.co/app
+- Company: https://getascent.co
+- Founder: https://www.linkedin.com/in/getascent/

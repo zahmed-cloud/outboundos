@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ascent Outbound OS — the app</title>
+<meta name="description" content="The free operating system for LinkedIn outbound, by Ascent. It tells you exactly what to do today, every number is a real logged action, and Claude drafts messages in your voice.">
+<meta name="robots" content="noindex">
+<meta name="author" content="Jamil Ahmed">
+<meta name="theme-color" content="#f6f6f9">
+<!-- Open Graph / social share -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Ascent Outbound OS">
+<meta property="og:title" content="Ascent Outbound OS — win clients on LinkedIn">
+<meta property="og:description" content="Free. It tells you exactly what to do today, every number is a real logged action, and Claude drafts messages in your voice.">
+<meta property="og:url" content="https://os.getascent.co/app">
+<meta property="og:image" content="https://os.getascent.co/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Ascent Outbound OS — win clients on LinkedIn">
+<meta name="twitter:description" content="Free. It tells you exactly what to do today, every number is a real logged action, and Claude drafts messages in your voice.">
+<meta name="twitter:image" content="https://os.getascent.co/assets/og.png">
+<link rel="icon" href="assets/favicon.svg">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="mobnote">Built for desktop. Open it on your computer for the full OS.</div>
+<div id="app">
+<aside id="side">
+  <span id="brand"><span class="bword">Ascent<span class="bdot">.</span></span>
+    <small>OUTBOUND&nbsp;OS</small></span>
+  <div id="navtiles">
+    <button class="tab on" data-v="dash" data-tip="the count is items due today" style="--n1:#4BA3FF;--n2:#0A6AE8">
+      <span class="trow"><span class="nti" data-ic="target"></span><span class="ncount" id="nc-dash"></span></span>
+      <span class="nlbl">Today</span></button>
+    <button class="tab" data-v="leads" data-tip="the count is untouched leads left to contact" style="--n1:#6A6A72;--n2:#44444B">
+      <span class="trow"><span class="nti" data-ic="users"></span><span class="ncount" id="nc-leads"></span></span>
+      <span class="nlbl">Leads</span></button>
+    <button class="tab" data-v="pipe" style="--n1:#C77BF5;--n2:#9945E3">
+      <span class="trow"><span class="nti" data-ic="funnel"></span><span class="ncount" id="nc-pipe"></span></span>
+      <span class="nlbl">Pipeline</span></button>
+    <button class="tab" data-v="focus" style="--n1:#8183F4;--n2:#5155D6">
+      <span class="trow"><span class="nti" data-ic="bolt"></span><span class="ncount" id="nc-focus"></span></span>
+      <span class="nlbl">Focus</span></button>
+    <button class="tab wide" data-v="clients" style="--n1:#46D66C;--n2:#1F9D44">
+      <span class="wl"><span class="nti" data-ic="bank"></span><span class="nlbl">Clients</span></span>
+      <span class="ncount" id="nc-clients"></span></button>
+  </div>
+  <div class="sideh">Segments</div>
+  <div id="seglist"></div>
+  <div id="sidefoot">
+    <div class="sfk">This month <span id="sfval"></span></div>
+    <div class="sftrack"><div class="sffill" id="sffill"></div></div>
+    <div class="sfs" id="sfsub"></div>
+  </div>
+  <div id="founder">
+    <button id="fcard" data-tip="who built this">
+      <img src="assets/founder.png" alt="Jamil Ahmed">
+      <span class="fn">Jamil Ahmed<small>Founder, Ascent</small></span>
+    </button>
+    <a id="fli" href="https://www.linkedin.com/in/getascent/" target="_blank"
+       rel="noopener" data-tip="Jamil on LinkedIn"><span data-ic="linkedin"></span></a>
+  </div>
+</aside>
+<div id="contentwrap">
+<div id="mainhead">
+  <h1 id="bigtitle">Today</h1>
+  <div id="topright">
+    <span id="ticker"></span>
+    <span id="clock"></span>
+    <span id="saved" data-tip="autosaves on every action">●</span>
+    <div id="menuwrap">
+      <button class="tbtn" id="menub" data-tip="Backup · Import · Settings · Claude coach · Help">⋯</button>
+      <div id="menu" class="hidden">
+        <button id="bexport"><span class="mi" data-ic="download"></span>Backup (JSON)</button>
+        <button id="bimport"><span class="mi" data-ic="upload"></span>Restore backup</button>
+        <button id="bcsv"><span class="mi" data-ic="table"></span>Export CSV</button>
+        <button class="importbtn"><span class="mi" data-ic="upload"></span>Import leads (CSV)</button>
+        <button id="bcoach"><span class="mi" data-ic="spark"></span>Claude coach</button>
+        <button id="bfeed"><span class="mi" data-ic="clock"></span>Recent activity</button>
+        <button id="bsettings"><span class="mi" data-ic="target"></span>Settings</button>
+        <button id="bhelp"><span class="mi" data-ic="help"></span>Help & playbook</button>
+        <button id="bsignout" class="hidden"><span class="mi" data-ic="upload"></span>Sign out</button>
+      </div>
+    </div>
+    <input type="file" id="fimport" accept=".json" class="hidden">
+  </div>
+</div>
+
+<div id="main">
+
+<div id="v-dash">
+  <div id="tagline"><b>Win the day, and the month wins itself. Simple as that.</b></div>
+  <div class="duo toprow">
+    <div class="panel"><h3><span class="pic" style="background:rgba(10,132,255,.16);color:#54A8FF" data-ic="target"></span>Today's targets — real actions only</h3><div class="mission" id="mission"></div></div>
+    <div class="panel"><h3><span class="pic" style="background:rgba(0,122,255,.16);color:#54A8FF" data-ic="pen"></span>My list — today</h3><div id="due"></div></div>
+  </div>
+  <div class="tiles" id="tiles"></div>
+  <div class="duo">
+    <div class="panel"><h3><span class="pic" style="background:rgba(94,92,230,.18);color:#8583EC" data-ic="chart"></span>Activity — last 14 days</h3><div id="chart"></div>
+      <div class="legend"><span><i style="background:#007AFF"></i>Outreach actions</span>
+        <span><i style="background:#34C759"></i>Replies</span>
+        <span><i style="background:#FF2D55;border-radius:50%"></i>Posted</span></div>
+    </div>
+    <div class="panel"><h3><span class="pic" style="background:rgba(100,210,255,.15);color:#64D2FF" data-ic="funnel"></span>Funnel — all segments</h3><div id="funnel"></div></div>
+  </div>
+  <div class="duo">
+    <div class="panel"><h3><span class="pic" style="background:rgba(191,90,242,.16);color:#CD7BF5" data-ic="folder"></span>Segments</h3><table class="grid" id="segtbl"></table></div>
+    <div class="panel"><h3><span class="pic" style="background:rgba(48,209,88,.15);color:#4CD964" data-ic="trend"></span>Momentum — from your real history</h3><table class="grid" id="momtbl"></table></div>
+  </div>
+</div>
+
+<div id="v-leads" class="hidden">
+  <div id="filters">
+    <input id="q" placeholder="/ search name, company, title…">
+    <select id="fseg"><option value="">All segments</option></select>
+    <select id="fst"><option value="">All statuses</option>
+      <option value="_none">Untouched</option><option>Connection pending</option>
+      <option>In sequence</option><option>Replied</option><option>Meeting booked</option>
+      <option>Client won</option><option>Not interested</option><option>No response</option></select>
+    <select id="fcn"><option value="">All countries</option></select>
+    <button class="utilb" id="addleadb">+ ADD LEAD</button>
+    <button class="utilb importbtn">IMPORT LEADS (CSV)</button>
+    <span id="count"></span>
+  </div>
+  <input type="file" id="csvfile" accept=".csv,text/csv" class="hidden">
+  <table id="tbl">
+    <thead><tr><th style="width:46px">#</th><th style="width:46px">Seg</th>
+      <th>Company</th><th>Person</th><th style="width:86px">LinkedIn</th>
+      <th style="width:220px">Stage</th><th style="width:88px">Last touch</th>
+      <th style="width:150px">Next action</th></tr></thead>
+    <tbody id="tbody"></tbody>
+  </table>
+  <button id="more" class="hidden">SHOW MORE</button>
+</div>
+
+<div id="v-pipe" class="hidden"><div id="pipewrap"><div id="board"></div></div></div>
+
+<div id="v-clients" class="hidden">
+  <div class="tiles" style="grid-template-columns:repeat(4,minmax(0,1fr))" id="ctiles"></div>
+  <div class="panel"><h3><span class="pic" style="background:rgba(52,199,89,.16);color:#1E9B4A" data-ic="bank"></span>Client book — the money you keep</h3>
+    <div id="clist"></div>
+    <button class="tbtn" id="addclient" style="margin-top:10px">+ ADD CLIENT</button>
+  </div>
+</div>
+
+<div id="v-focus" class="hidden"><div id="focuswrap"></div></div>
+<div id="palette" class="hidden"><div id="palbox">
+  <input id="palq" placeholder="Search leads…  ( > for commands )" autocomplete="off">
+  <div id="palres"></div></div></div>
+
+<div id="v-help" class="hidden">
+  <div class="panel"><h3>The 30-minute daily routine</h3>
+    <p><b>1. DASHBOARD → "My list" (2 min).</b> This list is the boss. Follow-ups due, replies with no plan, deals waiting on you. Click a row, do the thing.</p>
+    <p><b>2. PIPELINE (5 min).</b> Ball in your court anywhere? Act. Never let a reply sit 24 hours.</p>
+    <p><b>3. New outreach (20 min).</b> Target: <b>your daily numbers</b> (20 requests + 15 reachouts is the default, change them in Settings) — the rings on the Dashboard fill from real logged actions, and when both are full you hit SEAL THE DAY and your streak grows. LEADS → Status filter: <b>Untouched</b> → work top down. Per lead: <b>in ↗</b> opens LinkedIn → send request (CONN NOTE template copies with the name filled in) → hit the <b>✓ Request sent</b> button. That's it — one click logs it, the row updates, the counter climbs.</p>
+    <p><b>4. Accepts (3 min).</b> Status filter: <b>Connection pending</b> → check LinkedIn notifications → for each accept, hit <b>✓ They accepted</b>, copy MSG 1, personalise one line, send, hit <b>✓ Msg 1 sent</b>.</p>
+  </div>
+  <div class="panel"><h3>The deal journey — after they reply</h3>
+    <p>Status → <b>Replied</b> puts them on the PIPELINE board. From there the full funnel is:</p>
+    <p><b>Replied → Call booked → Meeting done → Proposal sent → Agreement sent → Won / Lost</b></p>
+    <p>Open any deal and you get the <b>Deal panel</b>: deal value ($), next step + date. After every meeting: add a note with what happened + when to send the doc, set the next step + date — My list will chase you. Deal value rolls up into the PIPELINE $ and WON $ tiles on the dashboard.</p>
+    <p><b>Meeting flow:</b> before the call read the notes timeline (30 seconds, you sound prepared). After: note the outcome, move the card to <b>Meeting done</b>, set "send proposal" + date. Proposal out → card to <b>Proposal sent</b>, chase in 3 days. Agreement out → <b>Agreement sent</b>, value confirmed. Signed → <b>Won</b>.</p>
+    <p><b>After Won:</b> hit <b>MAKE CLIENT</b> in the drawer. They move to the Clients page: retainer $/mo, status, and a check-in date that chases you in My list — agencies die of client neglect, not thin pipeline. MRR shows in the top bar and against your goal.</p>
+  </div>
+  <div class="panel"><h3>What we can sell each segment</h3>
+    <p><b>P1 UK Recruitment:</b> client-acquisition outbound · $1.5k GTM audit · part-time exec assistant · list building & enrichment</p>
+    <p><b>P2 Agencies:</b> pipeline-as-a-service · $1.5k GTM audit · white-label lead gen · founder EA</p>
+    <p><b>P3 USA Founders:</b> outbound engine (no $139k SDR) · founder EA · GTM audit · list building</p>
+    <p><b>P4 UAE Founders:</b> market-entry outbound · GTM audit · remote EA/ops · list building</p>
+    <p><b>P5 UK Seed Founders:</b> first outbound engine post-raise · $1.5k GTM audit · founder EA · ICP + lists</p>
+    <p><b>P6 UK VC Firms:</b> portfolio outbound partner · deal-flow origination outreach · GTM audits as a portfolio perk · platform/ops VA</p>
+    <p>Every lead's drawer shows these as bullets, plus templates written for that segment.</p>
+  </div>
+  <div class="panel"><h3>Mechanics</h3>
+    <p><b>Channel:</b> LinkedIn. Emails are stored for later — the OS works LinkedIn first.</p>
+    <p><b>One-click flow:</b> the blue Next-action button always knows the next step. Row buttons and drawer buttons do the same thing — use whichever. Click a lit drawer button again to clear it — clearing a Sent also erases its counted event, same as UNDO, so the rings always match what you actually did.</p>
+    <p><b>Keyboard:</b> <kbd>⌘K</kbd> command palette · <kbd>/</kbd> search · <kbd>j</kbd>/<kbd>k</kbd> move · <kbd>Enter</kbd> open · <kbd>Esc</kbd> close · <kbd>g</kbd>+<kbd>d</kbd>/<kbd>l</kbd>/<kbd>p</kbd>/<kbd>f</kbd> views</p>
+    <p><b>Focus mode:</b> deals you one lead at a time — due follow-ups first, then untouched. O opens LinkedIn, C copies the right message, Enter logs it and advances. The fastest way to clear your daily requests.</p>
+    <p><b>LinkedIn safety:</b> ~100 invites/week is the practical cap — 20/day × 5 days uses it fully, so take weekends off requests (follow-ups are fine). Withdraw requests older than 3 weeks before setting No response; free accounts only get ~10 personalised notes/month, so send most requests without a note.</p>
+    <p><b>Smart queue:</b> once 30 requests are logged, Focus ranks your untouched leads by your own accept rates per segment and title (due items always come first). Every ranked card says why. Under 30 requests it serves leads in order and shows the countdown, so the ranking is earned before it speaks.</p>
+    <p><b>Claude:</b> every lead drawer has a Claude section — paste what a prospect said and it drafts the reply in your voice, or paste their profile and it tailors the opener. The ⋯ menu has <b>Claude coach</b>: it reads your real ledger and tells you what to fix. Turn it on in Settings by pasting a Claude API key (stays in your browser, sent only to Anthropic), or it works automatically on deployments where the owner switched it on. It writes from your own templates and sticks to your real numbers.</p>
+    <p><b>Add, fix, remove:</b> + ADD LEAD on the Leads page adds one person in seconds (met someone at an event, spotted them on LinkedIn). EDIT LEAD inside any drawer fixes details, moves them to another segment, or deletes them — deleting erases their logged events too, so the ledger stays honest, and UNDO brings everything back.</p>
+    <p><b>Data:</b> autosaves on every action. BACKUP weekly (JSON). RESTORE moves machines. CSV for Google Sheets. On the live site your account keeps a synced copy; clearing browser data only clears the local one. BACKUP weekly regardless.</p>
+    <p><b>Rules:</b> one person per company · Not interested = leave forever · never re-request declined · reply within 24h.</p>
+  </div>
+</div>
+
+</div>
+</div></div>
+
+<div id="drawer">
+  <button id="dclose">✕</button>
+  <div id="dbody"></div>
+</div>
+<div id="toasts"></div>
+<div id="tip"></div>
+
+<script src="js/config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" onerror=""></script>
+<script src="js/mydata.js" onerror=""></script>
+<script src="js/icons.js"></script>
+<script src="js/content.js"></script>
+<script src="js/app.js"></script>
+<script src="js/auth.js"></script>
+</body>
+</html>

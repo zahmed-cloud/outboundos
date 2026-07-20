@@ -1,0 +1,10 @@
+{
+  "name": "outbound-os",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Ascent Outbound OS: an operating system for winning clients.",
+  "scripts": {
+    "dev": "npx serve ."
+  }
+}

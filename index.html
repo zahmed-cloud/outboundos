@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ascent Outbound OS — getting clients on LinkedIn</title>
+<meta name="description" content="The free operating system for LinkedIn outbound, by Ascent. It tells you exactly what to do today, every number is a real logged action, and Claude drafts messages in your voice.">
+<meta name="robots" content="index,follow">
+<meta name="author" content="Jamil Ahmed">
+<meta name="theme-color" content="#1c2c63">
+<link rel="canonical" href="https://os.getascent.co/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Ascent Outbound OS">
+<meta property="og:title" content="Ascent Outbound OS — getting clients on LinkedIn">
+<meta property="og:description" content="Free. It tells you exactly what to do today, every number is a real logged action, and Claude drafts messages in your voice.">
+<meta property="og:url" content="https://os.getascent.co/">
+<meta property="og:image" content="https://os.getascent.co/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Ascent Outbound OS — getting clients on LinkedIn">
+<meta name="twitter:description" content="Free. It tells you exactly what to do today, every number is a real logged action, and Claude drafts messages in your voice.">
+<meta name="twitter:image" content="https://os.getascent.co/assets/og.png">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@graph":[
+ {"@type":"SoftwareApplication",
+  "name":"Ascent Outbound OS",
+  "url":"https://os.getascent.co/",
+  "applicationCategory":"BusinessApplication",
+  "operatingSystem":"Web",
+  "description":"A free operating system for getting clients on LinkedIn. Import your leads, run a daily outbound loop with chosen targets, handle replies with a written playbook, chase deals through a pipeline with aging, and track clients with MRR. Every statistic is a real logged action, and built-in Claude drafts replies and openers in the user's own voice.",
+  "offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},
+  "author":{"@type":"Person","name":"Jamil Ahmed","url":"https://www.linkedin.com/in/getascent/","jobTitle":"Founder","worksFor":{"@type":"Organization","name":"Ascent","url":"https://getascent.co"}},
+  "publisher":{"@type":"Organization","name":"Ascent","url":"https://getascent.co"}},
+ {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Is it really free?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. It's one of the tools we built for ourselves at Ascent. We use it every day, and we made it public. You bring your own leads. Optionally add your own Claude API key for the drafting and coaching features."}}, {"@type": "Question", "name": "Do I need to create an account?", "acceptedAnswer": {"@type": "Answer", "text": "Yes — a free one, and it takes two minutes. Email and a password, or grab an emailed login link if you prefer. Your account keeps your pipeline saved and synced, so you can pick up on any machine."}}, {"@type": "Question", "name": "Where does my lead list live?", "acceptedAnswer": {"@type": "Answer", "text": "In your browser for speed and saved to your account, with a one-click backup file on top. Import a list and you're working it seconds later, on any machine you log into."}}, {"@type": "Question", "name": "Does it automate LinkedIn?", "acceptedAnswer": {"@type": "Answer", "text": "No, and that's deliberate. Automation gets accounts restricted. You send every message yourself on LinkedIn; the OS tells you who, when and what to say, then logs it in one click. The default targets sit inside LinkedIn's practical limits, about 100 invites a week."}}, {"@type": "Question", "name": "What makes it different from a normal CRM?", "acceptedAnswer": {"@type": "Answer", "text": "The truth ledger: every stat is a logged action, undo erases it everywhere, nothing double counts. Plus a daily loop with rings and a streak that makes consistency automatic, and built-in Claude that writes in your voice, learned from the templates you set."}}]}
+]}
+</script>
+<link rel="icon" href="assets/favicon.svg">
+<style>
+  :root{
+    --green:#16244f; --green2:#1d3068; --cream:#f2ede2; --cream2:#cdd6ea;
+    --orange:#2f6bf0; --ink:#1d1d1f; --ink2:#48484d; --ink3:#86868b; --line:#e6e6ec;
+    --blue:#2f6bf0; --emerald:#2aa6c9; --purple:#7c74e8; --pink:#5f7bff;
+    --indigo:#5856D6; --teal:#30B0C7; --brand:#e8501f;
+    --serif:Georgia,"Times New Roman",serif;
+    --ui:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font:16px/1.6 var(--ui);color:var(--ink);background:#fbfcfe;
+    -webkit-font-smoothing:antialiased}
+  a{text-decoration:none;color:inherit}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 28px}
+
+  /* nav */
+  nav{position:sticky;top:0;z-index:10;background:rgba(253,252,249,.85);
+    backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+  .navin{display:flex;align-items:center;justify-content:space-between;padding:14px 0}
+  .brand{font-family:var(--serif);font-size:24px;font-weight:700}
+  .brand i{color:var(--brand);font-style:normal}
+  .brand small{font-family:var(--ui);font-size:11px;letter-spacing:3px;
+    color:var(--ink3);margin-left:10px;font-weight:600}
+  .navcta{display:flex;gap:10px;align-items:center}
+  .btn{display:inline-block;border-radius:10px;padding:11px 22px;font-weight:700;
+    font-size:14px;letter-spacing:.3px;transition:transform .15s}
+  .btn:hover{transform:translateY(-1px)}
+  .btn.solid{background:var(--orange);color:#fff}
+  .btn.dark{background:var(--green);color:var(--cream)}
+  .btn.ghost{border:1.5px solid var(--line);color:var(--ink2)}
+  .btn.sm{padding:8px 16px;font-size:13px}
+
+  /* hero */
+  .hero{background:var(--green);color:var(--cream);padding:84px 0 0;overflow:hidden}
+  .hero .free{display:inline-block;background:var(--orange);color:#fff;border-radius:8px;
+    padding:5px 14px;font-size:13px;font-weight:700;letter-spacing:1.5px;margin-bottom:22px}
+  h1{font-family:var(--serif);font-size:clamp(38px,6vw,64px);line-height:1.12;
+    font-weight:700;max-width:820px}
+  h1 b{color:#b79cff}
+  .hero p{color:var(--cream2);font-size:clamp(17px,2.2vw,21px);max-width:640px;
+    margin:22px 0 30px}
+  .hero .ctas{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+  .hero .note{color:var(--cream2);font-size:13.5px;margin-top:16px}
+  .hero .note b{color:var(--cream)}
+  .shot{margin:48px auto 0;max-width:860px;border-radius:14px;overflow:hidden;
+    box-shadow:0 24px 70px rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.14)}
+  .shot img{width:100%;display:block}
+
+  /* sections */
+  section{padding:76px 0}
+  .kick{font-size:13px;letter-spacing:3px;color:var(--orange);font-weight:700;
+    text-transform:uppercase;margin-bottom:14px}
+  h2{font-family:var(--serif);font-size:clamp(28px,4vw,40px);line-height:1.2;
+    font-weight:700;margin-bottom:18px;max-width:760px}
+  .lead{font-size:18px;color:var(--ink2);max-width:700px}
+
+  /* flow */
+  .flow{display:flex;gap:0;margin:38px 0 18px}
+  .node{flex:1;text-align:center;padding:20px 10px;border-radius:16px;color:#fff;
+    position:relative;margin-right:30px;box-shadow:0 10px 26px rgba(20,30,80,.16)}
+  .node:last-child{margin-right:0}
+  .node::after{content:"";position:absolute;right:-23px;top:50%;margin-top:-8px;
+    border-left:14px solid #c9c4b8;border-top:8px solid transparent;
+    border-bottom:8px solid transparent}
+  .node:last-child::after{display:none}
+  .node .nt{font-weight:700;font-size:16px}
+  .node .ns{font-size:12px;opacity:.9;margin-top:4px;line-height:1.45}
+  .foundation{background:var(--green);color:var(--cream);border-radius:12px;
+    padding:16px 24px;text-align:center;font-size:15.5px}
+  .foundation b{color:var(--orange)}
+
+  /* loop chips */
+  .loop{display:flex;gap:14px;margin-top:34px}
+  .chip{flex:1;border:1.5px solid var(--line);border-radius:14px;padding:20px 14px;
+    text-align:center;font-size:14px;color:var(--ink2);background:#fff;line-height:1.5}
+  .chip b{display:block;font-size:26px;color:var(--ink);font-family:var(--serif);
+    margin-bottom:6px}
+  .chip.hot{border-color:var(--orange)}
+
+  /* kills */
+  .kills{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:34px}
+  .kill{border:1.5px solid var(--line);border-radius:16px;padding:24px 26px;background:#fff}
+  .kill .kt{font-weight:700;font-size:18px;margin-bottom:6px}
+  .kill p{font-size:14.5px;color:var(--ink2)}
+  .kill .dot{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:9px}
+
+  /* vs comparison */
+  .vs{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:34px}
+  .vs-col{border-radius:18px;padding:26px 30px}
+  .vs-col.them{background:#f0efe9;color:#6d6b60}
+  .vs-col.us{background:var(--green);color:var(--cream)}
+  .vs-h{font-weight:800;letter-spacing:2px;font-size:12px;text-transform:uppercase;
+    margin-bottom:8px}
+  .them .vs-h{color:#a3a196}
+  .us .vs-h{color:#8fb0ff}
+  .vs-row{padding:13px 0;border-bottom:1px solid rgba(0,0,0,.06);font-size:15px;
+    line-height:1.45}
+  .us .vs-row{border-bottom-color:rgba(242,237,226,.12);font-weight:600}
+  .vs-row:last-child{border-bottom:none}
+
+  /* dark truth band */
+  .dark{background:var(--green);color:var(--cream)}
+  .dark h2{color:var(--cream)}
+  .dark .lead{color:var(--cream2)}
+  .bigline{font-family:var(--serif);font-size:clamp(24px,3.4vw,34px);font-weight:700;
+    margin-top:26px}
+
+  /* AI section */
+  .ai{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;margin-top:34px}
+  .aicard{border:1.5px solid var(--line);border-radius:16px;padding:24px 26px;background:#fff}
+  .aicard .at{font-weight:700;font-size:17px;margin:10px 0 6px}
+  .aicard p{font-size:14.5px;color:var(--ink2)}
+  .sparkle{color:var(--indigo);font-size:22px}
+  .ainote{margin-top:22px;font-size:14px;color:var(--ink3)}
+
+  /* who */
+  .who{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px}
+  .who span{background:#fff;border:1.5px solid var(--line);border-radius:24px;
+    padding:9px 20px;font-size:15px;color:var(--ink2)}
+
+  /* founder */
+  .fdr{display:flex;gap:34px;align-items:flex-start;margin-top:34px}
+  .fdr img{width:110px;height:110px;border-radius:50%;background:#eef0f4;flex:none}
+  .fdr h3{font-family:var(--serif);font-size:26px;margin-bottom:2px}
+  .fdr .role{color:var(--ink3);font-size:14px;margin-bottom:14px}
+  .fdr p{color:var(--ink2);font-size:15.5px;max-width:640px;margin-bottom:12px}
+  .libtn{display:inline-flex;align-items:center;gap:8px;background:rgba(10,102,194,.12);
+    color:#0A66C2;font-weight:700;font-size:13.5px;border-radius:10px;padding:10px 20px}
+  .libtn:hover{background:rgba(10,102,194,.2)}
+  .libtn svg{width:18px;height:18px}
+
+  /* faq */
+  details{border-bottom:1px solid var(--line);padding:18px 0}
+  summary{font-weight:700;font-size:17px;cursor:pointer;list-style:none;
+    display:flex;justify-content:space-between;align-items:center}
+  summary::after{content:"+";font-size:22px;color:var(--orange);font-weight:400}
+  details[open] summary::after{content:"–"}
+  details p{color:var(--ink2);font-size:15px;margin-top:10px;max-width:760px}
+
+  /* footer */
+  footer{background:var(--green);color:var(--cream2);padding:80px 0 46px;text-align:center}
+  footer h2{color:var(--cream);max-width:none}
+  footer .sub{margin:14px 0 30px;font-size:17px}
+  .ftlinks{margin-top:46px;font-size:13.5px;display:flex;gap:26px;justify-content:center;
+    flex-wrap:wrap}
+  .ftlinks a{color:var(--cream2)}
+  .ftlinks a:hover{color:var(--cream)}
+  .ftlinks .o{color:#8fb0ff;letter-spacing:2px;font-weight:700}
+
+  /* ===== glass depth: ambient glow + frosted cards ===== */
+  body{position:relative}
+  body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+    background:
+      radial-gradient(760px 560px at 10% 6%, rgba(47,107,240,.10), transparent 60%),
+      radial-gradient(720px 620px at 90% 20%, rgba(120,160,255,.11), transparent 62%),
+      radial-gradient(820px 680px at 52% 98%, rgba(183,156,255,.13), transparent 60%),
+      radial-gradient(640px 520px at 80% 72%, rgba(48,176,199,.06), transparent 60%);}
+
+  /* frosted light cards */
+  .chip,.kill,.aicard,.who span,.vs-col.them{
+    background:rgba(255,255,255,.52);
+    -webkit-backdrop-filter:blur(20px) saturate(1.6);
+    backdrop-filter:blur(20px) saturate(1.6);
+    border:1px solid rgba(255,255,255,.65);
+    box-shadow:0 10px 34px rgba(17,17,20,.07),inset 0 1px 0 rgba(255,255,255,.8);}
+  .vs-col.them{background:rgba(240,239,233,.48)}
+  .chip,.kill,.aicard{transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease}
+  .chip:hover,.kill:hover,.aicard:hover{transform:translateY(-3px);
+    box-shadow:0 20px 48px rgba(17,17,20,.12),inset 0 1px 0 rgba(255,255,255,.95);
+    border-color:rgba(255,255,255,.95)}
+
+  /* richer glass nav */
+  nav{background:rgba(253,252,249,.62);
+    -webkit-backdrop-filter:blur(22px) saturate(1.7);
+    backdrop-filter:blur(22px) saturate(1.7);
+    border-bottom:1px solid rgba(255,255,255,.55);
+    box-shadow:0 1px 0 rgba(255,255,255,.6),0 6px 26px rgba(17,17,20,.05)}
+
+  /* dark surfaces get a glass edge + depth */
+  .vs-col.us,.foundation{border:1px solid rgba(255,255,255,.1);
+    box-shadow:0 16px 44px rgba(22,36,79,.32),inset 0 1px 0 rgba(255,255,255,.09)}
+
+  /* aurora glow inside the dark hero + bands */
+  .hero,.dark,footer{position:relative;overflow:hidden}
+  .hero::after,.dark::after,footer::after{content:"";position:absolute;inset:0;
+    pointer-events:none;z-index:0;
+    background:
+      radial-gradient(720px 400px at 80% -6%, rgba(183,156,255,.18), transparent 60%),
+      radial-gradient(640px 380px at 6% 108%, rgba(48,176,199,.13), transparent 62%);}
+  .hero .wrap,.dark .wrap,footer .wrap{position:relative;z-index:1}
+
+  /* ===== floating hero card (premium SaaS shell, Ascent green) ===== */
+  .navlinks{display:flex;gap:28px}
+  .navlinks a{font-size:14px;color:var(--ink2);font-weight:500;transition:color .15s}
+  .navlinks a:hover{color:var(--ink)}
+  .btn.pill{border-radius:999px}
+  .btn.dark.pill{background:#16244f;border-color:#16244f;color:#fff}
+  .btn.dark.pill:hover{background:#0f1a3a}
+
+  .herowrap{padding:0 24px}
+  .herocard{position:relative;max-width:1320px;margin:20px auto 0;border-radius:30px;
+    overflow:hidden;padding:48px 32px;text-align:center;color:#fff;
+    min-height:calc(100vh - 104px);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    background:
+      radial-gradient(1200px 720px at 80% 0%, #4a68c0 0%, transparent 56%),
+      radial-gradient(1000px 820px at 12% 112%, #0a1636 0%, transparent 60%),
+      linear-gradient(140deg,#131f45 0%, #1c2c63 55%, #141d40 100%);
+    box-shadow:0 40px 90px rgba(10,20,54,.35)}
+  .herocard h1{max-width:900px;margin:0 auto;font-size:clamp(38px,5.6vw,62px);line-height:1.07}
+  .herocard h1 b{color:#ffffff}
+  .herocard p{color:rgba(255,255,255,.85);font-size:clamp(16px,1.9vw,20px);max-width:600px;
+    margin:22px auto 0;line-height:1.55}
+  .hero-ctas{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:34px}
+  .btn.white{background:#fff;color:#2551d8;border:1px solid #fff;padding:14px 28px}
+  .btn.white:hover{background:#eef2ff;transform:translateY(-1px)}
+  .btn.glass{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.4);
+    padding:14px 28px;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+  .btn.glass:hover{background:rgba(255,255,255,.22);transform:translateY(-1px)}
+  @media(max-width:560px){.herocard{padding:56px 20px;min-height:calc(100vh - 90px)}}
+
+  @media(max-width:840px){
+    .navlinks{display:none}
+    .flow{flex-direction:column;gap:12px}
+    .node{margin-right:0}
+    .node::after{display:none}
+    .loop{flex-wrap:wrap}
+    .chip{min-width:44%}
+    .kills,.ai,.vs{grid-template-columns:1fr}
+    .fdr{flex-direction:column}
+    .navcta .ghost{display:none}
+  }
+</style>
+</head>
+<body>
+
+<nav><div class="wrap navin">
+  <span class="brand">Ascent<i>.</i><small>OUTBOUND OS</small></span>
+  <span class="navlinks">
+    <a href="#how">How it works</a>
+    <a href="#useful">Why it's useful</a>
+    <a href="#faq">Questions</a>
+  </span>
+  <span class="navcta">
+    <a class="btn dark pill sm" href="app.html">Open the app</a>
+  </span>
+</div></nav>
+
+<header class="herowrap">
+  <div class="herocard">
+    <h1>The operating system for getting clients on <b>LinkedIn</b>.</h1>
+    <p>It tells you exactly what to do today. And it always shows you where the
+    month really stands, because every number is an action you actually logged.</p>
+    <div class="hero-ctas">
+      <a class="btn pill white" href="app.html">Open it →</a>
+      <a class="btn pill glass" href="#how">See how it works</a>
+    </div>
+  </div>
+</header>
+
+<section id="problem"><div class="wrap">
+  <div class="kick">The problem</div>
+  <h2>The hard part was never the selling. The hard part is showing up every single day.</h2>
+  <p class="lead">You blast messages for three days. Nothing. You feel gross, you
+  stop, and you go back to hoping referrals show up. Six weeks later the pipeline's
+  empty and the panic blasting starts again. That cycle is why the pipeline never
+  feels predictable. This is the machine that breaks it.</p>
+</div></section>
+
+<section id="how" style="padding-top:0"><div class="wrap">
+  <div class="kick">The system</div>
+  <h2>One flow, cold stranger to monthly client.</h2>
+  <div class="flow">
+    <div class="node" style="background:linear-gradient(140deg,#4BA3FF,#0A6AE8)"><div class="nt">Your leads</div>
+      <div class="ns">bring your own list, organised into segments</div></div>
+    <div class="node" style="background:linear-gradient(140deg,#8183F4,#5155D6)"><div class="nt">Daily reps</div>
+      <div class="ns">requests, reachouts, a post — one person at a time</div></div>
+    <div class="node" style="background:linear-gradient(140deg,#4FC8F0,#1FA0D6)"><div class="nt">Replies</div>
+      <div class="ns">whatever they said, the playbook hands you the answer</div></div>
+    <div class="node" style="background:linear-gradient(140deg,#C77BF5,#9945E3)"><div class="nt">Deals</div>
+      <div class="ns">proposals age in front of you and get chased</div></div>
+    <div class="node" style="background:linear-gradient(140deg,#FF6482,#F2334E)"><div class="nt">Clients</div>
+      <div class="ns">wins become retainers, MRR, check-ins</div></div>
+  </div>
+  <div class="foundation">Each stat is an action you
+  actually logged. Fix a mistake and it updates everywhere. You always know
+  exactly where you stand.</div>
+
+  <div style="height:56px"></div>
+  <div class="kick">The daily loop</div>
+  <h2>Thirty minutes. Five steps. Every day.</h2>
+  <div class="loop">
+    <div class="chip"><b>1</b>Post on LinkedIn, one click logs it</div>
+    <div class="chip"><b>2</b>Clear what's due — replies first, always</div>
+    <div class="chip"><b>3</b>Connection requests in Focus mode</div>
+    <div class="chip"><b>4</b>Reachouts, click the ring as you go</div>
+    <div class="chip hot"><b>5</b>Seal the day. Streak grows. Done.</div>
+  </div>
+</div></section>
+
+<section style="padding-top:0"><div class="wrap">
+  <div class="kick">What it kills</div>
+  <h2>The four ways outbound quietly dies.</h2>
+  <div class="kills">
+    <div class="kill"><div class="kt"><span class="dot" style="background:var(--blue)"></span>The 9am question</div>
+      <p>"What do I actually do now?" is answered before you ask. Due list first,
+      then the reps. Zero decisions, just work.</p></div>
+    <div class="kill"><div class="kt"><span class="dot" style="background:var(--indigo)"></span>The consistency collapse</div>
+      <p>Daily targets you choose, a streak, and a Focus mode that deals you one
+      person at a time. Consistency stops being willpower.</p></div>
+    <div class="kill"><div class="kt"><span class="dot" style="background:var(--emerald)"></span>The fumbled reply</div>
+      <p>Price question, "not now", ghosting. There's a written answer for each,
+      one click to copy, at the exact moment it counts.</p></div>
+    <div class="kill"><div class="kt"><span class="dot" style="background:var(--pink)"></span>The quiet deal death</div>
+      <p>Day three it says chase. Day seven it says chase or close. Signatures get
+      hunted, not hoped for.</p></div>
+  </div>
+</div></section>
+
+<section id="useful" style="padding-top:0"><div class="wrap">
+  <div class="kick">Why it's useful</div>
+  <h2>A CRM is a filing cabinet. This is the machine that runs your day.</h2>
+  <p class="lead">You've tried a CRM. It became the place where leads go quiet.
+  We built the opposite: the thing that gets them contacted, answered, chased
+  and closed.</p>
+  <div class="vs">
+    <div class="vs-col them">
+      <div class="vs-h">Every other CRM</div>
+      <div class="vs-row">Asks you to update it after the work</div>
+      <div class="vs-row">Believes any number you type into it</div>
+      <div class="vs-row">Built for sales teams with managers</div>
+      <div class="vs-row">Weeks of setup, pipelines to configure</div>
+      <div class="vs-row">Leaves you staring at a hard reply</div>
+      <div class="vs-row">Prices for teams, per seat</div>
+    </div>
+    <div class="vs-col us">
+      <div class="vs-h">Outbound OS</div>
+      <div class="vs-row">Tells you the work: who, when, what to say</div>
+      <div class="vs-row">Counts only actions you actually logged</div>
+      <div class="vs-row">Built for one operator, thirty minutes a day</div>
+      <div class="vs-row">CSV in, the loop starts the same morning</div>
+      <div class="vs-row">Hands you the written answer, one click to copy</div>
+      <div class="vs-row">Free. One of the tools we use ourselves</div>
+    </div>
+  </div>
+  <p class="lead" style="margin-top:28px">You don't need more software. You need
+  to know your next move and actually take it, every single day. That's the
+  whole product.</p>
+</div></section>
+
+<section class="dark"><div class="wrap">
+  <div class="kick">The truth ledger</div>
+  <h2>Real numbers. Obvious next moves.</h2>
+  <p class="lead">You can't type a number in here. Every stat comes from an action
+  you logged, and undo removes it everywhere. When you trust your own numbers, the
+  next move stops being a guess — you can see which segment accepts, which titles
+  say yes, and where this month is really headed.</p>
+  <div class="bigline">Numbers you can trust. Moves you can make.</div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="kick">Claude built in</div>
+  <h2>It drafts in your voice. It coaches from your real numbers.</h2>
+  <div class="ai">
+    <div class="aicard">
+      <div class="at">Reply drafts</div>
+      <p>Paste what a prospect actually said. Claude drafts the answer in your
+      voice, learned from the templates you set, with the deal history in front
+      of it.</p></div>
+    <div class="aicard">
+      <div class="at">Opener tailor</div>
+      <p>Paste their headline or a recent post. Get a connection note
+      and a first message that references one real detail, so it reads like you
+      actually looked.</p></div>
+    <div class="aicard">
+      <div class="at">The coach</div>
+      <p>Reads your real ledger — accept rates, pace, deals going cold — and tells
+      you exactly what to fix this week. It tells you straight when a sample
+      is too small to trust.</p></div>
+  </div>
+  <div class="ainote">Bring your own Claude API key, takes 30 seconds and stays in
+  your browser. Everything else runs without it.</div>
+</div></section>
+
+<section style="padding-top:0"><div class="wrap">
+  <div class="kick">Who it's for</div>
+  <h2>Anyone who needs clients and hates chaos.</h2>
+  <div class="who">
+    <span>Agency owners</span><span>Founders doing their own sales</span>
+    <span>Recruiters</span><span>Consultants</span><span>Freelancers</span>
+  </div>
+  <p class="lead" style="margin-top:26px">This is one of the tools we built for ourselves
+  at Ascent. We use it, and we made it public because every small B2B team fights the
+  same fight — a slice of the daily grind, handled. Ascent itself is the bigger picture:
+  outbound and GTM, done for you. If that's what you'd rather have, that's
+  <a href="https://getascent.co" target="_blank" rel="noopener" style="color:var(--orange);font-weight:700">Ascent</a>.</p>
+</div></section>
+
+<section style="padding-top:0"><div class="wrap">
+  <div class="kick">Who built it</div>
+  <div class="fdr">
+    <img src="assets/founder.png" alt="Jamil Ahmed, founder of Ascent">
+    <div>
+      <h3>Jamil Ahmed</h3>
+      <div class="role">Founder, Ascent · B2B GTM &amp; Outbound</div>
+      <p>Bloody good at turning meh businesses into hell yeah. I build outbound
+      engines for B2B companies, the GTM, the pipeline, the messaging, the
+      execution, running everywhere from the USA to the UK to the UAE to
+      Australia, and across Europe.</p>
+      <p>Started two agencies, shipped an app solo that landed in the
+      Microsoft for Startups program, now all in on Ascent. This OS is one of the
+      tools we use day to day — a small piece of how Ascent works.</p>
+      <a class="libtn" href="https://www.linkedin.com/in/getascent/" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3.5" y="3.5" width="17" height="17" rx="3.8"/><path d="M8 10.8v5.7M8 7.4h.01M12.2 16.5v-3.3c0-1.3.9-2.3 2.1-2.3s2.1 1 2.1 2.3v3.3M12.2 12.4v-1.6"/></svg>
+        CONNECT ON LINKEDIN</a>
+    </div>
+  </div>
+</div></section>
+
+<section id="faq" style="padding-top:0"><div class="wrap">
+  <div class="kick">Questions</div>
+  <h2>Straight answers.</h2>
+  <details open><summary>Is it really free?</summary>
+    <p>Yes. It's one of the tools we built for ourselves at Ascent. We use it
+    every day, and we made it public. You bring your own leads. Optionally add
+    your own Claude API key for the drafting and coaching features.</p></details>
+  <details><summary>Do I need to create an account?</summary>
+    <p>Yes — a free one, and it takes two minutes. Email and a password, or grab
+    an emailed login link if you prefer. Your account keeps your pipeline saved
+    and synced, so you can pick up on any machine.</p></details>
+  <details><summary>Where does my lead list live?</summary>
+    <p>In your browser for speed and saved to your account, with a one-click backup file
+    on top. Import a list and you're working it seconds later, on any
+    machine you log into.</p></details>
+  <details><summary>Does it automate LinkedIn?</summary>
+    <p>No, and that's deliberate. Automation gets accounts restricted. You send
+    every message yourself on LinkedIn; the OS tells you who, when and what to
+    say, then logs it in one click. The default targets sit inside LinkedIn's practical
+    limits, about 100 invites a week.</p></details>
+  <details><summary>What makes it different from a normal CRM?</summary>
+    <p>The truth ledger: every stat is a logged action, undo erases it everywhere,
+    nothing double counts. Plus a daily loop with rings and a streak that makes
+    consistency automatic, and Claude that writes in your voice, from the templates you set.</p></details>
+</div></section>
+
+<footer><div class="wrap">
+  <h2>It's free. It's one of the tools we built for ourselves.</h2>
+  <div class="sub">Load your leads, run the loop. Use it or don't — it's here either way.</div>
+  <a class="btn solid" style="font-size:16px;padding:14px 34px" href="app.html">OPEN THE APP →</a>
+  <div class="ftlinks">
+    <a href="https://getascent.co" target="_blank" rel="noopener">Want it done for you? That's Ascent</a>
+    <a href="https://getascent.co/privacy" target="_blank" rel="noopener">Privacy</a>
+    <a href="https://getascent.co/terms" target="_blank" rel="noopener">Terms</a>
+    <a class="o" href="https://getascent.co" target="_blank" rel="noopener">GETASCENT.CO</a>
+  </div>
+</div></footer>
+
+</body>
+</html>
