@@ -22,8 +22,8 @@ ov.innerHTML=`<div class="auth-card">
   <div id="auth-form">
     <input id="auth-email" type="email" placeholder="you@company.com" autocomplete="email">
     <input id="auth-pass" type="password" placeholder="password, 8 or more characters" autocomplete="current-password">
-    <div class="auth-note auth-savage">Real talk: do not use your bank password
-    here. We're a free outbound tool running lean, not a vault. Make one up.</div>
+    <div class="auth-note auth-savage">Make up a fresh password, don't reuse your
+    bank one. We're a lean free tool — we don't exactly have the budget for Z+ data security.</div>
     <button id="auth-new">CREATE FREE ACCOUNT</button>
     <button id="auth-go">LOG IN</button>
     ${AUTH_CFG.google?`<button id="auth-google">CONTINUE WITH GOOGLE</button>`:""}
