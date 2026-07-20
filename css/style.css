@@ -37,7 +37,8 @@ a{color:var(--accent);text-decoration:none}
 /* segments scroll in their own lane; the month bar + founder card stay locked at the bottom */
 #seglist{flex:1 1 auto;min-height:0;overflow-y:auto}
 #sidefoot,#founder{flex:none}
-#brand{display:flex;align-items:baseline;gap:7px;padding:2px 6px 14px}
+#brand{display:flex;align-items:baseline;gap:7px;padding:2px 6px 14px;transition:opacity .15s}
+#brand:hover{opacity:.65}
 .bword{font-family:var(--serif);font-size:21px;font-weight:700;color:var(--ink)}
 .bdot{color:#e8501f}
 #brand small{color:var(--ink3);font-size:9px;letter-spacing:2px}
@@ -527,7 +528,9 @@ tr.flash td{animation:rowflash 1.1s ease}
 .auth-card{background:#fff;border:1px solid var(--line);border-radius:20px;
   padding:38px 40px;max-width:420px;width:calc(100% - 32px);
   box-shadow:0 24px 70px rgba(0,0,0,.14)}
-.auth-brand{font-family:var(--serif);font-size:22px;font-weight:700;margin-bottom:22px}
+.auth-brand{font-family:var(--serif);font-size:22px;font-weight:700;margin-bottom:22px;
+  color:var(--ink);display:inline-block;transition:opacity .15s}
+.auth-brand:hover{opacity:.65}
 .auth-brand i{color:#e8501f;font-style:normal}
 .auth-brand small{font-family:var(--ui);font-size:11px;letter-spacing:3px;
   color:var(--ink3);font-weight:600}

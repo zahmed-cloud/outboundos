@@ -15,7 +15,7 @@ const sb=supabase.createClient(AUTH_CFG.url,AUTH_CFG.anon);
 const ov=document.createElement("div");
 ov.id="authov";
 ov.innerHTML=`<div class="auth-card">
-  <div class="auth-brand">Ascent<i>.</i> <small>OUTBOUND OS</small></div>
+  <a class="auth-brand" href="index.html">Ascent<i>.</i> <small>OUTBOUND OS</small></a>
   <h2 id="auth-h">Welcome back.</h2>
   <p class="auth-sub" id="auth-sub">Log in to pick up your pipeline where you left off.</p>
 
