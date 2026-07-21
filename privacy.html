@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy Policy — Ascent Outbound OS</title>
+<meta name="description" content="What Outbound OS collects, where it lives, and how to get it back or have it deleted. Written in plain English.">
+<meta name="robots" content="index,follow">
+<meta name="theme-color" content="#16244f">
+<link rel="icon" href="assets/favicon.svg">
+<style>
+  :root{
+    --green:#16244f; --blue:#2f6bf0; --brand:#e8501f;
+    --ink:#1d1d1f; --ink2:#48484d; --ink3:#86868b; --line:#e6e6ec;
+    --cream:#f2ede2; --cream2:#cdd6ea;
+    --serif:Georgia,"Times New Roman",serif;
+    --ui:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font:16px/1.6 var(--ui);color:var(--ink);background:#fbfcfe;-webkit-font-smoothing:antialiased}
+  a{text-decoration:none;color:inherit}
+  .wrap{max-width:820px;margin:0 auto;padding:0 28px}
+
+  nav{position:sticky;top:0;z-index:10;background:rgba(253,252,249,.72);
+    -webkit-backdrop-filter:blur(20px) saturate(1.6);backdrop-filter:blur(20px) saturate(1.6);
+    border-bottom:1px solid rgba(255,255,255,.55);box-shadow:0 1px 0 rgba(255,255,255,.6),0 6px 26px rgba(17,17,20,.05)}
+  .navin{max-width:1080px;margin:0 auto;padding:14px 28px;display:flex;align-items:center;justify-content:space-between}
+  .brand{font-family:var(--serif);font-size:24px;font-weight:700}
+  .brand i{color:var(--brand);font-style:normal}
+  .brand small{font-family:var(--ui);font-size:11px;letter-spacing:3px;color:var(--ink3);margin-left:10px;font-weight:600}
+  .back{font-size:14px;font-weight:600;color:var(--ink2)}
+  .back:hover{color:var(--ink)}
+  @media(max-width:560px){.brand small{display:none}}
+
+  header.hero{padding:64px 0 34px;border-bottom:1px solid var(--line)}
+  .crumb{display:inline-flex;gap:8px;margin-bottom:24px;font-size:11px;text-transform:uppercase;
+    letter-spacing:.14em;color:var(--ink3);font-weight:600}
+  .crumb a{color:var(--ink3)} .crumb a:hover{color:var(--ink)} .crumb .sep{opacity:.4}
+  h1{font-family:var(--serif);font-size:clamp(38px,6vw,60px);line-height:1.04;letter-spacing:-.02em;font-weight:700}
+  h1 em,h2 em,.lead em{font-style:italic;color:var(--blue)}
+  .meta{display:flex;gap:24px;flex-wrap:wrap;margin-top:22px;font-size:11px;text-transform:uppercase;
+    letter-spacing:.1em;color:var(--ink3);font-weight:600}
+
+  article{padding:52px 0 90px}
+  .lead{font-family:var(--serif);font-size:23px;line-height:1.42;color:var(--ink);margin-bottom:36px;letter-spacing:-.015em}
+  article p{font-family:var(--serif);font-size:18.5px;line-height:1.62;color:var(--ink2);margin-bottom:22px;letter-spacing:-.008em}
+  article p em{font-style:italic;color:var(--ink)}
+  article a{border-bottom:1px solid var(--line);transition:color .15s,border-color .15s}
+  article a:hover{color:var(--blue);border-color:var(--blue)}
+  h2{font-family:var(--serif);font-size:clamp(26px,3.4vw,34px);margin:52px 0 20px;letter-spacing:-.02em;line-height:1.12;font-weight:700}
+  article ul{margin:22px 0;padding:0;list-style:none}
+  article ul li{font-family:var(--serif);font-size:18.5px;line-height:1.55;color:var(--ink2);padding:8px 0 8px 24px;position:relative}
+  article ul li::before{content:"—";position:absolute;left:0;color:var(--blue)}
+  hr{border:none;border-top:1px solid var(--line);margin:46px 0}
+  .callout{border-left:3px solid var(--blue);padding:14px 0 14px 28px;margin:36px 0;
+    font-family:var(--serif);font-size:20px;color:var(--ink);line-height:1.45;letter-spacing:-.012em}
+  .fine{font-size:12px;color:var(--ink3);text-transform:uppercase;letter-spacing:.1em;font-family:var(--ui)}
+  .fine a{color:var(--ink2)}
+
+  footer{background:var(--green);color:var(--cream2);padding:56px 0;margin-top:0}
+  .ftin{max-width:1080px;margin:0 auto;padding:0 28px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px}
+  .ftlogo{font-family:var(--serif);font-size:22px;font-weight:700;color:var(--cream)}
+  .ftlogo i{color:var(--brand);font-style:normal}
+  .ftlinks{display:flex;gap:22px;flex-wrap:wrap;font-size:14px}
+  .ftlinks a{color:var(--cream2)} .ftlinks a:hover{color:var(--cream)}
+  @media(max-width:700px){header.hero{padding:44px 0 26px}article{padding:34px 0 60px}}
+</style>
+</head>
+<body>
+
+<nav><div class="navin">
+  <a href="/" class="brand">Ascent<i>.</i><small>OUTBOUND OS</small></a>
+  <a class="back" href="/">← Back to Outbound OS</a>
+</div></nav>
+
+<header class="hero"><div class="wrap">
+  <div class="crumb"><a href="/">Outbound OS</a><span class="sep">/</span><span>Privacy</span></div>
+  <h1>Privacy, in <em>plain English</em>.</h1>
+  <div class="meta"><span>Effective 20 July 2026</span><span>Applies to Ascent &amp; Outbound OS</span></div>
+</div></header>
+
+<article><div class="wrap">
+
+  <p class="lead">This policy covers <em>Outbound OS</em>, our pipeline app, and the Ascent website. It says exactly what we collect, where it lives, and how to get it back or have it deleted. No lawyer voice.</p>
+
+  <p>Ascent is run by Jamil Ahmed. Anything in this policy, any question, any request — one email: <a href="mailto:jamil@getascent.co">jamil@getascent.co</a>.</p>
+
+  <h2>Your Outbound OS <em>account</em></h2>
+  <p>The live app requires a free account: your email address and a password. Accounts are handled by Supabase, our database provider. The password is hashed by Supabase; we never see it. Your email is used to sign you in and, rarely, to tell you something important about the service.</p>
+
+  <h2>Your app data <em>syncs to our servers</em></h2>
+  <p>Everything you do in Outbound OS — your settings, targets, daily activity, pipeline, and your leads — is saved to your account on our backend (a Supabase database) roughly every ten seconds while you work. That is what lets your data follow you across devices and survive a cleared browser.</p>
+
+  <div class="callout">Be clear on this one: when you import a lead list, that list — names, titles, companies, locations, LinkedIn URLs, email addresses — is stored on our servers. Both as part of your account's synced data and as an upload record when the import happens.</div>
+
+  <p>We store it to run the product for you: sync, backup, and making sure an import is never lost. We use it for operating the service and nothing else. We never sell it, rent it, or share it with anyone for marketing.</p>
+
+  <p>The people on your lead lists are your contacts, and having the right to use that data is your responsibility (more in the <a href="/terms">terms</a>). If someone on your list contacts us about their data, we will point them to you and cooperate with any deletion request.</p>
+
+  <h2>The <em>Claude</em> features</h2>
+  <p>Outbound OS uses Claude, built by Anthropic, to draft replies, tailor openers, and coach you on your numbers. When you use those features, the text involved — a prospect's message, a profile you paste, your own stats and templates — is sent to Anthropic to generate the draft. Two ways that can happen:</p>
+  <ul>
+    <li>With your own Claude key, pasted in Settings. It is stored only in your browser, and requests go straight from your browser to Anthropic.</li>
+    <li>Through our server, when Claude is enabled on a deployment without your own key.</li>
+  </ul>
+  <p>Anthropic does not train its models on data sent through its API. Nothing is sent to Anthropic unless you actively use a Claude feature.</p>
+
+  <h2>What lives <em>in your browser</em></h2>
+  <p>Outbound OS keeps its working copy of your data in your browser's local storage — that's why it's fast. Signing in stores a Supabase session token so you stay signed in. The site runs no ad trackers and no third-party analytics scripts.</p>
+
+  <h2>Where things are <em>hosted</em></h2>
+  <p>The app runs on Vercel and the database is Supabase. Like every host on the internet, they keep standard server logs (IP address, browser type, time of request) for security and debugging.</p>
+
+  <h2>Getting your data <em>out</em></h2>
+  <p>Backup, in the app's menu, downloads everything — your full state and all your leads — as a single JSON file, any time, no questions. That file is yours; Restore loads it on any machine.</p>
+  <p>To delete your account and everything stored against it, email <a href="mailto:jamil@getascent.co">jamil@getascent.co</a> from your account address. We delete the account, its synced data, and its upload records, and confirm when it's done. You can also ask what we hold about you at any time and we'll send you a copy.</p>
+
+  <h2>If this policy <em>changes</em></h2>
+  <p>We'll update this page and the date at the top. If a change genuinely matters — new data collected, a new place it goes — we'll tell account holders by email before it takes effect.</p>
+
+  <hr>
+  <p class="fine">— Questions? jamil@getascent.co. Also read the <a href="/terms">Terms of Service</a>.</p>
+
+</div></article>
+
+<footer><div class="ftin">
+  <span class="ftlogo">Ascent<i>.</i></span>
+  <span class="ftlinks">
+    <a href="/">Outbound OS</a>
+    <a href="/privacy">Privacy</a>
+    <a href="/terms">Terms</a>
+    <a href="mailto:jamil@getascent.co">jamil@getascent.co</a>
+  </span>
+</div></footer>
+
+</body>
+</html>

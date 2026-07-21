@@ -49,8 +49,8 @@ ov.innerHTML=`<div class="auth-card">
     bank one. We're a lean free tool — we don't exactly have the budget for Z+ data security.</div>
     <button id="auth-new">CREATE FREE ACCOUNT</button>
     <div class="auth-note">Creating an account means you're good with the
-    <a href="https://getascent.co/terms" target="_blank" rel="noopener">terms</a>
-    and <a href="https://getascent.co/privacy" target="_blank" rel="noopener">privacy policy</a>.</div>
+    <a href="/terms" target="_blank" rel="noopener">terms</a>
+    and <a href="/privacy" target="_blank" rel="noopener">privacy policy</a>.</div>
     <div class="auth-note auth-switch">Already have an account?
     <a href="#" id="to-login">Log in.</a></div>
   </div>
