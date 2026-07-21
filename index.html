@@ -61,11 +61,11 @@
   .brand small{font-family:var(--ui);font-size:11px;letter-spacing:3px;
     color:var(--ink3);margin-left:10px;font-weight:600}
   .navcta{display:flex;gap:10px;align-items:center}
-  .btn{display:inline-block;border-radius:10px;padding:11px 22px;font-weight:700;
+  .btn{display:inline-block;border-radius:12px;padding:11px 22px;font-weight:700;
     font-size:14px;letter-spacing:.3px;transition:transform .15s}
   .btn:hover{transform:translateY(-1px)}
   .btn.solid{background:var(--orange);color:#fff}
-  .btn.dark{background:var(--green);color:var(--cream)}
+  .btn.dark{background:var(--green);color:#fff}
   .btn.ghost{border:1.5px solid var(--line);color:var(--ink2)}
   .btn.sm{padding:8px 16px;font-size:13px}
 
@@ -99,7 +99,7 @@
     position:relative;margin-right:30px;box-shadow:0 10px 26px rgba(20,30,80,.16)}
   .node:last-child{margin-right:0}
   .node::after{content:"";position:absolute;right:-23px;top:50%;margin-top:-8px;
-    border-left:14px solid #c9c4b8;border-top:8px solid transparent;
+    border-left:14px solid #ccd4e4;border-top:8px solid transparent;
     border-bottom:8px solid transparent}
   .node:last-child::after{display:none}
   .node .nt{font-weight:700;font-size:16px}
@@ -276,7 +276,7 @@
     --eo:cubic-bezier(.16,1,.3,1);--ei:cubic-bezier(.4,0,1,1);
     --sh:0 1px 2px hsl(224 40% 20% / .04),0 4px 10px hsl(224 40% 20% / .05),0 14px 30px hsl(224 40% 20% / .07);
     font-family:var(--sans);color:var(--ink)}
-  .mh .mh-in{max-width:1220px;margin:0 auto;display:grid;grid-template-columns:1.12fr 0.88fr;gap:54px;align-items:center;padding:24px 44px 88px}
+  .mh .mh-in{max-width:1220px;margin:0 auto;display:grid;grid-template-columns:1.12fr 0.88fr;gap:54px;align-items:center;min-height:calc(100vh - 64px);padding:48px 44px 64px}
   .mh .hL h1{font-family:var(--serif);font-size:clamp(36px,4.6vw,52px);line-height:1.07;letter-spacing:-.025em;font-weight:700;max-width:none;color:var(--ink)}
   .mh .hL p{color:var(--soft);font-size:17.5px;line-height:1.6;max-width:none;margin:22px 0 30px}
   .mh .hL .ctas{display:flex;gap:12px;flex-wrap:wrap}
@@ -354,6 +354,7 @@
   .mh #cursor.press .cring{animation:mhck .5s ease-out}
   @keyframes mhck{0%{opacity:.7;transform:scale(.3)}100%{opacity:0;transform:scale(1.9)}}
   @media(max-width:920px){.mh .mh-in{grid-template-columns:1fr;gap:30px}.mh .app{margin:0 auto}}
+  @media(max-width:560px){.brand small{display:none}}
 </style>
 </head>
 <body>
@@ -366,7 +367,7 @@
     <a href="#faq">Questions</a>
   </span>
   <span class="navcta">
-    <a class="btn dark pill sm" href="app.html#login">Log in</a>
+    <a class="btn dark sm" href="app.html#login">Log in</a>
   </span>
 </div></nav>
 
@@ -424,7 +425,7 @@
             <div class="fr"><span class="fl">Replied</span><span class="track"><span class="bar" data-w="15" style="background:#12a862"></span></span><span class="fv" data-n="14">0</span></div>
             <div class="fr"><span class="fl">Won</span><span class="track"><span class="bar" data-w="6" style="background:#ff5a8a"></span></span><span class="fv" data-n="3">0</span></div>
           </div>
-          <div class="ncap">nothing typed. <b>you can't fake your own pipeline.</b></div>
+          <div class="ncap">each number is a real action you logged. <b>always know where you stand.</b></div>
         </div>
       </div>
       <div class="toast" id="toast"><span class="ck">✓</span><span id="toastT">logged</span></div>
@@ -446,15 +447,15 @@
   <div class="kick">The system</div>
   <h2>One flow, cold stranger to monthly client.</h2>
   <div class="flow">
-    <div class="node" style="background:linear-gradient(140deg,#4BA3FF,#0A6AE8)"><div class="nt">Your leads</div>
+    <div class="node" style="background:linear-gradient(140deg,#5B7CBE,#4C6AAC)"><div class="nt">Your leads</div>
       <div class="ns">bring your own list, organised into segments</div></div>
-    <div class="node" style="background:linear-gradient(140deg,#8183F4,#5155D6)"><div class="nt">Daily reps</div>
+    <div class="node" style="background:linear-gradient(140deg,#48649E,#3C5590)"><div class="nt">Daily reps</div>
       <div class="ns">requests, reachouts, a post — one person at a time</div></div>
-    <div class="node" style="background:linear-gradient(140deg,#4FC8F0,#1FA0D6)"><div class="nt">Replies</div>
+    <div class="node" style="background:linear-gradient(140deg,#374F86,#2D4478)"><div class="nt">Replies</div>
       <div class="ns">whatever they said, the playbook hands you the answer</div></div>
-    <div class="node" style="background:linear-gradient(140deg,#C77BF5,#9945E3)"><div class="nt">Deals</div>
+    <div class="node" style="background:linear-gradient(140deg,#273D6E,#1F3562)"><div class="nt">Deals</div>
       <div class="ns">proposals age in front of you and get chased</div></div>
-    <div class="node" style="background:linear-gradient(140deg,#FF6482,#F2334E)"><div class="nt">Clients</div>
+    <div class="node" style="background:linear-gradient(140deg,#182B57,#14224A)"><div class="nt">Clients</div>
       <div class="ns">wins become retainers, MRR, check-ins</div></div>
   </div>
   <div class="foundation">Each stat is an action you
