@@ -269,6 +269,91 @@
     .fdr{flex-direction:column}
     .navcta .ghost{display:none}
   }
+  /* ============ product-demo hero (scoped under .mh) ============ */
+  .mh{--ink:#0f1626;--soft:#556074;--mute:#98a0b3;--line:#eef0f5;--line2:#e3e7ef;
+    --navy:#14224a;--blue:#2f6bf0;--green:#12a862;--greenbg:#e7f7ef;--purple:#8a5cf6;--amber:#f59e2b;--pink:#ff5a8a;--teal:#1fb6cf;
+    --serif:Georgia,"Times New Roman",serif;--sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;--mono:ui-monospace,"SF Mono",Menlo,monospace;
+    --eo:cubic-bezier(.16,1,.3,1);--ei:cubic-bezier(.4,0,1,1);
+    --sh:0 1px 2px hsl(224 40% 20% / .04),0 4px 10px hsl(224 40% 20% / .05),0 14px 30px hsl(224 40% 20% / .07);
+    font-family:var(--sans);color:var(--ink)}
+  .mh .mh-in{max-width:1220px;margin:0 auto;display:grid;grid-template-columns:1.12fr 0.88fr;gap:54px;align-items:center;padding:24px 44px 88px}
+  .mh .hL h1{font-family:var(--serif);font-size:clamp(36px,4.6vw,52px);line-height:1.07;letter-spacing:-.025em;font-weight:700;max-width:none;color:var(--ink)}
+  .mh .hL p{color:var(--soft);font-size:17.5px;line-height:1.6;max-width:none;margin:22px 0 30px}
+  .mh .hL .ctas{display:flex;gap:12px;flex-wrap:wrap}
+  .mh .mbtn{font-weight:600;font-size:15px;border-radius:12px;padding:15px 26px;cursor:pointer;text-decoration:none;border:1px solid transparent;display:inline-block;transition:transform .15s var(--eo)}
+  .mh .mbtn:hover{transform:translateY(-1px)}
+  .mh .mbtn.dark{background:var(--navy);color:#fff}
+  .mh .mbtn.ghost{border-color:var(--line2);color:var(--ink);background:#fff}
+  .mh .stage{perspective:1200px}
+  .mh .app{position:relative;width:100%;max-width:512px;height:456px;margin-left:auto;background:#fff;border:1px solid var(--line2);border-radius:20px;box-shadow:var(--sh);overflow:hidden;transition:transform .4s var(--eo)}
+  .mh .bar{display:flex;align-items:center;gap:8px;padding:13px 18px 0}
+  .mh .bar .wm{font-family:var(--serif);font-weight:700;font-size:15px}
+  .mh .bar .wm i{color:#e8501f;font-style:normal}
+  .mh .tabs{position:relative;display:flex;margin:12px 16px 0;background:#f4f5f9;border-radius:12px;padding:4px}
+  .mh .tab{flex:1;text-align:center;font-size:12.5px;font-weight:600;color:var(--soft);padding:8px 0;z-index:2;transition:color .3s}
+  .mh .tab.on{color:var(--ink)}
+  .mh .tabind{position:absolute;top:4px;left:4px;height:calc(100% - 8px);width:calc(25% - 2px);background:#fff;border-radius:9px;box-shadow:0 2px 6px rgba(20,30,60,.08);transition:transform .5s var(--eo)}
+  .mh .screens{position:relative;margin:14px 16px 16px;height:326px}
+  .mh .screen{position:absolute;inset:0;opacity:0;transform:translateX(14px);transition:opacity .4s,transform .5s var(--eo);pointer-events:none}
+  .mh .screen.on{opacity:1;transform:none;pointer-events:auto}
+  .mh .lbl{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--mute);margin:0 2px 9px}
+  .mh .targets{display:flex;gap:10px;margin-bottom:14px}
+  .mh .tg{flex:1;border:1px solid var(--line);border-radius:14px;padding:12px 8px 9px;display:flex;flex-direction:column;align-items:center}
+  .mh .ringwrap{position:relative;width:50px;height:50px}
+  .mh .ringwrap svg{width:50px;height:50px;transform:rotate(-90deg)}
+  .mh .bgc{fill:none;stroke:#eef1f7;stroke-width:9}
+  .mh .fg{fill:none;stroke-width:9;stroke-linecap:round;stroke-dasharray:314;transition:stroke-dashoffset .9s var(--eo)}
+  .mh .ringwrap .num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px}
+  .mh .tg .lb{font-size:10.5px;color:var(--mute);margin-top:6px;font-weight:600}
+  .mh .rows{display:flex;flex-direction:column;gap:8px}
+  .mh .r{display:flex;align-items:center;gap:10px;padding:11px 12px;border:1px solid var(--line);border-radius:12px;background:#fff;transition:transform .18s var(--eo),box-shadow .18s,border-color .18s}
+  .mh .r:hover{transform:translateY(-2px);box-shadow:var(--sh);border-color:#dfe4ee}
+  .mh .r .av{width:32px;height:32px;border-radius:9px;flex:none;color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-weight:700;font-size:14px}
+  .mh .r .nm{font-weight:700;font-size:13px}
+  .mh .r .co{font-size:11px;color:var(--mute);margin-top:1px}
+  .mh .act{margin-left:auto;font-size:11.5px;font-weight:600;padding:6px 12px;border-radius:9px;white-space:nowrap;background:var(--navy);color:#fff;transition:transform .12s,background .3s}
+  .mh .act.ghost{background:#f2f4f8;color:var(--soft)}
+  .mh .act.pressed{transform:scale(.93)}
+  .mh .act.done{background:var(--greenbg);color:var(--green)}
+  .mh .pill{margin-left:auto;font-size:10.5px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;padding:5px 9px;border-radius:8px;white-space:nowrap}
+  .mh .pill.rep{background:#e0faee;color:#0f9e57}
+  .mh .pill.call{background:#e9f1ff;color:var(--blue)}
+  .mh .pill.prop{background:#f3ecff;color:#7a4bd6}
+  .mh .pill.won{background:#e7f7ef;color:var(--green)}
+  .mh .age{font-size:10.5px;color:var(--mute);margin-left:8px}
+  .mh .age.warn{color:#e5772b;font-weight:600}
+  .mh .fx{border:1px solid var(--line);border-radius:16px;padding:18px;position:relative;overflow:hidden}
+  .mh .fx .who{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+  .mh .fx .who .av{width:44px;height:44px;border-radius:12px;font-size:17px;color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-weight:700}
+  .mh .fx .who .nm{font-weight:700;font-size:16px}
+  .mh .fx .who .role{font-size:12px;color:var(--mute);margin-top:2px}
+  .mh .fx .who .seg{margin-left:auto;font-size:10.5px;font-weight:700;color:#7a4bd6;background:#f3ecff;padding:5px 9px;border-radius:8px}
+  .mh .fx .btns{display:flex;gap:8px;flex-wrap:wrap}
+  .mh .fx .fb{font-size:12px;font-weight:600;padding:9px 14px;border-radius:10px;border:1px solid var(--line2);color:var(--soft);background:#fff}
+  .mh .fx .fb.li{color:var(--blue);border-color:#cfe0ff;background:#f2f7ff}
+  .mh .fx .fb.prim{background:var(--navy);color:#fff;border-color:var(--navy)}
+  .mh .fx .fb.pressed{transform:scale(.94)}
+  .mh .fx.slideout{opacity:0;transform:translateX(-30px);transition:.4s var(--ei)}
+  .mh .fx-meta{display:flex;justify-content:space-between;font-size:11.5px;color:var(--mute);margin-bottom:10px}
+  .mh .fx-meta b{color:var(--ink);font-family:var(--mono)}
+  .mh .funnel{display:flex;flex-direction:column;gap:10px;margin-top:2px}
+  .mh .fr{display:grid;grid-template-columns:70px 1fr 34px;align-items:center;gap:11px}
+  .mh .fr .fl{font-size:12px;color:var(--soft);text-align:right}
+  .mh .fr .track{height:15px;background:#eef1f7;border-radius:8px;overflow:hidden}
+  .mh .fr .bar{height:100%;width:0;border-radius:8px;transition:width 1s var(--eo)}
+  .mh .fr .fv{font-family:var(--serif);font-weight:700;font-size:14px}
+  .mh .ncap{margin-top:14px;font-size:12px;color:var(--soft);text-align:center}
+  .mh .ncap b{color:var(--ink)}
+  .mh .toast{position:absolute;left:50%;bottom:14px;transform:translate(-50%,20px);background:var(--navy);color:#fff;font-size:12px;font-weight:600;padding:9px 15px;border-radius:11px;box-shadow:0 10px 24px rgba(20,34,74,.3);opacity:0;transition:opacity .3s,transform .4s var(--eo);z-index:9;display:flex;align-items:center;gap:8px;white-space:nowrap}
+  .mh .toast.show{opacity:1;transform:translate(-50%,0)}
+  .mh .toast .ck{width:15px;height:15px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;font-size:9px}
+  .mh #cursor{position:absolute;top:0;left:0;z-index:20;transform:translate(360px,300px);transition:transform .8s cubic-bezier(.5,.05,.2,1);pointer-events:none}
+  .mh #cursor .ptr{transition:transform .12s var(--eo);filter:drop-shadow(0 3px 5px rgba(20,30,60,.25))}
+  .mh #cursor.press .ptr{transform:scale(.8)}
+  .mh #cursor .cring{position:absolute;left:-3px;top:-3px;width:26px;height:26px;border-radius:50%;border:2px solid var(--blue);opacity:0}
+  .mh #cursor.press .cring{animation:mhck .5s ease-out}
+  @keyframes mhck{0%{opacity:.7;transform:scale(.3)}100%{opacity:0;transform:scale(1.9)}}
+  @media(max-width:920px){.mh .mh-in{grid-template-columns:1fr;gap:30px}.mh .app{margin:0 auto}}
 </style>
 </head>
 <body>
@@ -285,16 +370,67 @@
   </span>
 </div></nav>
 
-<header class="herowrap">
-  <div class="herocard">
-    <h1>The operating system for getting clients on <b>LinkedIn</b>.</h1>
-    <p>It tells you exactly what to do today. And it always shows you where the
-    month really stands, because every number is an action you actually logged.</p>
-    <div class="hero-ctas">
-      <a class="btn pill white" href="app.html#signup">Sign up free →</a>
-      <a class="btn pill glass" href="#how">See how it works</a>
+<header class="mh"><div class="mh-in">
+  <div class="hL">
+    <h1>The operating system for getting clients on LinkedIn.</h1>
+    <p>It tells you what to do today, sends one lead at a time, chases every deal, and keeps numbers you can't fake. Watch it work.</p>
+    <div class="ctas">
+      <a class="mbtn dark" href="app.html#signup">Sign up free →</a>
+      <a class="mbtn ghost" href="#how">See how it works</a>
     </div>
   </div>
+  <div class="hR"><div class="stage" id="stage">
+    <div class="app" id="app">
+      <div class="bar"><span class="wm">Ascent<i>.</i></span></div>
+      <div class="tabs"><span class="tabind" id="tabind"></span>
+        <span class="tab on">Today</span><span class="tab">Focus</span><span class="tab">Pipeline</span><span class="tab">Numbers</span>
+      </div>
+      <div class="screens" id="screens">
+        <div class="screen on" data-t="0">
+          <div class="targets">
+            <div class="tg"><div class="ringwrap"><svg viewBox="0 0 120 120"><circle class="bgc" cx="60" cy="60" r="50"/><circle class="fg" id="t1" cx="60" cy="60" r="50" stroke="#2f6bf0" stroke-dashoffset="31"/></svg><span class="num" id="n1">19</span></div><span class="lb">Requests</span></div>
+            <div class="tg"><div class="ringwrap"><svg viewBox="0 0 120 120"><circle class="bgc" cx="60" cy="60" r="50"/><circle class="fg" cx="60" cy="60" r="50" stroke="#12a862" stroke-dashoffset="0"/></svg><span class="num">15</span></div><span class="lb">Reachouts</span></div>
+            <div class="tg"><div class="ringwrap"><svg viewBox="0 0 120 120"><circle class="bgc" cx="60" cy="60" r="50"/><circle class="fg" cx="60" cy="60" r="50" stroke="#f59e2b" stroke-dashoffset="0"/></svg><span class="num">✓</span></div><span class="lb">Post</span></div>
+          </div>
+          <div class="lbl">Due now</div>
+          <div class="rows">
+            <div class="r"><span class="av" style="background:#2f6bf0">S</span><span><div class="nm">Sophie Turner</div><div class="co">Northline · connection request</div></span><span class="act" id="actA">Send request</span></div>
+            <div class="r"><span class="av" style="background:#8a5cf6">B</span><span><div class="nm">Ben Carter</div><div class="co">Summit · follow-up due</div></span><span class="act ghost">Follow up</span></div>
+            <div class="r"><span class="av" style="background:#12a862">E</span><span><div class="nm">Emma Hughes</div><div class="co">Brightwork · replied</div></span><span class="pill rep">Reply</span></div>
+          </div>
+        </div>
+        <div class="screen" data-t="1">
+          <div class="fx-meta"><span>Focus mode · one at a time</span><span><b id="fdone">12</b> done today</span></div>
+          <div class="fx" id="fxcard">
+            <div class="who"><span class="av" style="background:#2f6bf0" id="fav">G</span><span><div class="nm" id="fnm">Grace Bennett</div><div class="role" id="frole">Founder · Loop HQ</div></span><span class="seg" id="fseg">SaaS Founders</span></div>
+            <div class="btns"><span class="fb li">Open LinkedIn ↗</span><span class="fb">Copy message</span><span class="fb prim" id="fxdone">✓ Request sent</span><span class="fb">Skip</span></div>
+          </div>
+        </div>
+        <div class="screen" data-t="2">
+          <div class="lbl">Deals · chased automatically</div>
+          <div class="rows">
+            <div class="r"><span class="av" style="background:#8a5cf6">N</span><span><div class="nm">Northline</div><div class="co">Proposal sent <span class="age warn" id="page">3d · chase or close</span></div></span><span class="act" id="actWon">Mark won</span></div>
+            <div class="r"><span class="av" style="background:#2f6bf0">S</span><span><div class="nm">Summit</div><div class="co">Call booked <span class="age">tomorrow</span></div></span><span class="pill call">Call</span></div>
+            <div class="r"><span class="av" style="background:#1fb6cf">A</span><span><div class="nm">Atlas</div><div class="co">Replied · new</div></span><span class="pill rep">Reply</span></div>
+            <div class="r"><span class="av" style="background:#ff5a8a">F</span><span><div class="nm">Foundry</div><div class="co">Agreement sent <span class="age">1d</span></div></span><span class="pill prop">Signing</span></div>
+          </div>
+        </div>
+        <div class="screen" data-t="3">
+          <div class="lbl">Every number is a logged action</div>
+          <div class="funnel">
+            <div class="fr"><span class="fl">Leads</span><span class="track"><span class="bar" data-w="100" style="background:#5fa0ff"></span></span><span class="fv" data-n="120">0</span></div>
+            <div class="fr"><span class="fl">Requests</span><span class="track"><span class="bar" data-w="80" style="background:#8a5cf6"></span></span><span class="fv" data-n="96">0</span></div>
+            <div class="fr"><span class="fl">Accepted</span><span class="track"><span class="bar" data-w="42" style="background:#1fb6cf"></span></span><span class="fv" data-n="41">0</span></div>
+            <div class="fr"><span class="fl">Replied</span><span class="track"><span class="bar" data-w="15" style="background:#12a862"></span></span><span class="fv" data-n="14">0</span></div>
+            <div class="fr"><span class="fl">Won</span><span class="track"><span class="bar" data-w="6" style="background:#ff5a8a"></span></span><span class="fv" data-n="3">0</span></div>
+          </div>
+          <div class="ncap">nothing typed. <b>you can't fake your own pipeline.</b></div>
+        </div>
+      </div>
+      <div class="toast" id="toast"><span class="ck">✓</span><span id="toastT">logged</span></div>
+      <div id="cursor"><svg class="ptr" width="22" height="22" viewBox="0 0 22 22"><path d="M2 2 L2 17 L6.5 12.8 L9.6 19.5 L12.2 18.3 L9.1 11.8 L15 11.6 Z" fill="#0f1626" stroke="#fff" stroke-width="1.3" stroke-linejoin="round"/></svg><span class="cring"></span></div>
+    </div>
+  </div></div>
 </header>
 
 <section id="problem"><div class="wrap">
@@ -494,5 +630,40 @@
   </div>
 </div></footer>
 
+<script>
+/* product-demo hero */
+(function(){
+  var app=document.getElementById('app');if(!app)return;
+  var stage=document.getElementById('stage'),cursor=document.getElementById('cursor');
+  var toast=document.getElementById('toast'),toastT=document.getElementById('toastT'),tabind=document.getElementById('tabind');
+  var tabs=[].slice.call(document.querySelectorAll('.mh .tab')),screens=[].slice.call(document.querySelectorAll('.mh .screen'));
+  var t=[];function pushT(ms,fn){t.push(setTimeout(fn,ms));}function clr(){t.forEach(clearTimeout);t=[];}
+  function center(el){var pr=app.getBoundingClientRect(),r=el.getBoundingClientRect();return {x:r.left-pr.left+r.width/2,y:r.top-pr.top+r.height/2};}
+  function move(el,cb){var c=center(el);cursor.style.transform='translate('+(c.x-2)+'px,'+(c.y-2)+'px)';pushT(830,cb);}
+  function press(el,cb){cursor.classList.add('press');if(el)el.classList.add('pressed');pushT(210,function(){cursor.classList.remove('press');if(el)el.classList.remove('pressed');if(cb)cb();});}
+  function tst(x){toastT.textContent=x;toast.classList.add('show');pushT(1500,function(){toast.classList.remove('show');});}
+  function tick(el,to,dur,suf){var id=(el._t=(el._t||0)+1),s=performance.now();(function st(n){if(el._t!==id)return;var p=Math.min(1,(n-s)/dur);el.textContent=Math.max(0,Math.round(p*to))+(suf||'');if(p<1)requestAnimationFrame(st);})(s);}
+  function setTab(i){tabs.forEach(function(x,k){x.classList.toggle('on',k===i);});tabind.style.transform='translateX('+(i*100)+'%)';screens.forEach(function(s,k){s.classList.toggle('on',k===i);});}
+  function resetAll(){
+    document.getElementById('t1').style.strokeDashoffset='31';document.getElementById('n1').textContent='19';
+    var A=document.getElementById('actA');A.textContent='Send request';A.className='act';
+    var fx=document.getElementById('fxcard');fx.className='fx';document.getElementById('fdone').textContent='12';
+    document.getElementById('fnm').textContent='Grace Bennett';document.getElementById('frole').textContent='Founder · Loop HQ';document.getElementById('fseg').textContent='SaaS Founders';document.getElementById('fav').textContent='G';document.getElementById('fav').style.background='#2f6bf0';
+    var W=document.getElementById('actWon');W.textContent='Mark won';W.className='act';document.getElementById('page').textContent='3d · chase or close';document.getElementById('page').className='age warn';
+    screens[3].querySelectorAll('.bar').forEach(function(b){b.style.width='0';});
+    screens[3].querySelectorAll('.fv').forEach(function(n){n.textContent='0';});
+    cursor.style.transition='none';cursor.style.transform='translate(370px,300px)';void app.offsetWidth;cursor.style.transition='transform .8s cubic-bezier(.5,.05,.2,1)';
+  }
+  function playToday(){pushT(700,function(){move(document.getElementById('actA'),function(){press(document.getElementById('actA'),function(){var A=document.getElementById('actA');A.textContent='Sent ✓';A.className='act done';document.getElementById('t1').style.strokeDashoffset='0';document.getElementById('n1').textContent='20';tst('Request sent · logged');});});});}
+  function playFocus(){pushT(800,function(){move(document.getElementById('fxdone'),function(){press(document.getElementById('fxdone'),function(){var fx=document.getElementById('fxcard');fx.classList.add('slideout');tst('Logged · next lead');pushT(450,function(){document.getElementById('fnm').textContent='Marcus Webb';document.getElementById('frole').textContent='CEO · Beacon Search';document.getElementById('fseg').textContent='UK Recruiters';document.getElementById('fav').textContent='M';document.getElementById('fav').style.background='#12a862';document.getElementById('fdone').textContent='13';fx.className='fx';fx.style.transition='none';fx.style.transform='translateX(26px)';fx.style.opacity='0';void fx.offsetWidth;fx.style.transition='opacity .4s, transform .5s var(--eo)';fx.style.transform='';fx.style.opacity='1';});});});});}
+  function playPipe(){pushT(800,function(){move(document.getElementById('actWon'),function(){press(document.getElementById('actWon'),function(){var W=document.getElementById('actWon');W.textContent='Won · $2,000';W.className='pill won';document.getElementById('page').textContent='closed';document.getElementById('page').className='age';tst('Deal won · MRR updated');});});});}
+  function playNums(){pushT(500,function(){var bars=screens[3].querySelectorAll('.bar'),nums=screens[3].querySelectorAll('.fv');bars.forEach(function(b,k){pushT(k*95,function(){b.style.width=b.dataset.w+'%';});});nums.forEach(function(n){tick(n,+n.dataset.n,1000);});});}
+  var plays=[playToday,playFocus,playPipe,playNums],HOLDS=[3400,3600,3400,3300];
+  function step(i){if(i===0){clr();}setTab(i);if(i===0)resetAll();plays[i]();pushT(HOLDS[i],function(){step((i+1)%4);});}
+  stage.addEventListener('mousemove',function(e){var r=app.getBoundingClientRect();var dx=(e.clientX-(r.left+r.width/2))/r.width,dy=(e.clientY-(r.top+r.height/2))/r.height;app.style.transform='rotateY('+(dx*5)+'deg) rotateX('+(-dy*5)+'deg)';});
+  stage.addEventListener('mouseleave',function(){app.style.transform='';});
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches){setTab(0);}else step(0);
+})();
+</script>
 </body>
 </html>
