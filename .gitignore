@@ -3,3 +3,6 @@ node_modules/
 .vercel/
 *.log
 js/mydata.js
+
+# Local project context for Claude Code (auto-loads, kept private)
+CLAUDE.md
