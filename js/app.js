@@ -754,17 +754,22 @@ function focusStart(){
   let segF=S.focusSeg||"";
   if(segF&&!SEG[segF]){segF="";S.focusSeg="";}          /* list was deleted — fall back to all */
   const inSeg=l=>!segF||l.pri===segF;
+  const isUnt=l=>{const st2=S.leads[l.id];return !st2||(!st2.st&&!st2.conn)};
   const due=dueList().filter(x=>inSeg(x.l)).map(x=>x.l.id);
-  const untouched=LEADS.filter(l=>{if(!inSeg(l))return false;
-    const st2=S.leads[l.id];return !st2||(!st2.st&&!st2.conn)})
-    .slice(0,600).map(l=>l.id);
-  const ranked=smartRank(untouched);
-  _smartProgress=ranked.progress;
-  focusQueue=[...new Set([...due,...ranked.ids])];
+  const untouched=LEADS.filter(l=>inSeg(l)&&isUnt(l)).slice(0,600).map(l=>l.id);
+  const r=smartRank(untouched);_smartProgress=r.progress;
+  let rankedIds=r.ids;
+  if(!segF){
+    /* All lists: serve in the user's list-priority order, smart order kept within each list */
+    const rank={};orderedSegs().forEach((k,i)=>rank[k]=i);
+    const rankOf=id=>{const l=byId[id];const i=l?rank[l.pri]:undefined;return i==null?999:i};
+    rankedIds=r.ids.slice().sort((a,b)=>rankOf(a)-rankOf(b));
+  }
+  focusQueue=[...new Set([...due,...rankedIds])];
   focusRender();}
 function focusSegOptions(){const cur=S.focusSeg||"";
   return `<select id="focusseg" class="focusseg"><option value="">All lists</option>`+
-    Object.keys(SEG).map(k=>`<option value="${esc(k)}" ${k===cur?"selected":""}>${esc(SEG[k].name)}</option>`).join("")
+    orderedSegs().map(k=>`<option value="${esc(k)}" ${k===cur?"selected":""}>${esc(SEG[k].name)}</option>`).join("")
     +`</select>`}
 function bindFocusSeg(){const fs=$("#focusseg");
   fs&&(fs.onchange=()=>{S.focusSeg=fs.value;save();focusStart();});}
@@ -1570,13 +1575,26 @@ function tick(){
   if(now.toDateString()!==lastDay){lastDay=now.toDateString();_dirty=true;
     if(!$("#v-dash").classList.contains("hidden"))dash();updateTicker()}
 }
+/* the user's list priority order (falls back to natural order, appends any new lists) */
+function orderedSegs(){
+  const ord=(S.segOrder||[]).filter(k=>SEG[k]);
+  Object.keys(SEG).forEach(k=>{if(!ord.includes(k))ord.push(k)});
+  return ord;}
+function moveSeg(p,dir){
+  const ord=orderedSegs(),i=ord.indexOf(p),j=i+(dir==="up"?-1:1);
+  if(i<0||j<0||j>=ord.length)return;
+  [ord[i],ord[j]]=[ord[j],ord[i]];S.segOrder=ord;save();buildSeglist();}
 function buildSeglist(){
   const per={};LEADS.forEach(l=>per[l.pri]=(per[l.pri]||0)+1);
-  $("#seglist").innerHTML=Object.keys(SEG).map(p=>
-    `<div class="segrow" data-p="${p}"><span class="sdot2" style="background:${(SEG[p]||{}).color||"#8E8E93"}"></span>
-     ${SEG[p].name}<span class="sc">${per[p]||0}</span></div>`).join("");
+  const ord=orderedSegs();
+  $("#seglist").innerHTML=ord.map((p,i)=>
+    `<div class="segrow" data-p="${esc(p)}"><span class="sdot2" style="background:${(SEG[p]||{}).color||"#8E8E93"}"></span>
+     <span class="segnm">${esc(SEG[p].name)}</span><span class="sc">${per[p]||0}</span>
+     <span class="segmv"><button data-mv="up" data-p="${esc(p)}" ${i===0?"disabled":""} aria-label="move list up">▲</button><button data-mv="down" data-p="${esc(p)}" ${i===ord.length-1?"disabled":""} aria-label="move list down">▼</button></span></div>`).join("");
   $("#seglist").querySelectorAll(".segrow").forEach(r=>r.onclick=()=>{
-    show("leads");$("#fseg").value=r.dataset.p;renderRows(true)});}
+    show("leads");$("#fseg").value=r.dataset.p;renderRows(true)});
+  $("#seglist").querySelectorAll(".segmv button").forEach(b=>b.onclick=e=>{
+    e.stopPropagation();moveSeg(b.dataset.p,b.dataset.mv)});}
 function updateNav(){
   const c=countsCached();
   const due=dueList().length+(S.todos||[]).length;
