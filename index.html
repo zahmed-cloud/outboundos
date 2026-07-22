@@ -367,7 +367,7 @@
     <a href="#faq">Questions</a>
   </span>
   <span class="navcta">
-    <a class="btn dark sm" href="app.html#login">Log in</a>
+    <a class="btn dark sm" href="app.html#login" data-authcta>Log in</a>
   </span>
 </div></nav>
 
@@ -376,7 +376,7 @@
     <h1>The operating system for getting clients on LinkedIn.</h1>
     <p>It tells you what to do today, sends one lead at a time, chases every deal, and keeps numbers you can trust. Watch it work.</p>
     <div class="ctas">
-      <a class="mbtn dark" href="app.html#signup">Sign up free →</a>
+      <a class="mbtn dark" href="app.html#signup" data-authcta>Sign up free →</a>
       <a class="mbtn ghost" href="#how">See how it works</a>
     </div>
   </div>
@@ -622,7 +622,7 @@
 <footer><div class="wrap">
   <h2>It's free. It's one of the tools we built for ourselves.</h2>
   <div class="sub">Load your leads, run the loop. Use it or don't — it's here either way.</div>
-  <a class="btn solid" style="font-size:16px;padding:14px 34px" href="app.html#signup">Sign up free →</a>
+  <a class="btn solid" style="font-size:16px;padding:14px 34px" href="app.html#signup" data-authcta>Sign up free →</a>
   <div class="ftlinks">
     <a href="https://getascent.co" target="_blank" rel="noopener">Want it done for you? That's Ascent</a>
     <a href="/privacy">Privacy</a>
@@ -664,6 +664,24 @@
   stage.addEventListener('mousemove',function(e){var r=app.getBoundingClientRect();var dx=(e.clientX-(r.left+r.width/2))/r.width,dy=(e.clientY-(r.top+r.height/2))/r.height;app.style.transform='rotateY('+(dx*5)+'deg) rotateX('+(-dy*5)+'deg)';});
   stage.addEventListener('mouseleave',function(){app.style.transform='';});
   if(matchMedia('(prefers-reduced-motion: reduce)').matches){setTab(0);}else step(0);
+})();
+</script>
+<script>
+/* already-logged-in: swap the "Log in" / "Sign up free" CTAs to "Open dashboard".
+   Landing + app share one origin, so the Supabase session token is readable here. */
+(function(){
+  try{
+    var raw=null;
+    for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);
+      if(/^sb-.*-auth-token$/.test(k)){raw=localStorage.getItem(k);break;}}
+    if(!raw)return;
+    var s=JSON.parse(raw);
+    if(!s||!(s.access_token||s.refresh_token))return;   /* has a session */
+    document.querySelectorAll("[data-authcta]").forEach(function(a){
+      a.textContent="Open dashboard →";
+      a.setAttribute("href","app.html");
+    });
+  }catch(e){}
 })();
 </script>
 </body>
