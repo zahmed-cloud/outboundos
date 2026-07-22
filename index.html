@@ -32,7 +32,7 @@
   "offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},
   "author":{"@type":"Person","name":"Jamil Ahmed","url":"https://www.linkedin.com/in/getascent/","jobTitle":"Founder","worksFor":{"@type":"Organization","name":"Ascent","url":"https://getascent.co"}},
   "publisher":{"@type":"Organization","name":"Ascent","url":"https://getascent.co"}},
- {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Is it really free?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. It's one of the tools we built for ourselves at Ascent. We use it every day, and we made it public. You bring your own leads. Optionally add your own Claude API key for the drafting and coaching features."}}, {"@type": "Question", "name": "Do I need to create an account?", "acceptedAnswer": {"@type": "Answer", "text": "Yes — a free one, and it takes two minutes. Email and a password, or grab an emailed login link if you prefer. Your account keeps your pipeline saved and synced, so you can pick up on any machine."}}, {"@type": "Question", "name": "Where does my lead list live?", "acceptedAnswer": {"@type": "Answer", "text": "In your browser for speed and saved to your account, with a one-click backup file on top. Import a list and you're working it seconds later, on any machine you log into."}}, {"@type": "Question", "name": "Does it automate LinkedIn?", "acceptedAnswer": {"@type": "Answer", "text": "No, and that's deliberate. Automation gets accounts restricted. You send every message yourself on LinkedIn; the OS tells you who, when and what to say, then logs it in one click. The default targets sit inside LinkedIn's practical limits, about 100 invites a week."}}, {"@type": "Question", "name": "What makes it different from a normal CRM?", "acceptedAnswer": {"@type": "Answer", "text": "The truth ledger: every stat is a logged action, undo erases it everywhere, nothing double counts. Plus a daily loop with rings and a streak that makes consistency automatic, and built-in Claude that writes in your voice, learned from the templates you set."}}]}
+ {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Is it really free?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. It's one of the tools we built for ourselves at Ascent. We use it every day, and we made it public. You bring your own leads. Optionally add your own Claude API key for the drafting and coaching features."}}, {"@type": "Question", "name": "Do I need to create an account?", "acceptedAnswer": {"@type": "Answer", "text": "Yes, a free one, and it takes two minutes. Email and a password, or grab an emailed login link if you prefer. Your account keeps your pipeline saved and synced, so you can pick up on any machine."}}, {"@type": "Question", "name": "Where does my lead list live?", "acceptedAnswer": {"@type": "Answer", "text": "In your browser for speed and saved to your account, with a one-click backup file on top. Import a list and you're working it seconds later, on any machine you log into."}}, {"@type": "Question", "name": "Does it automate LinkedIn?", "acceptedAnswer": {"@type": "Answer", "text": "No, and that's deliberate. Automation gets accounts restricted. You send every message yourself on LinkedIn; the OS tells you who, when and what to say, then logs it in one click. The default targets sit inside LinkedIn's practical limits, about 100 invites a week."}}, {"@type": "Question", "name": "What makes it different from a normal CRM?", "acceptedAnswer": {"@type": "Answer", "text": "The truth ledger: every stat is a logged action, undo erases it everywhere, nothing double counts. Plus a daily loop with rings and a streak that makes consistency automatic, and built-in Claude that writes in your voice, learned from the templates you set."}}]}
 ]}
 </script>
 <link rel="icon" href="assets/favicon.svg">
@@ -65,7 +65,7 @@
   .btn{display:inline-block;border-radius:12px;padding:11px 22px;font-weight:700;
     font-size:14px;letter-spacing:.3px;transition:transform .15s}
   .btn:hover{transform:translateY(-1px)}
-  .btn.solid{background:var(--orange);color:#fff}
+  .btn.solid{background:var(--green);color:#fff}
   .btn.dark{background:var(--green);color:#fff}
   .btn.ghost{border:1.5px solid var(--line);color:var(--ink2)}
   .btn.sm{padding:8px 16px;font-size:13px}
@@ -193,10 +193,9 @@
   body{position:relative}
   body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
     background:
-      radial-gradient(760px 560px at 10% 6%, rgba(47,107,240,.10), transparent 60%),
-      radial-gradient(720px 620px at 90% 20%, rgba(120,160,255,.11), transparent 62%),
-      radial-gradient(820px 680px at 52% 98%, rgba(183,156,255,.13), transparent 60%),
-      radial-gradient(640px 520px at 80% 72%, rgba(48,176,199,.06), transparent 60%);}
+      radial-gradient(840px 620px at 12% 2%, rgba(47,107,240,.06), transparent 60%),
+      radial-gradient(780px 640px at 92% 22%, rgba(86,120,210,.06), transparent 62%),
+      radial-gradient(920px 720px at 50% 102%, rgba(110,140,225,.055), transparent 60%);}
 
   /* frosted light cards */
   .chip,.kill,.aicard,.who span,.vs-col.them{
@@ -453,7 +452,7 @@
     <div class="node" style="background:linear-gradient(140deg,#5B7CBE,#4C6AAC)"><div class="nt">Your leads</div>
       <div class="ns">bring your own list, organised into segments</div></div>
     <div class="node" style="background:linear-gradient(140deg,#48649E,#3C5590)"><div class="nt">Daily reps</div>
-      <div class="ns">requests, reachouts, a post — one person at a time</div></div>
+      <div class="ns">requests, reachouts, a post, one person at a time</div></div>
     <div class="node" style="background:linear-gradient(140deg,#374F86,#2D4478)"><div class="nt">Replies</div>
       <div class="ns">whatever they said, the playbook hands you the answer</div></div>
     <div class="node" style="background:linear-gradient(140deg,#273D6E,#1F3562)"><div class="nt">Deals</div>
@@ -470,7 +469,7 @@
   <h2>Thirty minutes. Five steps. Every day.</h2>
   <div class="loop">
     <div class="chip"><b>1</b>Post on LinkedIn, one click logs it</div>
-    <div class="chip"><b>2</b>Clear what's due — replies first, always</div>
+    <div class="chip"><b>2</b>Clear what's due, replies first always</div>
     <div class="chip"><b>3</b>Connection requests in Focus mode</div>
     <div class="chip"><b>4</b>Reachouts, click the ring as you go</div>
     <div class="chip hot"><b>5</b>Seal the day. Streak grows. Done.</div>
@@ -481,16 +480,16 @@
   <div class="kick">What it kills</div>
   <h2>The four ways outbound quietly dies.</h2>
   <div class="kills">
-    <div class="kill"><div class="kt"><span class="dot" style="background:var(--blue)"></span>The 9am question</div>
+    <div class="kill"><div class="kt"><span class="dot" style="background:#3f6fc4"></span>The 9am question</div>
       <p>"What do I actually do now?" is answered before you ask. Due list first,
       then the reps. Zero decisions, just work.</p></div>
-    <div class="kill"><div class="kt"><span class="dot" style="background:var(--indigo)"></span>The consistency collapse</div>
+    <div class="kill"><div class="kt"><span class="dot" style="background:#5b63c0"></span>The consistency collapse</div>
       <p>Daily targets you choose, a streak, and a Focus mode that deals you one
       person at a time. Consistency stops being willpower.</p></div>
-    <div class="kill"><div class="kt"><span class="dot" style="background:var(--emerald)"></span>The fumbled reply</div>
+    <div class="kill"><div class="kt"><span class="dot" style="background:#3f8fb0"></span>The fumbled reply</div>
       <p>Price question, "not now", ghosting. There's a written answer for each,
       one click to copy, at the exact moment it counts.</p></div>
-    <div class="kill"><div class="kt"><span class="dot" style="background:var(--pink)"></span>The quiet deal death</div>
+    <div class="kill"><div class="kt"><span class="dot" style="background:#7079c8"></span>The quiet deal death</div>
       <p>Day three it says chase. Day seven it says chase or close. Signatures get
       hunted, not hoped for.</p></div>
   </div>
@@ -553,7 +552,7 @@
       actually looked.</p></div>
     <div class="aicard">
       <div class="at">The coach</div>
-      <p>Reads your real ledger — accept rates, pace, deals going cold — and tells
+      <p>Reads your real ledger: accept rates, pace, deals going cold, and tells
       you exactly what to fix this week. It tells you straight when a sample
       is too small to trust.</p></div>
   </div>
@@ -570,7 +569,7 @@
   </div>
   <p class="lead" style="margin-top:26px">This is one of the tools we built for ourselves
   at Ascent. We use it, and we made it public because every small B2B team fights the
-  same fight — a slice of the daily grind, handled. Ascent itself is the bigger picture:
+  same fight, a slice of the daily grind, handled. Ascent itself is the bigger picture:
   outbound and GTM, done for you. If that's what you'd rather have, that's
   <a href="https://getascent.co" target="_blank" rel="noopener" style="color:var(--orange);font-weight:700">Ascent</a>.</p>
 </div></section>
@@ -588,7 +587,7 @@
       Australia, and across Europe.</p>
       <p>Started two agencies, shipped an app solo that landed in the
       Microsoft for Startups program, now all in on Ascent. This OS is one of the
-      tools we use day to day — a small piece of how Ascent works.</p>
+      tools we use day to day, a small piece of how Ascent works.</p>
       <a class="libtn" href="https://www.linkedin.com/in/getascent/" target="_blank" rel="noopener">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3.5" y="3.5" width="17" height="17" rx="3.8"/><path d="M8 10.8v5.7M8 7.4h.01M12.2 16.5v-3.3c0-1.3.9-2.3 2.1-2.3s2.1 1 2.1 2.3v3.3M12.2 12.4v-1.6"/></svg>
         CONNECT ON LINKEDIN</a>
@@ -604,7 +603,7 @@
     every day, and we made it public. You bring your own leads. Optionally add
     your own Claude API key for the drafting and coaching features.</p></details>
   <details><summary>Do I need to create an account?</summary>
-    <p>Yes — a free one, and it takes two minutes. Email and a password, or grab
+    <p>Yes, a free one, and it takes two minutes. Email and a password, or grab
     an emailed login link if you prefer. Your account keeps your pipeline saved
     and synced, so you can pick up on any machine.</p></details>
   <details><summary>Where does my lead list live?</summary>
