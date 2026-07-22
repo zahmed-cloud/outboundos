@@ -5,19 +5,22 @@
 // Settings instead. Optional: set AI_ALLOWED_ORIGIN to your domain so random
 // scripts can't burn your credits through this endpoint.
 export default async function handler(req, res) {
-  res.setHeader("Access-Control-Allow-Origin", "*");
+  const allowed = process.env.AI_ALLOWED_ORIGIN;
+  const origin = String(req.headers.origin || "");
+  const list = allowed ? allowed.split(",").map((s) => s.trim()).filter(Boolean) : [];
+  const okOrigin = !allowed || list.includes(origin); // exact match, not substring
+  res.setHeader("Access-Control-Allow-Origin", allowed ? (okOrigin ? origin : list[0]) : "*");
+  res.setHeader("Vary", "Origin");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
   if (req.method === "OPTIONS") return res.status(200).end();
   if (req.method !== "POST") return res.status(405).json({ error: "POST only" });
+  if (allowed && !okOrigin) return res.status(403).json({ error: "origin not allowed" });
   const key = process.env.ANTHROPIC_API_KEY;
   if (!key)
     return res.status(200).json({
       error:
         "Claude is switched off on this deployment. Paste your own Claude API key in Settings and it works instantly.",
     });
-  const allowed = process.env.AI_ALLOWED_ORIGIN;
-  if (allowed && !String(req.headers.origin || "").includes(allowed))
-    return res.status(403).json({ error: "origin not allowed" });
   try {
     const { system, user, max_tokens } = req.body || {};
     if (!user) return res.status(400).json({ error: "no prompt" });

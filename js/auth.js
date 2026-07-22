@@ -4,7 +4,9 @@
    (table user_state, row-level security, last write wins). */
 (function(){
 const K_APP="outbound_os_v1", K_LEADS="outbound_os_leads_v1",
-      K_PUSH="outbound_os_push_t", K_LOOP="outbound_os_reloaded";
+      K_PUSH="outbound_os_push_t", K_LOOP="outbound_os_reloaded",
+      K_OWNER="outbound_os_owner";
+const jparse=(s,f)=>{try{return JSON.parse(s)}catch(_){return f}};
 const REQUIRED=location.protocol.startsWith("http")
   && window.AUTH_CFG && AUTH_CFG.url && AUTH_CFG.anon
   && typeof supabase!=="undefined";
@@ -142,24 +144,36 @@ async function push(){
   const h=snap();if(h===lastHash)return;lastHash=h;
   const now=new Date().toISOString();
   const {error}=await sb.from("user_state").upsert({user_id:user.id,
-    app:JSON.parse(localStorage.getItem(K_APP)||"{}"),
-    leads:JSON.parse(localStorage.getItem(K_LEADS)||"[]"),
+    app:jparse(localStorage.getItem(K_APP),{}),
+    leads:jparse(localStorage.getItem(K_LEADS),[]),
     updated_at:now});
-  if(!error){pushT=now;localStorage.setItem(K_PUSH,now)}}
+  if(!error){pushT=now;localStorage.setItem(K_PUSH,now);localStorage.setItem(K_OWNER,user.id)}}
 async function firstSync(){
   const {data}=await sb.from("user_state").select("app,leads,updated_at")
     .eq("user_id",user.id).maybeSingle();
+  /* SECURITY: if this browser's local snapshot belongs to a DIFFERENT account (shared
+     machine), never push it into this account — boot clean from remote (or empty). */
+  const owner=localStorage.getItem(K_OWNER)||"";
+  if(owner&&owner!==user.id&&!sessionStorage.getItem(K_LOOP)){
+    localStorage.setItem(K_APP,JSON.stringify((data&&data.app)||{}));
+    localStorage.setItem(K_LEADS,JSON.stringify((data&&data.leads)||[]));
+    localStorage.setItem(K_PUSH,(data&&data.updated_at)||"");
+    localStorage.setItem(K_OWNER,user.id);
+    sessionStorage.setItem(K_LOOP,"1");
+    location.reload();return}
   const localPush=localStorage.getItem(K_PUSH)||"";
-  const hasLocal=!!localStorage.getItem(K_LEADS)&&JSON.parse(localStorage.getItem(K_LEADS)||"[]").length>0;
+  const hasLocal=!!localStorage.getItem(K_LEADS)&&(jparse(localStorage.getItem(K_LEADS),[])||[]).length>0;
   if(data&&(!hasLocal||(data.updated_at&&data.updated_at>localPush))){
     /* remote wins: apply and reload once so the app boots from it */
     if(sessionStorage.getItem(K_LOOP))return;      /* never loop */
     localStorage.setItem(K_APP,JSON.stringify(data.app||{}));
     localStorage.setItem(K_LEADS,JSON.stringify(data.leads||[]));
     localStorage.setItem(K_PUSH,data.updated_at||new Date().toISOString());
+    localStorage.setItem(K_OWNER,user.id);
     sessionStorage.setItem(K_LOOP,"1");
     location.reload();return}
   sessionStorage.removeItem(K_LOOP);
+  localStorage.setItem(K_OWNER,user.id);
   lastHash="";await push();                         /* local wins: seed the cloud */
   setInterval(push,10000);                          /* debounced background sync */
   window.addEventListener("beforeunload",push);}
@@ -170,6 +184,7 @@ function unlock(){
   if(so){so.classList.remove("hidden");
     so.innerHTML=so.innerHTML.replace("Sign out","Sign out · "+(user.email||""));
     so.onclick=async()=>{await push();await sb.auth.signOut();
+      [K_APP,K_LEADS,K_PUSH,K_OWNER].forEach(k=>localStorage.removeItem(k));
       sessionStorage.removeItem(K_LOOP);location.reload()}}}
 sb.auth.onAuthStateChange((_e,session)=>{
   if(session&&session.user&&!user){user=session.user;unlock();firstSync()}});

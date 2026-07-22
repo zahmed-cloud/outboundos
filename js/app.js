@@ -4,7 +4,10 @@ const LKEY="outbound_os_leads_v1";
 const DHASH="byo-v1";
 const KEY="outbound_os_v1";
 function loadLeads(){try{LEADS=JSON.parse(localStorage.getItem(LKEY))||[]}catch(e){LEADS=[]}indexLeads()}
-function saveLeads(){localStorage.setItem(LKEY,JSON.stringify(LEADS))}
+let _storageWarned=false;
+function storageWarn(){if(_storageWarned)return;_storageWarned=true;
+  try{toast("<b>Storage full.</b> Export a backup from the ⋯ menu to be safe.")}catch(e){}}
+function saveLeads(){try{localStorage.setItem(LKEY,JSON.stringify(LEADS))}catch(e){storageWarn()}}
 let S;
 try{S=JSON.parse(localStorage.getItem(KEY))||{}}catch(e){S={}}
 S.leads=S.leads||{}; S.events=S.events||[];
@@ -30,12 +33,14 @@ const stClass=s=>({"Connection pending":"st-conn","In sequence":"st-seq","Replie
   "Meeting booked":"st-meet","Client won":"st-won","Not interested":"st-no",
   "No response":"st-none"}[s]||"");
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+/* only ever treat http(s) links as clickable — blocks javascript:/data: URLs from imported lists */
+const safeUrl=u=>{u=String(u==null?"":u).trim();return /^https?:\/\//i.test(u)?u:""};
 const L=id=>S.leads[id]||(S.leads[id]={});
 const money=n=>"$"+(+n).toLocaleString();
 let saveT;
 function save(){_dirty=true;clearTimeout(saveT);saveT=setTimeout(()=>{
   for(const k in S.leads)if(Object.keys(S.leads[k]).length===0)delete S.leads[k];
-  localStorage.setItem(KEY,JSON.stringify(S));
+  try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){storageWarn();return}
   const sd=$("#saved");sd.classList.add("ok");
   clearTimeout(sd._t);sd._t=setTimeout(()=>sd.classList.remove("ok"),1500);
 },120)}
@@ -138,11 +143,12 @@ function resealCheck(evts){
   const dks=[...new Set(evts.map(e=>dayKey(new Date(e.t))))];
   dks.forEach(dk=>{const rec=S.days[dk];if(!rec)return;
     const t=countsOnDay(dk);
-    if(t.req<Math.min(rec.req,TGT().req)||t.reach<Math.min(rec.reach,1)){
-      if(t.req<TGT().req){delete S.days[dk];
-        toast(`<b>Day ${dk} unsealed</b> — its counts changed. Streak recalculated.`)}
-      else S.days[dk]={req:t.req,reach:t.reach,t:rec.t};
-    } else if(t.req!==rec.req||t.reach!==rec.reach)
+    /* a sealed day must stay backed by its ledger on BOTH counted dimensions */
+    const reqOk=t.req>=Math.min(rec.req,TGT().req);
+    const reachOk=t.reach>=Math.min(rec.reach||0,TGT().reach>0?1:0);
+    if(!reqOk||!reachOk){delete S.days[dk];
+      toast(`<b>Day ${dk} unsealed</b> — its counts changed. Streak recalculated.`);}
+    else if(t.req!==rec.req||t.reach!==rec.reach)
       S.days[dk]={req:t.req,reach:t.reach,t:rec.t};});
 }
 function refresh(id){
@@ -487,7 +493,7 @@ function applyFilter(keepId){
     if(cn&&l.cn!==cn)return false;
     if(st==="_none"){if(s.st||s.conn)return false}
     else if(st&&s.st!==st)return false;
-    if(q&&!(l.name+" "+l.co+" "+l.title).toLowerCase().includes(q))return false;
+    if(q&&!(l._s||"").includes(q))return false;
     return true});
   /* the row you just acted on stays visible — no vanishing under your cursor */
   if(keepId&&oldIdx>-1&&!filtered.some(l=>l.id===keepId))
@@ -510,10 +516,10 @@ function stageCell(s){
   return `<span class="stage">${stageLabel(s)}</span><br>${dotsHtml(s)}`}
 function rowHtml(l,i){const s=RS(l.id);const na=nextAction(s);
   return `<tr data-i="${i}" data-id="${l.id}" ${i===selIdx?'class="sel"':""}>
-   <td>${l.id}</td><td><span class="chip seg-${l.pri}">${l.pri}</span></td>
+   <td>${l.id}</td><td><span class="chip seg-${esc(l.pri)}">${esc(l.pri)}</span></td>
    <td class="co">${esc(l.co)}<span class="sub">${esc(l.cn)}${l.loc&&l.loc!==l.cn?" · "+esc(l.loc):""}</span></td>
    <td>${esc(l.name)}<span class="sub">${esc(l.title)}</span></td>
-   <td>${l.li?`<a class="libtn" href="${esc(l.li)}" target="_blank" rel="noopener">in ↗</a>`
+   <td>${safeUrl(l.li)?`<a class="libtn" href="${esc(safeUrl(l.li))}" target="_blank" rel="noopener">in ↗</a>`
              :`<span class="libtn none">—</span>`}</td>
    <td>${stageCell(s)}</td>
    <td><span class="lt">${relTime(lastTouch(s))||"—"}</span></td>
@@ -551,10 +557,10 @@ function openDrawer(id){
   const inDeal=s.stage||["Replied","Meeting booked","Client won"].includes(s.st);
   const aiMode=(s.st==="Replied"||s.rtype||inDeal)?"reply":"opener";
   $("#dbody").innerHTML=`
-   <h2>${esc(l.name)||"(no name)"} <span class="chip seg-${l.pri}">${l.pri}</span></h2>
+   <h2>${esc(l.name)||"(no name)"} <span class="chip seg-${esc(l.pri)}">${esc(l.pri)}</span></h2>
    <div class="subh">${esc(l.title)} — <b>${esc(l.co)}</b> · ${esc(l.loc)||esc(l.cn)}</div>
    <div class="dsec linkrow">
-     ${l.li?`<a class="libtn" style="padding:6px 14px" href="${esc(l.li)}" target="_blank" rel="noopener">OPEN LINKEDIN ↗</a>`:""}
+     ${safeUrl(l.li)?`<a class="libtn" style="padding:6px 14px" href="${esc(safeUrl(l.li))}" target="_blank" rel="noopener">OPEN LINKEDIN ↗</a>`:""}
      ${l.em?`<button class="tbtn" id="cpEm">COPY EMAIL</button>
      <span style="color:var(--ink3);font-size:11px">${esc(l.em)} (future use)</span>`:""}
      <button class="tbtn" id="leadedit">EDIT LEAD</button>
@@ -672,7 +678,7 @@ function pipe(){
       <span>${c.cards.length}${v?" · "+money(v):""}</span></h4>`+
     c.cards.map(l=>{const s=S.leads[l.id]||{};
       return `<div class="card" data-id="${l.id}"><div class="c">${esc(l.co)}</div>
-       <div class="n">${esc(l.name)} · <span class="chip seg-${l.pri}">${l.pri}</span></div>
+       <div class="n">${esc(l.name)} · <span class="chip seg-${esc(l.pri)}">${esc(l.pri)}</span></div>
        ${s.val?`<div class="val">${money(s.val)}</div>`:""}
        ${s.nstep?`<div class="d">→ ${esc(s.nstep)}${s.ndate?" · "+esc(s.ndate):""}</div>`:""}
        <div class="mv">
@@ -696,7 +702,8 @@ $("#bimport").onclick=()=>$("#fimport").click();
 $("#fimport").addEventListener("change",e=>{const f=e.target.files[0];if(!f)return;
   const r=new FileReader();r.onload=()=>{try{const raw=JSON.parse(r.result);
     const inc=raw.app?raw.app:raw;
-    if(raw.app&&Array.isArray(raw.leads)){LEADS=raw.leads;saveLeads();indexLeads()}
+    /* a backup with app-state MUST carry its matching leads array, or states point at ids that don't exist */
+    if(raw.app){if(!Array.isArray(raw.leads))throw 0;LEADS=raw.leads;saveLeads();indexLeads()}
     if(!inc.leads||typeof inc.leads!=="object")throw 0;
     S=inc;S.leads=S.leads||{};
     S.events=Array.isArray(S.events)?S.events:[];
@@ -798,12 +805,12 @@ function focusRender(){
      <span class="fx-stage">${stepName.toUpperCase()}</span>
      ${smartOn&&focusWhy[cur.id]?`<div class="fx-why">${I("trend")} Ranked here because: ${esc(focusWhy[cur.id])}</div>`
        :smartOn&&focusWhy[cur.id]===""?`<div class="fx-why">${I("trend")} No strong cohort signal yet for this lead, serving by baseline</div>`:""}
-     <h2>${esc(l.name)||"(no name)"} <span class="chip seg-${l.pri}">${l.pri}</span></h2>
+     <h2>${esc(l.name)||"(no name)"} <span class="chip seg-${esc(l.pri)}">${esc(l.pri)}</span></h2>
      <div class="fx-sub">${esc(l.title)} — <b>${esc(l.co)}</b> · ${esc(l.loc)||esc(l.cn)}</div>
      ${((SEG[l.pri]||{}).bullets||[]).length?`<ul class="bullets">${SEG[l.pri].bullets.slice(0,3).map(b=>`<li>${esc(b)}</li>`).join("")}</ul>`:""}
      ${l.info?`<div class="infobox">${I("info")} ${esc(l.info)}</div>`:""}
      <div class="fx-actions">
-       ${l.li?`<a class="big libig" href="${esc(l.li)}" target="_blank" rel="noopener">OPEN LINKEDIN<kbd>O</kbd></a>`:""}
+       ${safeUrl(l.li)?`<a class="big libig" href="${esc(safeUrl(l.li))}" target="_blank" rel="noopener">OPEN LINKEDIN<kbd>O</kbd></a>`:""}
        ${na.o!=="Accepted"?`<button class="big" id="fxcopy">COPY MESSAGE<kbd>C</kbd></button>`:""}
        <button class="big primary" id="fxdone">${na.lbl.toUpperCase()}<kbd>↵</kbd></button>
        <button class="big" id="fxskip">SKIP<kbd>S</kbd></button>
@@ -1238,7 +1245,7 @@ function openPrep(id){
   overlay.style.cssText="position:fixed;inset:0;background:rgba(60,60,70,.28);backdrop-filter:blur(4px);z-index:45;display:flex;justify-content:center;align-items:flex-start;padding:6vh 16px;overflow-y:auto";
   overlay.innerHTML=`<div class="fx-card" style="max-width:640px;width:100%">
     <div style="display:flex;justify-content:space-between;align-items:baseline">
-      <h2 style="font-family:var(--serif);font-size:20px">${esc(l.name)} <span class="chip seg-${l.pri}">${l.pri}</span></h2>
+      <h2 style="font-family:var(--serif);font-size:20px">${esc(l.name)} <span class="chip seg-${esc(l.pri)}">${esc(l.pri)}</span></h2>
       <button class="tbtn" id="prepx">CLOSE</button></div>
     <div class="fx-sub">${esc(l.title)} — <b>${esc(l.co)}</b> · ${esc(l.loc)||esc(l.cn)}</div>
     ${s.val?`<div style="color:var(--money);font-weight:700;margin-bottom:8px">Deal: ${money(s.val)}${s.stage?" · "+esc(s.stage):""}${s.nstep?" · next: "+esc(s.nstep):""}</div>`:""}
@@ -1513,7 +1520,8 @@ const fc=$("#fcard");fc&&(fc.onclick=()=>openFounder());
 /* ---------- multi-tab guard: last write wins, both tabs converge ---------- */
 window.addEventListener("storage",e=>{
   if(e.key!==KEY||!e.newValue)return;
-  try{S=JSON.parse(e.newValue);S.leads=S.leads||{};S.events=S.events||[];_dirty=true;
+  try{S=JSON.parse(e.newValue);S.leads=S.leads||{};S.events=S.events||[];S.segs=S.segs||{};
+    SEG=S.segs;loadLeads();renderSegCss();buildSeglist();_dirty=true;
     toast("<b>Synced</b> from another tab");refresh()}catch(_){}});
 
 /* ---------- overflow menu ---------- */
@@ -1528,6 +1536,7 @@ document.addEventListener("mouseover",e=>{const t=e.target.closest("[data-tip]")
   const tip=$("#tip");if(t){tip.textContent=t.dataset.tip;tip.style.display="block"}
   else tip.style.display="none"});
 document.addEventListener("mousemove",e=>{const tip=$("#tip");
+  if(tip.style.display!=="block")return;
   tip.style.left=(e.clientX+12)+"px";tip.style.top=(e.clientY+12)+"px"});
 
 /* ---------- keyboard ---------- */
@@ -1548,7 +1557,7 @@ document.addEventListener("keydown",e=>{
       if(e.key==="Enter"){$("#fxdone")&&$("#fxdone").click();return}
       if(e.key.toLowerCase()==="s"){$("#fxskip")&&$("#fxskip").click();return}
       if(e.key.toLowerCase()==="c"){$("#fxcopy")&&$("#fxcopy").click();return}
-      if(e.key.toLowerCase()==="o"){const l=byId[cur.id];l.li&&window.open(l.li,"_blank");return}}
+      if(e.key.toLowerCase()==="o"){const l=byId[cur.id];const u=safeUrl(l&&l.li);u&&window.open(u,"_blank");return}}
     return}
   if(e.key==="/"){e.preventDefault();show("leads");$("#q").focus();return}
   if(e.key==="g"){gPending=true;setTimeout(()=>gPending=false,600);return}
