@@ -55,7 +55,7 @@
   /* nav */
   nav{position:sticky;top:0;z-index:10;background:rgba(253,252,249,.85);
     backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
-  .navin{display:flex;align-items:center;justify-content:space-between;padding:14px 0}
+  .navin{display:flex;align-items:center;justify-content:space-between;padding:14px 28px}
   .brand{font-family:var(--serif);font-size:24px;font-weight:700}
   .brand i{color:var(--brand);font-style:normal}
   .brand small{font-family:var(--ui);font-size:11px;letter-spacing:3px;
@@ -354,7 +354,7 @@
   .mh #cursor.press .cring{animation:mhck .5s ease-out}
   @keyframes mhck{0%{opacity:.7;transform:scale(.3)}100%{opacity:0;transform:scale(1.9)}}
   @media(max-width:920px){.mh .mh-in{grid-template-columns:1fr;gap:30px}.mh .app{margin:0 auto}}
-  @media(max-width:560px){.brand small{display:none}}
+  @media(max-width:560px){.brand small{display:none}.navin{padding:12px 18px}.brand{font-size:21px}}
 </style>
 </head>
 <body>
