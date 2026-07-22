@@ -490,6 +490,11 @@ function applyFilter(keepId){
     else if(st&&s.st!==st)return false;
     if(q&&!(l._s||"").includes(q))return false;
     return true});
+  /* skipped / dead-end leads sink to the bottom — active work stays on top */
+  const parked=id=>{const s=S.leads[id]||{};
+    return s.conn==="Skipped"||s.conn==="Declined"||s.msg1==="Skipped"||
+      s.fu1==="Skipped"||s.fu2==="Skipped"||s.st==="Not interested"||s.st==="No response";};
+  filtered.sort((a,b)=>(parked(a.id)?1:0)-(parked(b.id)?1:0));
   /* the row you just acted on stays visible — no vanishing under your cursor */
   if(keepId&&oldIdx>-1&&!filtered.some(l=>l.id===keepId))
     filtered.splice(Math.min(oldIdx,filtered.length),0,byId[keepId]);
@@ -746,13 +751,23 @@ function smartRank(untouchedIds){
 let _smartProgress=0;
 function focusStart(){
   focusDone=0;focusIdx=0;
-  const due=dueList().map(x=>x.l.id);
-  const untouched=LEADS.filter(l=>{const st2=S.leads[l.id];return !st2||(!st2.st&&!st2.conn)})
+  let segF=S.focusSeg||"";
+  if(segF&&!SEG[segF]){segF="";S.focusSeg="";}          /* list was deleted — fall back to all */
+  const inSeg=l=>!segF||l.pri===segF;
+  const due=dueList().filter(x=>inSeg(x.l)).map(x=>x.l.id);
+  const untouched=LEADS.filter(l=>{if(!inSeg(l))return false;
+    const st2=S.leads[l.id];return !st2||(!st2.st&&!st2.conn)})
     .slice(0,600).map(l=>l.id);
   const ranked=smartRank(untouched);
   _smartProgress=ranked.progress;
   focusQueue=[...new Set([...due,...ranked.ids])];
   focusRender();}
+function focusSegOptions(){const cur=S.focusSeg||"";
+  return `<select id="focusseg" class="focusseg"><option value="">All lists</option>`+
+    Object.keys(SEG).map(k=>`<option value="${esc(k)}" ${k===cur?"selected":""}>${esc(SEG[k].name)}</option>`).join("")
+    +`</select>`}
+function bindFocusSeg(){const fs=$("#focusseg");
+  fs&&(fs.onchange=()=>{S.focusSeg=fs.value;save();focusStart();});}
 function focusCurrent(){
   while(focusIdx<focusQueue.length){
     const id=focusQueue[focusIdx];
@@ -764,13 +779,14 @@ function focusRender(){
   const cur=focusCurrent();
   const {req,reach}=todayCounts();
   const effReach=Math.min(TGT().reach,reach+availReach());
-  if(!cur){$("#focuswrap").innerHTML=`<div class="fx-empty">Queue clear. ${focusDone} actions this session.<br><br>
-    <button class="tbtn" onclick="show('dash')">BACK TO DASHBOARD</button></div>`;return}
+  const pick=`<div class="fx-pick"><span>Working list</span>${focusSegOptions()}</div>`;
+  if(!cur){$("#focuswrap").innerHTML=pick+`<div class="fx-empty">Queue clear${S.focusSeg?" for this list":""}. ${focusDone} actions this session.<br><br>
+    <button class="tbtn" onclick="show('dash')">BACK TO DASHBOARD</button></div>`;bindFocusSeg();return}
   const l=byId[cur.id],s=RS(cur.id),na=cur.na;
   const tplKey=na.f==="conn"?"conn":na.f==="msg1"?"m1":na.f==="fu1"?"f1":"f2";
   const stepName=na.f==="conn"?(na.o==="Accepted"?"Mark their accept":"Connection request")
     :FL[na.f];
-  $("#focuswrap").innerHTML=`
+  $("#focuswrap").innerHTML=pick+`
    <div class="fx-head"><span>FOCUS · ${focusDone} done this session · ${smartOn
       ?`<span style="color:var(--indigo)">SMART QUEUE ON</span>`
       :`<span data-tip="ranks your untouched leads by your own accept rates once 30 requests are logged">SMART QUEUE ${_smartProgress}/${SMART_MIN}</span>`}</span>
@@ -802,7 +818,8 @@ function focusRender(){
   $("#fxdone").onclick=()=>{
     if(na.f==="rtype"){openDrawer(cur.id);return}
     focusDone++;focusIdx++;applyAction(cur.id,na.f,na.o,false)};
-  $("#fxskip").onclick=()=>{applyAction(cur.id,na.f,"Skipped",false)};}
+  $("#fxskip").onclick=()=>{applyAction(cur.id,na.f,"Skipped",false)};
+  bindFocusSeg();}
 
 /* ---------- COMMAND PALETTE (Cmd/Ctrl+K) ---------- */
 LEADS.forEach(l=>l._s=(l.name+" "+l.co+" "+l.title).toLowerCase());
