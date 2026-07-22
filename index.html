@@ -7,7 +7,7 @@
 <meta name="description" content="The free operating system for LinkedIn outbound, by Ascent. It tells you exactly what to do today, every number is a real logged action, and Claude drafts messages in your voice.">
 <meta name="robots" content="index,follow">
 <meta name="author" content="Jamil Ahmed">
-<meta name="theme-color" content="#16244f">
+<meta name="theme-color" content="#fbfcfe">
 <link rel="canonical" href="https://os.getascent.co/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Ascent Outbound OS">
@@ -42,6 +42,7 @@
     --orange:#2f6bf0; --ink:#1d1d1f; --ink2:#48484d; --ink3:#86868b; --line:#e6e6ec;
     --blue:#2f6bf0; --emerald:#2aa6c9; --purple:#7c74e8; --pink:#5f7bff;
     --indigo:#5856D6; --teal:#30B0C7; --brand:#e8501f;
+    --band:#eef1f5; --bandink:#1d2330; --bandsub:#5a6270; --bandline:#dde2ea;
     --serif:Georgia,"Times New Roman",serif;
     --ui:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;
   }
@@ -104,7 +105,7 @@
   .node:last-child::after{display:none}
   .node .nt{font-weight:700;font-size:16px}
   .node .ns{font-size:12px;opacity:.9;margin-top:4px;line-height:1.45}
-  .foundation{background:var(--green);color:var(--cream);border-radius:12px;
+  .foundation{background:var(--band);color:var(--bandink);border-radius:14px;border:1px solid var(--bandline);
     padding:16px 24px;text-align:center;font-size:15.5px}
   .foundation b{color:var(--orange)}
 
@@ -126,23 +127,24 @@
   /* vs comparison */
   .vs{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:34px}
   .vs-col{border-radius:18px;padding:26px 30px}
-  .vs-col.them{background:#f0efe9;color:#6d6b60}
+  .vs-col.them{background:var(--band);color:var(--bandsub)}
   .vs-col.us{background:var(--green);color:var(--cream)}
   .vs-h{font-weight:800;letter-spacing:2px;font-size:12px;text-transform:uppercase;
     margin-bottom:8px}
-  .them .vs-h{color:#a3a196}
+  .them .vs-h{color:#97a1b3}
   .us .vs-h{color:#8fb0ff}
   .vs-row{padding:13px 0;border-bottom:1px solid rgba(0,0,0,.06);font-size:15px;
     line-height:1.45}
   .us .vs-row{border-bottom-color:rgba(242,237,226,.12);font-weight:600}
   .vs-row:last-child{border-bottom:none}
 
-  /* dark truth band */
-  .dark{background:var(--green);color:var(--cream)}
-  .dark h2{color:var(--cream)}
-  .dark .lead{color:var(--cream2)}
+  /* soft truth band (Porcelain) */
+  .dark{background:var(--band);color:var(--bandsub);
+    border-top:1px solid var(--bandline);border-bottom:1px solid var(--bandline)}
+  .dark h2{color:var(--bandink)}
+  .dark .lead{color:var(--bandsub)}
   .bigline{font-family:var(--serif);font-size:clamp(24px,3.4vw,34px);font-weight:700;
-    margin-top:26px}
+    margin-top:26px;color:var(--bandink)}
 
   /* Claude section */
   .ai{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;margin-top:34px}
@@ -177,14 +179,15 @@
   details p{color:var(--ink2);font-size:15px;margin-top:10px;max-width:760px}
 
   /* footer */
-  footer{background:var(--green);color:var(--cream2);padding:80px 0 46px;text-align:center}
-  footer h2{color:var(--cream);max-width:none}
+  footer{background:var(--band);color:var(--bandsub);padding:80px 0 46px;text-align:center;
+    border-top:1px solid var(--bandline)}
+  footer h2{color:var(--bandink);max-width:none}
   footer .sub{margin:14px 0 30px;font-size:17px}
   .ftlinks{margin-top:46px;font-size:13.5px;display:flex;gap:26px;justify-content:center;
     flex-wrap:wrap}
-  .ftlinks a{color:var(--cream2)}
-  .ftlinks a:hover{color:var(--cream)}
-  .ftlinks .o{color:#8fb0ff;letter-spacing:2px;font-weight:700}
+  .ftlinks a{color:var(--bandsub)}
+  .ftlinks a:hover{color:var(--bandink)}
+  .ftlinks .o{color:#2f6bf0;letter-spacing:2px;font-weight:700}
 
   /* ===== glass depth: ambient glow + frosted cards ===== */
   body{position:relative}
@@ -202,7 +205,7 @@
     backdrop-filter:blur(20px) saturate(1.6);
     border:1px solid rgba(255,255,255,.65);
     box-shadow:0 10px 34px rgba(17,17,20,.07),inset 0 1px 0 rgba(255,255,255,.8);}
-  .vs-col.them{background:rgba(240,239,233,.48)}
+  .vs-col.them{background:rgba(233,237,244,.55)}
   .chip,.kill,.aicard{transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease}
   .chip:hover,.kill:hover,.aicard:hover{transform:translateY(-3px);
     box-shadow:0 20px 48px rgba(17,17,20,.12),inset 0 1px 0 rgba(255,255,255,.95);
@@ -216,12 +219,12 @@
     box-shadow:0 1px 0 rgba(255,255,255,.6),0 6px 26px rgba(17,17,20,.05)}
 
   /* dark surfaces get a glass edge + depth */
-  .vs-col.us,.foundation{border:1px solid rgba(255,255,255,.1);
+  .vs-col.us{border:1px solid rgba(255,255,255,.1);
     box-shadow:0 16px 44px rgba(22,36,79,.32),inset 0 1px 0 rgba(255,255,255,.09)}
 
   /* aurora glow inside the dark hero + bands */
   .hero,.dark,footer{position:relative;overflow:hidden}
-  .hero::after,.dark::after,footer::after{content:"";position:absolute;inset:0;
+  .hero::after{content:"";position:absolute;inset:0;
     pointer-events:none;z-index:0;
     background:
       radial-gradient(720px 400px at 80% -6%, rgba(183,156,255,.18), transparent 60%),
@@ -621,7 +624,7 @@
 
 <footer><div class="wrap">
   <h2>It's free. It's one of the tools we built for ourselves.</h2>
-  <div class="sub">Load your leads, run the loop. Use it or don't — it's here either way.</div>
+  <div class="sub">Load your leads, run the loop. Use it or don't, it's here either way.</div>
   <a class="btn solid" style="font-size:16px;padding:14px 34px" href="app.html#signup" data-authcta>Sign up free →</a>
   <div class="ftlinks">
     <a href="https://getascent.co" target="_blank" rel="noopener">Want it done for you? That's Ascent</a>
