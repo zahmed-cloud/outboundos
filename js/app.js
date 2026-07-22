@@ -1532,9 +1532,8 @@ $("#menu").addEventListener("click",()=>$("#menu").classList.add("hidden"));
 $("#bhelp").onclick=()=>show("help");
 
 /* ---------- tooltip ---------- */
-document.addEventListener("mouseover",e=>{const t=e.target.closest("[data-tip]");
-  const tip=$("#tip");if(t){tip.textContent=t.dataset.tip;tip.style.display="block"}
-  else tip.style.display="none"});
+/* hover tooltips disabled — no pre-click text pops up on nav/menu/buttons */
+document.addEventListener("mouseover",()=>{const tip=$("#tip");if(tip)tip.style.display="none"});
 document.addEventListener("mousemove",e=>{const tip=$("#tip");
   if(tip.style.display!=="block")return;
   tip.style.left=(e.clientX+12)+"px";tip.style.top=(e.clientY+12)+"px"});
