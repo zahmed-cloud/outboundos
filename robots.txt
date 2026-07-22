@@ -31,5 +31,21 @@ User-agent: cohere-ai
 Allow: /
 User-agent: Meta-ExternalAgent
 Allow: /
+User-agent: CCBot
+Allow: /
+User-agent: Amazonbot
+Allow: /
+User-agent: Bytespider
+Allow: /
+User-agent: YouBot
+Allow: /
+User-agent: DuckAssistBot
+Allow: /
+User-agent: Applebot
+Allow: /
+User-agent: PetalBot
+Allow: /
+User-agent: Diffbot
+Allow: /
 
-Sitemap: https://os.getascent.co/sitemap.xml
+Sitemap: https://outboundos-flax.vercel.app/sitemap.xml

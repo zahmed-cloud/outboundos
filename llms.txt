@@ -51,7 +51,7 @@ https://getascent.co.
 
 ## Links
 
-- Landing: https://os.getascent.co
-- App: https://os.getascent.co/app
+- Landing: https://outboundos-flax.vercel.app
+- App: https://outboundos-flax.vercel.app/app
 - Company: https://getascent.co
 - Founder: https://www.linkedin.com/in/getascent/
