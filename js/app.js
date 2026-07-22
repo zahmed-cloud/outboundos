@@ -347,19 +347,15 @@ function bindTodos(){
 function renderDue(){const d=dueList();
   const cc=coldCash();
   const foot=cc.n?`<div class="due-empty" style="color:var(--warn)">${I("coins")} ${money(cc.v)} going cold across ${cc.n} deal${cc.n>1?"s":""} sitting past their stage limit</div>`:"";
-  const needBk=(!S.lastBackup&&S.events.length>20)||(S.lastBackup&&Date.now()-S.lastBackup>7*DAY);
   S.clients=S.clients||[];
   const today2=dayKey(new Date());
   const cliRows=S.clients.filter(c=>(c.status==="Active"||c.status==="Onboarding")&&c.ndate&&c.ndate<=today2)
     .map(c=>`<div class="due-row" data-view="clients"><span><b>${esc(c.co)}</b>
       <span style="color:var(--ink3)"> — ${esc(c.nstep||"client check-in due")}</span></span>
       <span class="tag">CLIENT</span></div>`).join("");
-  const bkRow=needBk?`<div class="due-row" id="bkrow"><span><b>Back up your data</b>
-    <span style="color:var(--ink3)"> — ${S.lastBackup?daysAgo(S.lastBackup)+"d since last backup":"never backed up, one click fixes it"}</span></span>
-    <span class="tag">PROTECT</span></div>`:"";
   $("#due").innerHTML=renderTodos()
    +(d.length?`<div class="tdiv">From the machine — due now</div>`:"")
-   +cliRows+bkRow
+   +cliRows
    +(d.length?d.slice(0,8).map(x=>
     `<div class="due-row" data-id="${x.l.id}"><span><b>${esc(x.l.co)}</b> · ${esc(x.l.name)}
       <span style="color:var(--ink3)"> — ${esc(x.d)}</span></span>
@@ -367,7 +363,6 @@ function renderDue(){const d=dueList();
     (d.length>8?`<div class="due-empty">…and ${d.length-8} more</div>`:"")
    :"")+foot;
   $("#due").querySelectorAll(".due-row[data-id]").forEach(r=>r.onclick=()=>openDrawer(+r.dataset.id));
-  const bk=$("#bkrow");bk&&(bk.onclick=()=>{$("#bexport").click();renderDue()});
   $("#due").querySelectorAll('[data-view="clients"]').forEach(r=>r.onclick=()=>show("clients"));
   bindTodos();}
 function renderChart(){
@@ -695,28 +690,7 @@ function pipe(){
 /* ---------- export / import ---------- */
 function dl(name,text,type){const a=document.createElement("a");
   a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;a.click()}
-$("#bexport").onclick=()=>{S._dhash=DHASH;S.lastBackup=Date.now();save();
-  dl("outbound_os_backup_"+new Date().toISOString().slice(0,10)+".json",
-  JSON.stringify({app:S,leads:LEADS,_dhash:DHASH}),"application/json")};
-$("#bimport").onclick=()=>$("#fimport").click();
-$("#fimport").addEventListener("change",e=>{const f=e.target.files[0];if(!f)return;
-  const r=new FileReader();r.onload=()=>{try{const raw=JSON.parse(r.result);
-    const inc=raw.app?raw.app:raw;
-    /* a backup with app-state MUST carry its matching leads array, or states point at ids that don't exist */
-    if(raw.app){if(!Array.isArray(raw.leads))throw 0;LEADS=raw.leads;saveLeads();indexLeads()}
-    if(!inc.leads||typeof inc.leads!=="object")throw 0;
-    S=inc;S.leads=S.leads||{};
-    S.events=Array.isArray(S.events)?S.events:[];
-    S.days=(S.days&&typeof S.days==="object")?S.days:{};
-    S.eseq=Math.max(+inc.eseq||0,...S.events.map(e=>+e.i||0),0);
-    S.segs=S.segs||{};SEG=S.segs;renderSegCss();buildSeglist();
-    _dirty=true;chartAnimated=false;missionAnimated=false;
-    localStorage.setItem(KEY,JSON.stringify(S));
-    if(inc._dhash&&inc._dhash!==DHASH)
-      toast("<b>Heads up:</b> backup came from a different lead dataset — check a few leads before trusting states.");
-    show("dash");updateTicker();
-    toast("<b>Backup restored</b>")}catch(_){alert("Not a valid Ascent Outbound OS backup file.")}};
-  r.readAsText(f)});
+/* Backup/Restore (JSON) removed — cloud sync is the recovery path. CSV export stays. */
 $("#bcsv").onclick=()=>{
   const q=v=>'"'+String(v==null?"":v).replace(/"/g,'""')+'"';
   const head=["#","Segment","Name","Title","Company","Country","Location","LinkedIn",
@@ -839,7 +813,6 @@ const COMMANDS=[
   ["pipeline","Go to Pipeline",()=>show("pipe")],
   ["untouched","Leads: show Untouched",()=>{show("leads");$("#fst").value="_none";renderRows(true)}],
   ["due","Open Dashboard due list",()=>show("dash")],
-  ["backup","Download backup JSON",()=>$("#bexport").click()],
   ["csv","Export CSV",()=>$("#bcsv").click()],
   ["help","Open Help & playbook",()=>show("help")],
   ["goal","Set revenue goal: >goal 10000 2000",()=>{}],
