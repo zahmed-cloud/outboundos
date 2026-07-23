@@ -476,8 +476,7 @@ function renderMission(){
 
 /* ---------- leads ---------- */
 let filtered=[],shown=0,selIdx=-1;const PAGE=150;let _lastNext={id:0,t:0};let _reachT=0;
-Object.keys(SEG).forEach(p=>{const o=document.createElement("option");
-  o.value=p;o.textContent=p+" — "+SEG[p].name;$("#fseg").append(o)});
+rebuildSegFilter();
 [...new Set(LEADS.map(l=>l.cn))].sort().forEach(c=>{
   const o=document.createElement("option");o.textContent=c;$("#fcn").append(o)});
 function applyFilter(keepId){
@@ -1809,7 +1808,14 @@ function buildSeglist(){
   $("#seglist").querySelectorAll(".segrow").forEach(r=>r.onclick=()=>{
     show("leads");$("#fseg").value=r.dataset.p;renderRows(true)});
   $("#seglist").querySelectorAll(".segkebab").forEach(b=>b.onclick=e=>{
-    e.stopPropagation();openSegMenu(b.dataset.p,b);});}
+    e.stopPropagation();openSegMenu(b.dataset.p,b);});
+  rebuildSegFilter();}
+function rebuildSegFilter(){
+  const sel=$("#fseg");if(!sel)return;
+  const cur=sel.value;
+  sel.innerHTML='<option value="">All segments</option>'+
+    orderedSegs().map(p=>`<option value="${esc(p)}">${esc((SEG[p]||{}).name||p)}</option>`).join("");
+  sel.value=(cur&&SEG[cur])?cur:"";}
 function closeSegMenu(){const m=document.getElementById("segmenu");if(m)m.remove();}
 function openSegMenu(p,btn){
   if(document.getElementById("segmenu")){closeSegMenu();return;}
