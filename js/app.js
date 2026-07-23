@@ -1231,6 +1231,7 @@ async function runApolloSearch(box,line,wantEmail){
   let people=[],page=1,total=null;
   try{
     while(people.length<want){
+      if(!document.getElementById("apov"))break;
       const body=Object.assign({},filters,{per_page:Math.min(100,want),page:page});
       const r=await fetch("/api/apollo",{method:"POST",headers:{"Content-Type":"application/json"},
         body:JSON.stringify({apiKey:S.apolloKey,query:body})});
@@ -1251,6 +1252,24 @@ async function runApolloSearch(box,line,wantEmail){
   }
   people=people.slice(0,want);
   if(!people.length){apolloLog(box,`<span class="aterm-dim">No matches. Try broader titles or a wider location.</span>`);return;}
+  if(wantEmail){
+    let done=0;
+    for(let i=0;i<people.length;i+=10){
+      if(!document.getElementById("apov"))break;
+      const batch=people.slice(i,i+10);
+      try{
+        const r=await fetch("/api/apollo",{method:"POST",headers:{"Content-Type":"application/json"},
+          body:JSON.stringify({apiKey:S.apolloKey,action:"enrich",people:batch.map(p=>({
+            name:p.name,first_name:p.first_name,last_name:p.last_name,
+            organization_name:(p.organization&&p.organization.name)||p.organization_name||"",
+            linkedin_url:p.linkedin_url,title:p.title}))})});
+        const data=await r.json().catch(()=>({}));
+        if(r.ok&&Array.isArray(data.matches))data.matches.forEach((m,j)=>{if(m&&m.email&&batch[j])batch[j].email=m.email;});
+      }catch(e){/* skip a bad batch, keep going */}
+      done+=batch.length;
+      status.innerHTML=`<span class="aterm-dim">${esc(head)}. revealing emails… ${done}/${people.length}</span>`;
+    }
+  }
   const mapped=people.map(p=>apolloMap(p,wantEmail)).filter(x=>x.name||x.co);
   const seen=new Set(LEADS.map(apolloKey));
   const fresh=mapped.filter(m=>{const k=apolloKey(m);if(seen.has(k))return false;seen.add(k);return true;});
@@ -1286,7 +1305,7 @@ function openApolloFinder(forceSetup){
         <button data-m="li" class="on">LinkedIn only</button>
         <button data-m="em">LinkedIn + email</button>
       </div>
-      <span class="apctl-hint">emails spend more credits, and only come where Apollo has them unlocked</span></div>
+      <span class="apctl-hint">emails are revealed via Apollo enrichment — about 1 credit each, none for GDPR-blocked people</span></div>
     <div id="aterm" class="aterm"><div class="aterm-line aterm-dim">try:  “500 recruitment agency founders in London”   ·   “20 SaaS CEOs in the US”   ·   “1 founder at Monzo”</div></div>
     <div class="aterm-input"><span>›</span><input id="ap_in" placeholder="describe the leads you want — any number, 1 to 1000…" autocomplete="off"><button id="ap_go" class="tbtn">RUN</button></div>
     <div class="ai-note">Your Apollo credits. LinkedIn-first, de-duped against leads you already have. Type a new line any time to run again.</div>`)+
