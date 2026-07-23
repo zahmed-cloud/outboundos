@@ -390,8 +390,11 @@ table.grid td:first-child{color:var(--ink)}
   font-weight:600;border-bottom:1px solid var(--line2)}
 .crow{border-bottom:1px solid #f0f0f4;font-size:13px}
 .crow input,.crow select{padding:4px 8px;font-size:12.5px;width:100%}
+.crow .cname{cursor:pointer}
 .crow .cname b{color:var(--ink);display:block}
+.crow .cname:hover b{text-decoration:underline}
 .crow .cname span{color:var(--ink3);font-size:11px}
+.crow .cname span a{color:#007AFF;text-decoration:none}
 .cst-Active{background:rgba(52,199,89,.13);color:#1E9B4A;border-color:transparent}
 .cst-Onboarding{background:rgba(0,122,255,.11);color:#0068DF;border-color:transparent}
 .cst-Paused{background:rgba(175,82,222,.12);color:#9741C4;border-color:transparent}

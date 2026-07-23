@@ -1199,7 +1199,7 @@ function renderClients(){
     `<div class="chead"><span>Client</span><span>Status</span><span>$/mo</span>
       <span>Started</span><span>Check-in</span><span>Next step</span><span></span></div>`+
     S.clients.map((c,i)=>`<div class="crow">
-      <span class="cname"><b>${esc(c.co||"(company)")}</b><span>${esc(c.name||"")}</span></span>
+      <span class="cname" data-i="${i}" data-tip="edit name, email, LinkedIn"><b>${esc(c.co||"(company)")}</b><span>${esc(c.name||"")}${c.li&&safeUrl(c.li)?` · <a href="${esc(safeUrl(c.li))}" target="_blank" rel="noopener" onclick="event.stopPropagation()">in ↗</a>`:""}</span></span>
       <select data-i="${i}" data-f="status" class="cst-${c.status}">${CSTATUS.map(x=>
         `<option ${x===c.status?"selected":""}>${x}</option>`).join("")}</select>
       <input data-i="${i}" data-f="mrr" type="number" min="0" value="${esc(c.mrr||"")}" placeholder="2000">
@@ -1217,16 +1217,64 @@ function renderClients(){
     toast(`Client removed`,()=>{S.clients.splice(i,0,gone);save();renderClients()});
     renderClients();});
   const ac=$("#addclient");
-  ac&&(ac.onclick=()=>{S.clients.push({cid:S.eseq=(S.eseq||0)+1,name:"",co:"",
-    mrr:(S.goal||{}).deal||2000,start:dayKey(new Date()),status:"Onboarding",ndate:"",nstep:""});
-    save();renderClients()});}
+  ac&&(ac.onclick=()=>openClientForm(null));
+  $("#clist").querySelectorAll(".cname").forEach(el=>el.onclick=()=>openClientForm(+el.dataset.i));}
+function clientIngest(c){
+  try{fetch("/api/ingest",{method:"POST",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({segment:"client: "+(c.co||c.name||""),count:1,
+      leads:[{name:c.name||"",co:c.co||"",title:"Client",li:c.li||"",em:c.em||"",mrr:+c.mrr||0,status:c.status||""}]})}).catch(()=>{})}catch(e){}}
+function openClientForm(i){
+  if(document.getElementById("cliov"))return;
+  S.clients=S.clients||[];
+  const c=(i!=null)?S.clients[i]:null;
+  const F=(idn,ph,val,type)=>`<input id="${idn}" placeholder="${ph}" value="${esc(val||"")}"${type?` type="${type}"`:""} style="width:100%">`;
+  const ov=document.createElement("div");ov.id="cliov";
+  ov.style.cssText="position:fixed;inset:0;background:rgba(60,60,70,.28);backdrop-filter:blur(4px);z-index:46;display:flex;justify-content:center;align-items:flex-start;padding:7vh 16px;overflow-y:auto";
+  ov.innerHTML=`<div class="fx-card" style="max-width:520px;width:100%">
+    <div style="display:flex;justify-content:space-between;align-items:baseline">
+      <h2 style="font-family:var(--serif);font-size:22px">${c?"Edit client":"Add a client"}</h2>
+      <button class="tbtn" id="clix">CLOSE</button></div>
+    <div class="fx-sub">${c?"Update their details.":"Add someone you already work with — name, company, and how to reach them."}</div>
+    <div class="dsec"><div class="k">Who</div>
+      <div class="dealrow">${F("cl_co","Company",c&&c.co)}${F("cl_name","Contact name",c&&c.name)}</div></div>
+    <div class="dsec"><div class="k">Reach them</div>
+      ${F("cl_li","LinkedIn URL",c&&c.li)}
+      <div style="height:8px"></div>${F("cl_em","Email",c&&c.em,"email")}</div>
+    <div class="dsec"><div class="k">Retainer · status · start date</div>
+      <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:8px">${F("cl_mrr","$/mo e.g. 2000",c&&c.mrr,"number")}
+      <select id="cl_status" style="width:100%">${CSTATUS.map(x=>`<option ${c&&c.status===x?"selected":""}>${x}</option>`).join("")}</select>
+      ${F("cl_start","",c?c.start:dayKey(new Date()),"date")}</div></div>
+    <div id="cl_warn" class="ai-note" style="display:none;color:var(--red)"></div>
+    <div class="fx-actions">
+      <button class="big primary" id="cl_save">${c?"SAVE CHANGES":"ADD CLIENT"}</button>
+      ${c?`<button class="big" id="cl_del" style="color:var(--red)">DELETE CLIENT</button>`:""}
+    </div></div>`;
+  document.body.append(ov);
+  const close=()=>ov.remove();
+  ov.addEventListener("click",e=>{if(e.target===ov)close()});
+  ov.querySelector("#clix").onclick=close;
+  ov.querySelector("#cl_save").onclick=()=>{
+    const v=x=>{const el=ov.querySelector("#cl_"+x);return el?el.value.trim():"";};
+    const d={co:v("co"),name:v("name"),li:v("li"),em:v("em"),mrr:+v("mrr")||0,
+      status:ov.querySelector("#cl_status").value,start:v("start")};
+    const warn=ov.querySelector("#cl_warn");
+    if(!d.co&&!d.name){warn.textContent="Give me at least a company or a name.";warn.style.display="block";return}
+    if(d.li&&!/linkedin\.com\//i.test(d.li)){warn.textContent="That LinkedIn URL should contain linkedin.com/";warn.style.display="block";return}
+    if(c){Object.assign(c,d);}
+    else{const nc={cid:S.eseq=(S.eseq||0)+1,ndate:"",nstep:"kickoff call",...d};S.clients.push(nc);clientIngest(nc);}
+    save();_dirty=true;close();renderClients();updateTicker();
+    toast(`<b>${esc(d.co||d.name)}</b> ${c?"updated":"added as a client"}`);};
+  const del=ov.querySelector("#cl_del");let armed=false;
+  del&&(del.onclick=()=>{if(!armed){armed=true;del.textContent="CLICK AGAIN TO CONFIRM";return}
+    S.clients.splice(i,1);save();close();renderClients();updateTicker();toast("Client removed");});}
 function makeClient(id){
   S.clients=S.clients||[];
   const l=byId[id],st=RS(id);
   if(S.clients.some(c=>c.leadId===id)){toast("Already a client");show("clients");return}
-  S.clients.push({cid:S.eseq=(S.eseq||0)+1,leadId:id,name:l.name,co:l.co,
+  const nc={cid:S.eseq=(S.eseq||0)+1,leadId:id,name:l.name,co:l.co,li:l.li||"",em:l.em||"",
     mrr:+st.val||((S.goal||{}).deal||2000),start:dayKey(new Date()),
-    status:"Onboarding",ndate:"",nstep:"kickoff call"});
+    status:"Onboarding",ndate:"",nstep:"kickoff call"};
+  S.clients.push(nc);clientIngest(nc);
   save();_dirty=true;
   toast(`<span style="color:#1E9B4A">${I("bank")}</span> <b>${esc(l.co)}</b> is now a client. Set the retainer.`);
   show("clients");}
