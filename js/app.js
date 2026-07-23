@@ -968,6 +968,8 @@ function stageCSVText(text){
   const cols=Object.keys(idx).map(k=>({name:"Name",title:"Title",co:"Company",
     cn:"Country",loc:"Location",li:"LinkedIn",em:"Email"}[k])).join(", ");
   return {data,cols,count:data.length}}
+function segNameFromFile(fn){
+  return (fn||"").replace(/\.[^.]+$/,"").replace(/[_-]+/g," ").replace(/\s+/g," ").trim();}
 function openImportModal(){
   if(document.getElementById("impov"))return;
   _staged=null;
@@ -983,7 +985,7 @@ function openImportModal(){
       ${["Name","Title","Company","Country","Location","LinkedIn","Email"].map(c=>
         `<span class="chip" style="background:rgba(0,122,255,.1);color:#0068DF">${c}</span>`).join("")}
     </div>
-    <div class="dsec"><div class="k">Step 1 · Name this list, it becomes a segment</div>
+    <div class="dsec"><div class="k">Step 1 · Name this list (leave blank to use the file name)</div>
       <input id="impseg" placeholder="e.g. UK Recruiters" value="" style="width:100%"></div>
     <div class="dsec"><div class="k">Step 2 · Your file</div>
       <div id="dropz">Drag your CSV here, or click to choose a file
@@ -1007,6 +1009,9 @@ function openImportModal(){
     info.innerHTML=`<b style="color:var(--good)">Found ${st.count} leads</b> · columns: ${esc(st.cols)}`;
     go.disabled=false;go.style.opacity=1};
   const handleFile=f=>{if(!f)return;
+    ov._fname=f.name;
+    const segIn=ov.querySelector("#impseg");
+    if(segIn&&!segIn.value.trim()){const guess=segNameFromFile(f.name);if(guess)segIn.value=guess;}
     const r=new FileReader();r.onload=()=>handleText(r.result);r.readAsText(f)};
   dz.onclick=()=>$("#csvfile").click();
   dz.addEventListener("dragover",e=>{e.preventDefault();dz.classList.add("drag")});
@@ -1016,7 +1021,7 @@ function openImportModal(){
   ov._handleFile=handleFile;
   go.onclick=()=>{
     if(!_staged)return;
-    const name=(ov.querySelector("#impseg").value.trim())||"My leads";
+    const name=(ov.querySelector("#impseg").value.trim())||segNameFromFile(ov._fname)||"My leads";
     const res=addSegmentLeads(name,_staged.data);
     close();
     toast(`<b>${res.count} leads imported</b> into "${esc(name)}". Go get them.`);
@@ -1590,11 +1595,61 @@ function buildSeglist(){
   $("#seglist").innerHTML=ord.map((p,i)=>
     `<div class="segrow" data-p="${esc(p)}"><span class="sdot2" style="background:${(SEG[p]||{}).color||"#8E8E93"}"></span>
      <span class="segnm">${esc(SEG[p].name)}</span><span class="sc">${per[p]||0}</span>
-     <span class="segmv"><button data-mv="up" data-p="${esc(p)}" ${i===0?"disabled":""} aria-label="move list up">▲</button><button data-mv="down" data-p="${esc(p)}" ${i===ord.length-1?"disabled":""} aria-label="move list down">▼</button></span></div>`).join("");
+     <span class="segmv"><button data-mv="up" data-p="${esc(p)}" ${i===0?"disabled":""} aria-label="move list up">▲</button><button data-mv="down" data-p="${esc(p)}" ${i===ord.length-1?"disabled":""} aria-label="move list down">▼</button><button data-act="ren" data-p="${esc(p)}" aria-label="rename list" data-tip="rename this list">✎</button><button data-act="del" data-p="${esc(p)}" aria-label="delete list" data-tip="delete this list">✕</button></span></div>`).join("");
   $("#seglist").querySelectorAll(".segrow").forEach(r=>r.onclick=()=>{
     show("leads");$("#fseg").value=r.dataset.p;renderRows(true)});
-  $("#seglist").querySelectorAll(".segmv button").forEach(b=>b.onclick=e=>{
-    e.stopPropagation();moveSeg(b.dataset.p,b.dataset.mv)});}
+  $("#seglist").querySelectorAll(".segmv button[data-mv]").forEach(b=>b.onclick=e=>{
+    e.stopPropagation();moveSeg(b.dataset.p,b.dataset.mv)});
+  $("#seglist").querySelectorAll(".segmv button[data-act]").forEach(b=>b.onclick=e=>{
+    e.stopPropagation();
+    if(b.dataset.act==="ren")renameSegment(b.dataset.p);else deleteSegment(b.dataset.p);});}
+function renameSegment(p){
+  if(!SEG[p]||document.getElementById("segrenov"))return;
+  const ov=document.createElement("div");ov.id="segrenov";
+  ov.style.cssText="position:fixed;inset:0;background:rgba(60,60,70,.28);backdrop-filter:blur(4px);z-index:46;display:flex;justify-content:center;align-items:flex-start;padding-top:12vh";
+  ov.innerHTML=`<div class="fx-card" style="max-width:420px;width:100%">
+    <div style="display:flex;justify-content:space-between;align-items:baseline">
+      <h2 style="font-family:var(--serif);font-size:20px">Rename list</h2>
+      <button class="tbtn" id="srx">CLOSE</button></div>
+    <div class="fx-sub">Give this segment a clear name.</div>
+    <input id="srin" value="${esc(SEG[p].name||"")}" placeholder="e.g. Agencies" style="width:100%">
+    <div class="fx-actions"><button class="big primary" id="srsave">SAVE</button></div></div>`;
+  document.body.append(ov);
+  const close=()=>ov.remove();
+  ov.addEventListener("click",e=>{if(e.target===ov)close()});
+  ov.querySelector("#srx").onclick=close;
+  const inp=ov.querySelector("#srin");inp.focus();inp.select();
+  const commit=()=>{const nm=inp.value.trim();if(!nm){inp.focus();return}
+    SEG[p].name=nm;LEADS.forEach(l=>{if(l.pri===p)l.seg=nm;});
+    saveLeads();save();renderSegCss();buildSeglist();refresh();
+    close();toast(`List renamed to <b>${esc(nm)}</b>`);};
+  ov.querySelector("#srsave").onclick=commit;
+  inp.addEventListener("keydown",e=>{if(e.key==="Enter")commit();});}
+function deleteSegment(p){
+  if(!SEG[p]||document.getElementById("segdelov"))return;
+  const name=SEG[p].name||"this list";
+  const n=LEADS.filter(l=>l.pri===p).length;
+  const ov=document.createElement("div");ov.id="segdelov";
+  ov.style.cssText="position:fixed;inset:0;background:rgba(60,60,70,.28);backdrop-filter:blur(4px);z-index:46;display:flex;justify-content:center;align-items:flex-start;padding-top:12vh";
+  ov.innerHTML=`<div class="fx-card" style="max-width:440px;width:100%">
+    <div style="display:flex;justify-content:space-between;align-items:baseline">
+      <h2 style="font-family:var(--serif);font-size:20px">Delete list</h2>
+      <button class="tbtn" id="sdx">CLOSE</button></div>
+    <div class="fx-sub">Remove <b>${esc(name)}</b> and its <b>${n}</b> lead${n===1?"":"s"} from the app. Your original import stays safe in your Ascent backup.</div>
+    <div class="fx-actions"><button class="big" id="sddel" style="color:var(--red)">DELETE ${n} LEAD${n===1?"":"S"}</button></div></div>`;
+  document.body.append(ov);
+  const close=()=>ov.remove();
+  ov.addEventListener("click",e=>{if(e.target===ov)close()});
+  ov.querySelector("#sdx").onclick=close;
+  let armed=false;const btn=ov.querySelector("#sddel");
+  btn.onclick=()=>{
+    if(!armed){armed=true;btn.textContent="CLICK AGAIN TO CONFIRM";return}
+    for(let i=LEADS.length-1;i>=0;i--)if(LEADS[i].pri===p){delete S.leads[LEADS[i].id];LEADS.splice(i,1);}
+    delete SEG[p];
+    if(S.segOrder)S.segOrder=S.segOrder.filter(k=>k!==p);
+    if(S.focusSeg===p)S.focusSeg="";
+    saveLeads();indexLeads();save();renderSegCss();buildSeglist();applyFilter();refresh();
+    close();toast(`<b>${esc(name)}</b> deleted (${n} lead${n===1?"":"s"}).`);};}
 function updateNav(){
   const c=countsCached();
   const due=dueList().length+(S.todos||[]).length;
