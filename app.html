@@ -73,8 +73,8 @@
     <div id="menuwrap">
       <button class="tbtn" id="menub" data-tip="Backup · Import · Settings · Claude coach · Help">⋯</button>
       <div id="menu" class="hidden">
-        <button id="bcsv"><span class="mi" data-ic="table"></span>Export CSV</button>
         <button class="importbtn"><span class="mi" data-ic="upload"></span>Import leads (CSV)</button>
+        <button id="bapollo"><span class="mi" data-ic="bolt"></span>Find leads with Apollo</button>
         <button id="bcoach"><span class="mi" data-ic="spark"></span>Claude coach</button>
         <button id="bfeed"><span class="mi" data-ic="clock"></span>Recent activity</button>
         <button id="bsettings"><span class="mi" data-ic="target"></span>Settings</button>
@@ -119,6 +119,7 @@
     <select id="fcn"><option value="">All countries</option></select>
     <button class="utilb" id="addleadb">+ ADD LEAD</button>
     <button class="utilb importbtn">IMPORT LEADS (CSV)</button>
+    <button class="utilb" id="bcsv">EXPORT CSV</button>
     <span id="count"></span>
   </div>
   <input type="file" id="csvfile" accept=".csv,text/csv" class="hidden">

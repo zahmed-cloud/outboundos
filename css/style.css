@@ -354,6 +354,18 @@ table.grid td:first-child{color:var(--ink)}
 #dclose:hover{color:var(--ink)}
 .dealrow{display:flex;gap:8px;margin-top:8px}
 .dealrow input{flex:1}
+.aterm{background:#0f1220;border-radius:12px;padding:12px 14px;margin-top:12px;max-height:300px;
+  overflow-y:auto;font-family:var(--mono);font-size:12.5px;line-height:1.6;color:#c9d1e0}
+.aterm-line{white-space:pre-wrap;word-break:break-word;margin:3px 0}
+.aterm-you{color:#6b8cf0;font-weight:700}
+.aterm-dim{color:#7b8494}
+.aterm-ok{color:#46d66c}
+.aterm-err{color:#ff6b6b}
+.aterm-input{display:flex;align-items:center;gap:8px;margin-top:10px;border:1px solid var(--line2);
+  border-radius:10px;padding:6px 8px 6px 12px}
+.aterm-input>span{color:#6b8cf0;font-weight:700;font-family:var(--mono)}
+.aterm-input input{flex:1;border:none;padding:4px 2px;background:transparent}
+.aterm-input input:focus{outline:none}
 .valwrap{display:flex;align-items:center;gap:6px}
 .valwrap b{color:var(--money)}
 .dealtpl{border:1px solid var(--line2);border-radius:8px;padding:5px 12px;
