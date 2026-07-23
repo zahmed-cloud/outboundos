@@ -1188,7 +1188,7 @@ const APOLLO_SYS=`You turn a natural-language lead request into Apollo People Se
 - organization_locations: array of the COMPANY hq location, only if that's clearly what's meant
 - organization_num_employees_ranges: array of ranges like ["1,10"],["11,50"],["51,200"]
 - q_keywords: extra free-text keywords like industry or niche, e.g. "recruitment agency"
-- per_page: integer 1-100, how many to fetch (default 25; if they name a number use it, capped at 100)
+- count: integer 1-1000, how many leads to fetch (default 25; if they name a number use it, capped at 1000)
 - segment_name: short clean label for this list, e.g. "London Recruitment Founders"
 Infer sensibly and return strictly valid JSON.`;
 function apolloSummary(q){
@@ -1199,18 +1199,18 @@ function apolloSummary(q){
   if(q.q_keywords)p.push('"'+q.q_keywords+'"');
   return p.join(" · ")||"your request";
 }
-function apolloBody(q){
-  const per=Math.max(1,Math.min(100,+q.per_page||25));
-  const b={page:1,per_page:per};
+function apolloFilters(q){
+  const b={};
   ["person_titles","person_seniorities","person_locations","organization_locations","organization_num_employees_ranges"]
     .forEach(k=>{if(Array.isArray(q[k])&&q[k].length)b[k]=q[k];});
   if(q.q_keywords)b.q_keywords=String(q.q_keywords);
   return b;
 }
-function apolloMap(p){
+function apolloMap(p,wantEmail){
   const org=(p.organization&&p.organization.name)||p.organization_name||"";
   const loc=[p.city,p.state,p.country].filter(Boolean).join(", ");
-  const em=(p.email&&!/email_not_unlocked|notunlocked|domain\.com/i.test(p.email))?p.email:"";
+  let em="";
+  if(wantEmail&&p.email&&!/email_not_unlocked|notunlocked|domain\.com/i.test(p.email))em=p.email;
   return {name:p.name||[p.first_name,p.last_name].filter(Boolean).join(" ").trim(),
     title:p.title||"",co:org,cn:p.country||"",loc:loc,li:safeUrl(p.linkedin_url||""),em:em};
 }
@@ -1218,53 +1218,78 @@ function apolloKey(l){const li=(l.li||"").toLowerCase().replace(/\/+$/,"").repla
   return li||((l.name||"").toLowerCase()+"|"+(l.co||"").toLowerCase());}
 function apolloLog(box,html,cls){const d=document.createElement("div");
   d.className="aterm-line"+(cls?" "+cls:"");d.innerHTML=html;box.append(d);box.scrollTop=box.scrollHeight;return d;}
-async function runApolloSearch(box,line){
+async function runApolloSearch(box,line,wantEmail){
   apolloLog(box,`<span class="aterm-you">›</span> ${esc(line)}`,"you");
   const status=apolloLog(box,`<span class="aterm-dim">reading your request…</span>`);
   let q;
   try{const raw=await aiCall(APOLLO_SYS,line,500);
     q=JSON.parse(String(raw).replace(/```json|```/g,"").trim());}
   catch(e){status.innerHTML=`<span class="aterm-err">Couldn't read that — ${esc((e&&e.message)||e)}</span>`;return;}
-  status.innerHTML=`<span class="aterm-dim">understood → ${esc(apolloSummary(q))}. searching Apollo…</span>`;
-  let data;
-  try{const r=await fetch("/api/apollo",{method:"POST",headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({apiKey:S.apolloKey,query:apolloBody(q)})});
-    data=await r.json().catch(()=>({}));
-    if(!r.ok||data.error)throw new Error(data.error||("Apollo error "+r.status));}
-  catch(e){status.innerHTML=`<span class="aterm-err">Apollo — ${esc((e&&e.message)||e)}</span>`;return;}
-  const people=(data.people||[]);
+  const want=Math.max(1,Math.min(1000,+q.count||+q.per_page||25));
+  const filters=apolloFilters(q),head=apolloSummary(q);
+  status.innerHTML=`<span class="aterm-dim">understood → ${esc(head)} · up to ${want}. searching Apollo…</span>`;
+  let people=[],page=1,total=null;
+  try{
+    while(people.length<want){
+      const body=Object.assign({},filters,{per_page:Math.min(100,want),page:page});
+      const r=await fetch("/api/apollo",{method:"POST",headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({apiKey:S.apolloKey,query:body})});
+      const data=await r.json().catch(()=>({}));
+      if(!r.ok||data.error)throw new Error(data.error||("Apollo error "+r.status));
+      const batch=data.people||[];
+      people=people.concat(batch);
+      total=(data.pagination&&data.pagination.total_entries)||total;
+      status.innerHTML=`<span class="aterm-dim">understood → ${esc(head)}. fetched ${people.length}${total?(" of ~"+total):""}…</span>`;
+      if(batch.length<Math.min(100,want))break;
+      if(total&&people.length>=total)break;
+      if(page>=10)break;
+      page++;
+    }
+  }catch(e){
+    if(!people.length){status.innerHTML=`<span class="aterm-err">Apollo — ${esc((e&&e.message)||e)}</span>`;return;}
+    apolloLog(box,`<span class="aterm-dim">stopped early (${esc((e&&e.message)||e)}) — keeping ${people.length}.</span>`);
+  }
+  people=people.slice(0,want);
   if(!people.length){apolloLog(box,`<span class="aterm-dim">No matches. Try broader titles or a wider location.</span>`);return;}
-  const mapped=people.map(apolloMap).filter(x=>x.name||x.co);
+  const mapped=people.map(p=>apolloMap(p,wantEmail)).filter(x=>x.name||x.co);
   const seen=new Set(LEADS.map(apolloKey));
   const fresh=mapped.filter(m=>{const k=apolloKey(m);if(seen.has(k))return false;seen.add(k);return true;});
   const dup=mapped.length-fresh.length;
   if(!fresh.length){apolloLog(box,`<span class="aterm-dim">All ${mapped.length} are already in your lists.</span>`);return;}
   const name=String(q.segment_name||line).slice(0,44);
   const res=addSegmentLeads(name,fresh);
-  apolloLog(box,`<span class="aterm-ok">✓ Added ${res.count} leads to “${esc(name)}”${dup?` (${dup} you already had)`:""}.</span> <span class="aterm-dim">Open Leads to work them.</span>`,"ok");
+  const withEmail=fresh.filter(f=>f.em).length;
+  apolloLog(box,`<span class="aterm-ok">✓ Added ${res.count} leads to “${esc(name)}”${dup?` (${dup} you already had)`:""}${wantEmail?` · ${withEmail} with email`:""}.</span> <span class="aterm-dim">Open Leads to work them.</span>`,"ok");
   buildSeglist();updateNav();if(!$("#v-dash").classList.contains("hidden"))dash();
 }
-function openApolloFinder(){
+function openApolloFinder(forceSetup){
   if(document.getElementById("apov"))return;
   const ov=document.createElement("div");ov.id="apov";
-  ov.style.cssText="position:fixed;inset:0;background:rgba(60,60,70,.28);backdrop-filter:blur(4px);z-index:46;display:flex;justify-content:center;align-items:flex-start;padding:6vh 16px;overflow-y:auto";
-  const setup=!S.aiKey||!S.apolloKey;
-  ov.innerHTML=`<div class="fx-card" style="max-width:640px;width:100%">
-    <div style="display:flex;justify-content:space-between;align-items:baseline">
+  ov.style.cssText="position:fixed;inset:0;background:rgba(60,60,70,.28);backdrop-filter:blur(4px);z-index:46;display:flex;justify-content:center;align-items:flex-start;padding:5vh 16px;overflow-y:auto";
+  const hasKeys=!!(S.aiKey&&S.apolloKey);
+  const setup=forceSetup||!hasKeys;
+  ov.innerHTML=`<div class="fx-card" style="max-width:720px;width:100%">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px">
       <h2 style="font-family:var(--serif);font-size:22px">Find leads with Apollo</h2>
-      <button class="tbtn" id="apx">CLOSE</button></div>`+
+      <div style="display:flex;gap:6px">${setup?"":`<button class="tbtn" id="apkeys" data-tip="change your Claude / Apollo keys">⚙ Keys</button>`}<button class="tbtn" id="apx">CLOSE</button></div></div>`+
     (setup?`
-    <div class="fx-sub">Add both keys once — they stay in this browser. Apollo runs on your own account and credits.</div>
+    <div class="fx-sub">Add both keys — they stay in this browser. Apollo runs on your own account and credits.</div>
     <div class="dsec"><div class="k">Claude API key</div>
       <input id="ap_ck" type="password" placeholder="sk-ant-…" value="${esc(S.aiKey||"")}" style="width:100%" autocomplete="off"></div>
     <div class="dsec"><div class="k">Apollo API key</div>
-      <input id="ap_ak" type="password" placeholder="Apollo → Settings → API" value="${esc(S.apolloKey||"")}" style="width:100%" autocomplete="off"></div>
-    <div class="fx-actions"><button class="big primary" id="ap_save">SAVE KEYS</button></div>`
+      <input id="ap_ak" type="password" placeholder="Apollo → Settings → Integrations → API" value="${esc(S.apolloKey||"")}" style="width:100%" autocomplete="off"></div>
+    <div class="fx-actions"><button class="big primary" id="ap_save">SAVE KEYS</button>${hasKeys?`<button class="big" id="ap_back">BACK</button>`:""}</div>`
     :`
     <div class="fx-sub">Type what you want, like you'd tell a person. Claude reads your line, pulls matching people from Apollo, and drops them into a new list.</div>
-    <div id="aterm" class="aterm"><div class="aterm-line aterm-dim">try: “100 recruitment agency founders in London”   ·   “SaaS CEOs in the US, 50 of them”</div></div>
-    <div class="aterm-input"><span>›</span><input id="ap_in" placeholder="describe the leads you want…" autocomplete="off"><button id="ap_go" class="tbtn">RUN</button></div>
-    <div class="ai-note">Uses your Apollo credits. Pulls up to 100 at a time, LinkedIn-first. Runs again each time you type a new line.</div>`)+
+    <div class="apctl"><span class="apctl-lbl">Pull</span>
+      <div class="seg-toggle" id="ap_mode">
+        <button data-m="li" class="on">LinkedIn only</button>
+        <button data-m="em">LinkedIn + email</button>
+      </div>
+      <span class="apctl-hint">emails spend more credits, and only come where Apollo has them unlocked</span></div>
+    <div id="aterm" class="aterm"><div class="aterm-line aterm-dim">try:  “500 recruitment agency founders in London”   ·   “20 SaaS CEOs in the US”   ·   “1 founder at Monzo”</div></div>
+    <div class="aterm-input"><span>›</span><input id="ap_in" placeholder="describe the leads you want — any number, 1 to 1000…" autocomplete="off"><button id="ap_go" class="tbtn">RUN</button></div>
+    <div class="ai-note">Your Apollo credits. LinkedIn-first, de-duped against leads you already have. Type a new line any time to run again.</div>`)+
     `</div>`;
   document.body.append(ov);
   const close=()=>ov.remove();
@@ -1275,13 +1300,20 @@ function openApolloFinder(){
       const ck=ov.querySelector("#ap_ck").value.trim(),ak=ov.querySelector("#ap_ak").value.trim();
       if(!ck||!ak){toast("Both keys are needed to run this.");return;}
       S.aiKey=ck;S.apolloKey=ak;save();close();openApolloFinder();};
+    const back=ov.querySelector("#ap_back");back&&(back.onclick=()=>{close();openApolloFinder();});
     return;
   }
+  ov.querySelector("#apkeys").onclick=()=>{close();openApolloFinder(true);};
+  let emailMode=false;
+  const modeWrap=ov.querySelector("#ap_mode");
+  modeWrap.querySelectorAll("button").forEach(b=>b.onclick=()=>{
+    modeWrap.querySelectorAll("button").forEach(x=>x.classList.remove("on"));
+    b.classList.add("on");emailMode=b.dataset.m==="em";});
   const box=ov.querySelector("#aterm"),inp=ov.querySelector("#ap_in"),go=ov.querySelector("#ap_go");
   inp.focus();let busy=false;
   const run=async()=>{const line=inp.value.trim();if(!line||busy)return;
     inp.value="";busy=true;go.disabled=true;go.textContent="…";
-    try{await runApolloSearch(box,line);}catch(e){apolloLog(box,`<span class="aterm-err">${esc((e&&e.message)||e)}</span>`);}
+    try{await runApolloSearch(box,line,emailMode);}catch(e){apolloLog(box,`<span class="aterm-err">${esc((e&&e.message)||e)}</span>`);}
     busy=false;go.disabled=false;go.textContent="RUN";inp.focus();};
   go.onclick=run;
   inp.addEventListener("keydown",e=>{if(e.key==="Enter")run();});
