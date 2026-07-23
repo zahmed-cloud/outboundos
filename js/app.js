@@ -1259,23 +1259,29 @@ async function runApolloSearch(box,line,wantEmail){
   }
   people=people.slice(0,want);
   if(!people.length){apolloLog(box,`<span class="aterm-dim">No matches. Try broader titles or a wider location.</span>`);return;}
-  if(wantEmail){
-    let done=0;
-    for(let i=0;i<people.length;i+=10){
-      if(!document.getElementById("apov"))break;
-      const batch=people.slice(i,i+10);
-      try{
-        const r=await fetch("/api/apollo",{method:"POST",headers:{"Content-Type":"application/json"},
-          body:JSON.stringify({apiKey:S.apolloKey,action:"enrich",people:batch.map(p=>({
-            name:p.name,first_name:p.first_name,last_name:p.last_name,
-            organization_name:(p.organization&&p.organization.name)||p.organization_name||"",
-            linkedin_url:p.linkedin_url,title:p.title}))})});
-        const data=await r.json().catch(()=>({}));
-        if(r.ok&&Array.isArray(data.matches))data.matches.forEach((m,j)=>{if(m&&m.email&&batch[j])batch[j].email=m.email;});
-      }catch(e){/* skip a bad batch, keep going */}
-      done+=batch.length;
-      status.innerHTML=`<span class="aterm-dim">${esc(head)}. revealing emails… ${done}/${people.length}</span>`;
-    }
+  // Apollo search returns teaser data only (first name, title, company). Enrich to
+  // unlock the LinkedIn URL + full name (+ email when chosen). ~1 credit per lead.
+  status.innerHTML=`<span class="aterm-dim">${esc(head)}. unlocking LinkedIn${wantEmail?" + email":""} for ${people.length} (~${people.length} credits)…</span>`;
+  let done=0;
+  for(let i=0;i<people.length;i+=10){
+    if(!document.getElementById("apov"))break;
+    const batch=people.slice(i,i+10);
+    try{
+      const r=await fetch("/api/apollo",{method:"POST",headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({apiKey:S.apolloKey,action:"enrich",reveal:wantEmail,people:batch.map(p=>({
+          id:p.id,name:p.name,first_name:p.first_name,last_name:p.last_name,
+          organization_name:(p.organization&&p.organization.name)||p.organization_name||"",
+          linkedin_url:p.linkedin_url,title:p.title}))})});
+      const data=await r.json().catch(()=>({}));
+      if(r.ok&&Array.isArray(data.matches)){
+        const byId={};data.matches.forEach(m=>{if(m&&m.id)byId[m.id]=m;});
+        batch.forEach((p,j)=>{const m=(p.id&&byId[p.id])||data.matches[j];if(!m)return;
+          ["linkedin_url","name","first_name","last_name","title","email","city","state","country"].forEach(k=>{if(m[k])p[k]=m[k];});
+          const on=(m.organization&&m.organization.name)||m.organization_name;if(on)p.organization={name:on};});
+      }
+    }catch(e){/* skip a bad batch, keep going */}
+    done+=batch.length;
+    status.innerHTML=`<span class="aterm-dim">${esc(head)}. unlocked ${done}/${people.length}…</span>`;
   }
   const mapped=people.map(p=>apolloMap(p,wantEmail)).filter(x=>x.name||x.co);
   const seen=new Set(LEADS.map(apolloKey));
@@ -1312,10 +1318,10 @@ function openApolloFinder(forceSetup){
         <button data-m="li" class="on">LinkedIn only</button>
         <button data-m="em">LinkedIn + email</button>
       </div>
-      <span class="apctl-hint">emails are revealed via Apollo enrichment — about 1 credit each, none for GDPR-blocked people</span></div>
+      <span class="apctl-hint">Apollo unlocks the LinkedIn URL + full name via enrichment — about 1 credit per lead. “+ email” also reveals their email.</span></div>
     <div id="aterm" class="aterm"><div class="aterm-line aterm-dim">try:  “500 recruitment agency founders in London”   ·   “20 SaaS CEOs in the US”   ·   “1 founder at Monzo”</div></div>
     <div class="aterm-input"><span>›</span><input id="ap_in" placeholder="describe the leads you want — any number, 1 to 1000…" autocomplete="off"><button id="ap_go" class="tbtn">RUN</button></div>
-    <div class="ai-note">Your Apollo credits. LinkedIn-first, de-duped against leads you already have. Type a new line any time to run again.</div>`)+
+    <div class="ai-note">About 1 Apollo credit per lead (that's how Apollo unlocks LinkedIn). De-duped against leads you already have. Start small to test.</div>`)+
     `</div>`;
   document.body.append(ov);
   const close=()=>ov.remove();

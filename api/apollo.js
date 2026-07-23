@@ -29,8 +29,24 @@ export default async function handler(req, res) {
       "X-Api-Key": String(apiKey),
     };
     const errOf = (j, r) => (j && (j.error || j.error_message || j.message)) || "Apollo error " + r.status;
+    // keep every top-level scalar (so linkedin_url survives whatever it's named) + org name
+    const shallow = (p) => {
+      const o = {};
+      for (const k in p) {
+        const v = p[k];
+        if (v == null) continue;
+        const t = typeof v;
+        if (t === "string" || t === "number" || t === "boolean") o[k] = v;
+      }
+      const orgName = (p.organization && p.organization.name) || p.organization_name || o.organization_name || "";
+      o.organization_name = orgName;
+      o.organization = { name: orgName };
+      return o;
+    };
 
-    // ---- email enrichment (Bulk People Match, max 10 per call, ~1 credit each) ----
+    // ---- enrichment (Bulk People Match, max 10 per call, ~1 credit each) ----
+    // Apollo search returns teaser data only; enrichment unlocks LinkedIn URL,
+    // full name and (when reveal is set) email.
     if (action === "enrich") {
       if (!Array.isArray(people) || !people.length)
         return res.status(400).json({ error: "no people to enrich" });
@@ -38,13 +54,15 @@ export default async function handler(req, res) {
       const r = await fetch("https://api.apollo.io/api/v1/people/bulk_match", {
         method: "POST",
         headers,
-        body: JSON.stringify({ details, reveal_personal_emails: true }),
+        body: JSON.stringify({ details, reveal_personal_emails: !!req.body.reveal }),
       });
       const j = await r.json().catch(() => ({}));
       if (!r.ok) return res.status(r.status).json({ error: errOf(j, r) });
       const matches = (j.matches || []).map((m) => {
-        const em = m && m.email && !LOCKED.test(m.email) ? m.email : "";
-        return { email: em };
+        if (!m) return null;
+        const s = shallow(m);
+        if (s.email && LOCKED.test(s.email)) s.email = "";
+        return s;
       });
       return res.status(200).json({ matches });
     }
@@ -62,21 +80,6 @@ export default async function handler(req, res) {
     const j = await r.json().catch(() => ({}));
     if (!r.ok) return res.status(r.status).json({ error: errOf(j, r) });
 
-    // keep every top-level scalar (so linkedin_url survives whatever it's named)
-    // plus the org name; drop big nested arrays to keep the payload light.
-    const shallow = (p) => {
-      const o = {};
-      for (const k in p) {
-        const v = p[k];
-        if (v == null) continue;
-        const t = typeof v;
-        if (t === "string" || t === "number" || t === "boolean") o[k] = v;
-      }
-      const orgName = (p.organization && p.organization.name) || p.organization_name || o.organization_name || "";
-      o.organization_name = orgName;
-      o.organization = { name: orgName };
-      return o;
-    };
     const peopleOut = (j.people || []).concat(j.contacts || []).map(shallow);
     return res.status(200).json({ people: peopleOut, pagination: j.pagination || null });
   } catch (e) {
