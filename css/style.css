@@ -114,6 +114,8 @@ a{color:var(--accent);text-decoration:none}
 #menu button:hover{background:rgba(0,122,255,.09);color:var(--ink)}
 #menu button.brand-apollo-row{background:rgba(108,76,240,.07)}
 #menu button.brand-apollo-row:hover{background:rgba(108,76,240,.14);color:var(--ink)}
+#menu button.brand-claude-row{background:rgba(193,95,60,.07)}
+#menu button.brand-claude-row:hover{background:rgba(193,95,60,.13);color:var(--ink)}
 .brand-chip{display:inline-flex;align-items:center;gap:5px;padding:2px 9px 2px 7px;border-radius:999px;font-size:.86em;font-weight:600;vertical-align:middle;white-space:nowrap}
 .brand-chip.apollo{background:rgba(108,76,240,.1);color:#6C4CF0}
 .brand-chip.claude{background:rgba(193,95,60,.12);color:#C15F3C}
@@ -277,6 +279,8 @@ table.grid td:first-child{color:var(--ink)}
 
 /* ============ leads ============ */
 #filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;align-items:center}
+#filters #q{flex:1 1 170px;min-width:140px}
+#filters select{max-width:160px}
 #q{width:280px}
 #count{color:var(--ink3);font-size:12px;margin-left:auto;font-family:var(--rounded)}
 #tbl{width:100%;border-collapse:collapse;font-size:13px;background:var(--card);
