@@ -1152,11 +1152,11 @@ function openSettings(){
         <label style="flex:1;font-size:12px;color:var(--ink3)">Monthly revenue goal $<input id="s_rev" type="number" min="0" value="${g.rev}"></label>
         <label style="flex:1;font-size:12px;color:var(--ink3)">Average deal $<input id="s_deal" type="number" min="0" value="${g.deal}"></label>
       </div></div>
-    <div class="dsec"><div class="k" style="color:var(--indigo)">${I("spark")} Claude</div>
+    <div class="dsec"><div class="k" style="color:#C15F3C">${I("claude")} Claude</div>
       <input id="s_key" type="password" placeholder="Claude API key (sk-ant-…) — powers drafting and the coach" value="${esc(S.aiKey||"")}" style="width:100%" autocomplete="off">
       <textarea id="s_pitch" placeholder="What you sell, in your words — Claude only ever claims what you write here…" style="width:100%;min-height:64px;margin-top:8px;resize:vertical">${esc(S.aiPitch||"")}</textarea>
       <div class="ai-note">The key lives in this browser only and is sent to Anthropic, nowhere else. Get one at console.anthropic.com.</div></div>
-    <div class="dsec"><div class="k" style="color:#0A6AE8">${I("bolt")} Apollo</div>
+    <div class="dsec"><div class="k" style="color:#6C4CF0">${I("apollo")} Apollo</div>
       <input id="s_apollo" type="password" placeholder="Apollo API key — powers Find leads (your account, your credits)" value="${esc(S.apolloKey||"")}" style="width:100%" autocomplete="off">
       <div class="ai-note">Stored in this browser only. With Claude, it pulls leads straight into a list. Get it in Apollo → Settings → API.</div></div>
     <div class="fx-actions">
@@ -1312,13 +1312,13 @@ function openApolloFinder(forceSetup){
   const setup=forceSetup||!hasKeys;
   ov.innerHTML=`<div class="fx-card" style="max-width:720px;width:100%">
     <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px">
-      <h2 style="font-family:var(--serif);font-size:22px">Find leads with Apollo</h2>
+      <h2 style="font-family:var(--serif);font-size:22px">Find leads with <span class="brand-chip apollo">${I("apollo")} Apollo</span></h2>
       <div style="display:flex;gap:6px">${setup?"":`<button class="tbtn" id="apkeys" data-tip="change your Claude / Apollo keys">⚙ Keys</button>`}<button class="tbtn" id="apx">CLOSE</button></div></div>`+
     (setup?`
     <div class="fx-sub">Add both keys — they stay in this browser. Apollo runs on your own account and credits.</div>
-    <div class="dsec"><div class="k">Claude API key</div>
+    <div class="dsec"><div class="k"><span style="color:#C15F3C">${I("claude")}</span> Claude API key</div>
       <input id="ap_ck" type="password" placeholder="sk-ant-…" value="${esc(S.aiKey||"")}" style="width:100%" autocomplete="off"></div>
-    <div class="dsec"><div class="k">Apollo API key</div>
+    <div class="dsec"><div class="k"><span style="color:#6C4CF0">${I("apollo")}</span> Apollo API key</div>
       <input id="ap_ak" type="password" placeholder="Apollo → Settings → Integrations → API" value="${esc(S.apolloKey||"")}" style="width:100%" autocomplete="off"></div>
     <div class="fx-actions"><button class="big primary" id="ap_save">SAVE KEYS</button>${hasKeys?`<button class="big" id="ap_back">BACK</button>`:""}</div>`
     :`

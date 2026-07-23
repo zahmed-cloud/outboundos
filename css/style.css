@@ -112,6 +112,11 @@ a{color:var(--accent);text-decoration:none}
   padding:5px;box-shadow:0 14px 40px rgba(0,0,0,.16);display:flex;flex-direction:column}
 #menu button{text-align:left;padding:9px 12px;border-radius:8px;font-size:13px;color:var(--ink2)}
 #menu button:hover{background:rgba(0,122,255,.09);color:var(--ink)}
+#menu button.brand-apollo-row{background:rgba(108,76,240,.07)}
+#menu button.brand-apollo-row:hover{background:rgba(108,76,240,.14);color:var(--ink)}
+.brand-chip{display:inline-flex;align-items:center;gap:5px;padding:2px 9px 2px 7px;border-radius:999px;font-size:.86em;font-weight:600;vertical-align:middle;white-space:nowrap}
+.brand-chip.apollo{background:rgba(108,76,240,.1);color:#6C4CF0}
+.brand-chip.claude{background:rgba(193,95,60,.12);color:#C15F3C}
 .mi{display:inline-flex;width:17px;margin-right:9px;vertical-align:-2px;color:var(--ink3)}
 #main{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;padding:8px 24px 24px;
   overscroll-behavior:contain}

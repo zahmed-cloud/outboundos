@@ -25,5 +25,7 @@ const ICONS={
  coins:'<circle cx="9" cy="9" r="5.5"/><path d="M14.5 7.5a5.5 5.5 0 1 1-7 7"/>',
  spark:'<path d="M12 3.5c.5 3.6 2.4 5.5 6 6-3.6.5-5.5 2.4-6 6-.5-3.6-2.4-5.5-6-6 3.6-.5 5.5-2.4 6-6zM18.7 14.8c.3 1.9 1.3 2.9 3.2 3.2-1.9.3-2.9 1.3-3.2 3.2-.3-1.9-1.3-2.9-3.2-3.2 1.9-.3 2.9-1.3 3.2-3.2z"/>',
  linkedin:'<rect x="3.5" y="3.5" width="17" height="17" rx="3.8"/><path d="M8 10.8v5.7M8 7.4h.01M12.2 16.5v-3.3c0-1.3.9-2.3 2.1-2.3s2.1 1 2.1 2.3v3.3M12.2 12.4v-1.6"/>',
+ apollo:'<circle cx="12" cy="12" r="3.3"/><ellipse cx="12" cy="12" rx="9.2" ry="3.7" transform="rotate(-28 12 12)"/>',
+ claude:'<path d="M12 3v18M4.5 6.75l15 10.5M4.5 17.25l15-10.5"/>',
 };
 const I=n=>`<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em">${ICONS[n]||""}</svg>`;
