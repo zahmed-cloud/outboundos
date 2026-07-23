@@ -1595,14 +1595,29 @@ function buildSeglist(){
   $("#seglist").innerHTML=ord.map((p,i)=>
     `<div class="segrow" data-p="${esc(p)}"><span class="sdot2" style="background:${(SEG[p]||{}).color||"#8E8E93"}"></span>
      <span class="segnm">${esc(SEG[p].name)}</span><span class="sc">${per[p]||0}</span>
-     <span class="segmv"><button data-mv="up" data-p="${esc(p)}" ${i===0?"disabled":""} aria-label="move list up">▲</button><button data-mv="down" data-p="${esc(p)}" ${i===ord.length-1?"disabled":""} aria-label="move list down">▼</button><button data-act="ren" data-p="${esc(p)}" aria-label="rename list" data-tip="rename this list">✎</button><button data-act="del" data-p="${esc(p)}" aria-label="delete list" data-tip="delete this list">✕</button></span></div>`).join("");
+     <span class="segmv"><button class="segkebab" data-p="${esc(p)}" aria-label="list options" data-tip="rename, reorder or delete">⋮</button></span></div>`).join("");
   $("#seglist").querySelectorAll(".segrow").forEach(r=>r.onclick=()=>{
     show("leads");$("#fseg").value=r.dataset.p;renderRows(true)});
-  $("#seglist").querySelectorAll(".segmv button[data-mv]").forEach(b=>b.onclick=e=>{
-    e.stopPropagation();moveSeg(b.dataset.p,b.dataset.mv)});
-  $("#seglist").querySelectorAll(".segmv button[data-act]").forEach(b=>b.onclick=e=>{
-    e.stopPropagation();
-    if(b.dataset.act==="ren")renameSegment(b.dataset.p);else deleteSegment(b.dataset.p);});}
+  $("#seglist").querySelectorAll(".segkebab").forEach(b=>b.onclick=e=>{
+    e.stopPropagation();openSegMenu(b.dataset.p,b);});}
+function closeSegMenu(){const m=document.getElementById("segmenu");if(m)m.remove();}
+function openSegMenu(p,btn){
+  if(document.getElementById("segmenu")){closeSegMenu();return;}
+  const ord=orderedSegs(),i=ord.indexOf(p);
+  const m=document.createElement("div");m.id="segmenu";m.className="segmenu";
+  m.innerHTML=`<button data-a="ren">Rename</button>`+
+    `<button data-a="up" ${i<=0?"disabled":""}>Move up</button>`+
+    `<button data-a="down" ${i>=ord.length-1?"disabled":""}>Move down</button>`+
+    `<button data-a="del" class="danger">Delete list</button>`;
+  document.body.append(m);
+  const r=btn.getBoundingClientRect();
+  m.style.top=(r.bottom+6)+"px";
+  m.style.left=Math.max(8,Math.min(r.right-m.offsetWidth,window.innerWidth-m.offsetWidth-8))+"px";
+  m.querySelectorAll("button").forEach(b=>b.onclick=e=>{e.stopPropagation();
+    if(b.disabled)return;const a=b.dataset.a;closeSegMenu();
+    if(a==="ren")renameSegment(p);else if(a==="up")moveSeg(p,"up");
+    else if(a==="down")moveSeg(p,"down");else if(a==="del")deleteSegment(p);});
+  setTimeout(()=>document.addEventListener("click",closeSegMenu,{once:true}),0);}
 function renameSegment(p){
   if(!SEG[p]||document.getElementById("segrenov"))return;
   const ov=document.createElement("div");ov.id="segrenov";
@@ -1635,7 +1650,7 @@ function deleteSegment(p){
     <div style="display:flex;justify-content:space-between;align-items:baseline">
       <h2 style="font-family:var(--serif);font-size:20px">Delete list</h2>
       <button class="tbtn" id="sdx">CLOSE</button></div>
-    <div class="fx-sub">Remove <b>${esc(name)}</b> and its <b>${n}</b> lead${n===1?"":"s"} from the app. Your original import stays safe in your Ascent backup.</div>
+    <div class="fx-sub">Remove <b>${esc(name)}</b> and its <b>${n}</b> lead${n===1?"":"s"} from the app. This can't be undone here.</div>
     <div class="fx-actions"><button class="big" id="sddel" style="color:var(--red)">DELETE ${n} LEAD${n===1?"":"S"}</button></div></div>`;
   document.body.append(ov);
   const close=()=>ov.remove();
