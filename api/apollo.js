@@ -62,19 +62,22 @@ export default async function handler(req, res) {
     const j = await r.json().catch(() => ({}));
     if (!r.ok) return res.status(r.status).json({ error: errOf(j, r) });
 
-    const peopleOut = (j.people || []).concat(j.contacts || []).map((p) => ({
-      name: p.name,
-      first_name: p.first_name,
-      last_name: p.last_name,
-      title: p.title,
-      linkedin_url: p.linkedin_url,
-      city: p.city,
-      state: p.state,
-      country: p.country,
-      email: p.email,
-      organization_name: (p.organization && p.organization.name) || p.organization_name || "",
-      organization: { name: (p.organization && p.organization.name) || p.organization_name || "" },
-    }));
+    // keep every top-level scalar (so linkedin_url survives whatever it's named)
+    // plus the org name; drop big nested arrays to keep the payload light.
+    const shallow = (p) => {
+      const o = {};
+      for (const k in p) {
+        const v = p[k];
+        if (v == null) continue;
+        const t = typeof v;
+        if (t === "string" || t === "number" || t === "boolean") o[k] = v;
+      }
+      const orgName = (p.organization && p.organization.name) || p.organization_name || o.organization_name || "";
+      o.organization_name = orgName;
+      o.organization = { name: orgName };
+      return o;
+    };
+    const peopleOut = (j.people || []).concat(j.contacts || []).map(shallow);
     return res.status(200).json({ people: peopleOut, pagination: j.pagination || null });
   } catch (e) {
     return res.status(500).json({ error: "Apollo request failed." });

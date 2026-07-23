@@ -1205,13 +1205,21 @@ function apolloFilters(q){
   if(q.q_keywords)b.q_keywords=String(q.q_keywords);
   return b;
 }
+function apolloLinkedIn(p){
+  let u=p&&p.linkedin_url?String(p.linkedin_url):"";
+  if(!u&&p){for(const k in p){const v=p[k];
+    if(typeof v==="string"&&/linkedin\.com\/(in|company|pub)\//i.test(v)){u=v;break;}}}
+  u=(u||"").trim();
+  if(u&&!/^https?:\/\//i.test(u))u="https://"+u.replace(/^\/+/,"");
+  return /linkedin\.com\//i.test(u)?u:"";
+}
 function apolloMap(p,wantEmail){
   const org=(p.organization&&p.organization.name)||p.organization_name||"";
   const loc=[p.city,p.state,p.country].filter(Boolean).join(", ");
   let em="";
   if(wantEmail&&p.email&&!/email_not_unlocked|notunlocked|domain\.com/i.test(p.email))em=p.email;
   return {name:p.name||[p.first_name,p.last_name].filter(Boolean).join(" ").trim(),
-    title:p.title||"",co:org,cn:p.country||"",loc:loc,li:safeUrl(p.linkedin_url||""),em:em};
+    title:p.title||"",co:org,cn:p.country||"",loc:loc,li:apolloLinkedIn(p),em:em};
 }
 function apolloKey(l){const li=(l.li||"").toLowerCase().replace(/\/+$/,"").replace(/^https?:\/\//,"").replace(/^www\./,"");
   return li||((l.name||"").toLowerCase()+"|"+(l.co||"").toLowerCase());}
@@ -1276,8 +1284,8 @@ async function runApolloSearch(box,line,wantEmail){
   if(!fresh.length){apolloLog(box,`<span class="aterm-dim">All ${mapped.length} are already in your lists.</span>`);return;}
   const name=String(q.segment_name||line).slice(0,44);
   const res=addSegmentLeads(name,fresh);
-  const withEmail=fresh.filter(f=>f.em).length;
-  apolloLog(box,`<span class="aterm-ok">✓ Added ${res.count} leads to “${esc(name)}”${dup?` (${dup} you already had)`:""}${wantEmail?` · ${withEmail} with email`:""}.</span> <span class="aterm-dim">Open Leads to work them.</span>`,"ok");
+  const withLi=fresh.filter(f=>f.li).length, withEmail=fresh.filter(f=>f.em).length;
+  apolloLog(box,`<span class="aterm-ok">✓ Added ${res.count} leads to “${esc(name)}”${dup?` (${dup} you already had)`:""} · ${withLi} with LinkedIn${wantEmail?` · ${withEmail} with email`:""}.</span> <span class="aterm-dim">Open Leads to work them.</span>`,"ok");
   buildSeglist();updateNav();if(!$("#v-dash").classList.contains("hidden"))dash();
 }
 function openApolloFinder(forceSetup){
