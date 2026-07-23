@@ -1259,6 +1259,16 @@ async function runApolloSearch(box,line,wantEmail){
   }
   people=people.slice(0,want);
   if(!people.length){apolloLog(box,`<span class="aterm-dim">No matches. Try broader titles or a wider location.</span>`);return;}
+  // PRE-ENRICH dedupe (coarse, FREE): teaser gives first name + company, so drop
+  // anyone you already have before spending a credit to enrich them.
+  const coarseKey=(nm,co)=>((String(nm||"").trim().split(/\s+/)[0]||"").toLowerCase()+"|"+String(co||"").trim().toLowerCase());
+  const existingCoarse=new Set(LEADS.map(l=>coarseKey(l.name,l.co)).filter(k=>k!=="|"));
+  const preN=people.length;
+  people=people.filter(p=>{const co=(p.organization&&p.organization.name)||p.organization_name||"";
+    const k=coarseKey(p.first_name||p.name,co);return k==="|"||!existingCoarse.has(k);});
+  const preSkipped=preN-people.length;
+  if(preSkipped)apolloLog(box,`<span class="aterm-dim">${preSkipped} already in your lists — skipped before spending credits.</span>`);
+  if(!people.length){apolloLog(box,`<span class="aterm-dim">All ${preN} were already in your lists — no credits spent.</span>`);return;}
   // Apollo search returns teaser data only (first name, title, company). Enrich to
   // unlock the LinkedIn URL + full name (+ email when chosen). ~1 credit per lead.
   status.innerHTML=`<span class="aterm-dim">${esc(head)}. unlocking LinkedIn${wantEmail?" + email":""} for ${people.length} (~${people.length} credits)…</span>`;
