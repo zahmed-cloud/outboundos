@@ -937,12 +937,14 @@ function mapHeaders(head){
     for(const k in HMAP)if(HMAP[k].some(v=>hl===v||hl.includes(v)))if(!(k in idx))idx[k]=i});
   return idx}
 function addSegmentLeads(segName,rows){
+  const usable=rows.filter(r=>r.name||r.co);
+  if(!usable.length)return {key:null,count:0};   /* nothing real to add — don't mint an empty segment */
   const keys=Object.keys(SEG);
   const k="P"+(keys.length?Math.max(...keys.map(x=>+x.slice(1)||0))+1:1);
   SEG[k]={name:segName,color:SEGPAL[keys.length%SEGPAL.length],bullets:[]};
   let next=LEADS.reduce((a,l)=>Math.max(a,l.id),0);
   const added=[];
-  rows.forEach(r=>{if(!r.name&&!r.co)return;
+  usable.forEach(r=>{
     next++;const l={id:next,pri:k,seg:segName,name:r.name||"",title:r.title||"",
       co:r.co||"",cn:r.cn||"",loc:r.loc||"",li:r.li||"",em:r.em||""};
     LEADS.push(l);added.push(l)});
@@ -1230,7 +1232,8 @@ async function runApolloSearch(box,line,wantEmail){
   const status=apolloLog(box,`<span class="aterm-dim">reading your request…</span>`);
   let q;
   try{const raw=await aiCall(APOLLO_SYS,line,500);
-    q=JSON.parse(String(raw).replace(/```json|```/g,"").trim());}
+    q=JSON.parse(String(raw).replace(/```json|```/g,"").trim());
+    if(!q||typeof q!=="object"||Array.isArray(q))throw new Error("unexpected response shape");}
   catch(e){status.innerHTML=`<span class="aterm-err">Couldn't read that — ${esc((e&&e.message)||e)}</span>`;return;}
   const want=Math.max(1,Math.min(1000,+q.count||+q.per_page||25));
   const filters=apolloFilters(q),head=apolloSummary(q);
@@ -1293,6 +1296,7 @@ async function runApolloSearch(box,line,wantEmail){
     done+=batch.length;
     status.innerHTML=`<span class="aterm-dim">${esc(head)}. unlocked ${done}/${people.length}…</span>`;
   }
+  if(!document.getElementById("apov"))return;   /* closed mid-run → don't write a partial list */
   const mapped=people.map(p=>apolloMap(p,wantEmail)).filter(x=>x.name||x.co);
   const seen=new Set(LEADS.map(apolloKey));
   const fresh=mapped.filter(m=>{const k=apolloKey(m);if(seen.has(k))return false;seen.add(k);return true;});
@@ -1840,7 +1844,7 @@ function rebuildSegFilter(){
   sel.innerHTML='<option value="">All segments</option>'+
     orderedSegs().map(p=>`<option value="${esc(p)}">${esc((SEG[p]||{}).name||p)}</option>`).join("");
   sel.value=(cur&&SEG[cur])?cur:"";}
-function closeSegMenu(){const m=document.getElementById("segmenu");if(m)m.remove();}
+function closeSegMenu(){const m=document.getElementById("segmenu");if(m){if(m._onDoc)document.removeEventListener("click",m._onDoc);m.remove();}}
 function openSegMenu(p,btn){
   if(document.getElementById("segmenu")){closeSegMenu();return;}
   const ord=orderedSegs(),i=ord.indexOf(p);
@@ -1857,7 +1861,8 @@ function openSegMenu(p,btn){
     if(b.disabled)return;const a=b.dataset.a;closeSegMenu();
     if(a==="ren")renameSegment(p);else if(a==="up")moveSeg(p,"up");
     else if(a==="down")moveSeg(p,"down");else if(a==="del")deleteSegment(p);});
-  setTimeout(()=>document.addEventListener("click",closeSegMenu,{once:true}),0);}
+  m._onDoc=()=>closeSegMenu();
+  setTimeout(()=>document.addEventListener("click",m._onDoc),0);}
 function renameSegment(p){
   if(!SEG[p]||document.getElementById("segrenov"))return;
   const ov=document.createElement("div");ov.id="segrenov";
@@ -1899,7 +1904,10 @@ function deleteSegment(p){
   let armed=false;const btn=ov.querySelector("#sddel");
   btn.onclick=()=>{
     if(!armed){armed=true;btn.textContent="CLICK AGAIN TO CONFIRM";return}
-    for(let i=LEADS.length-1;i>=0;i--)if(LEADS[i].pri===p){delete S.leads[LEADS[i].id];LEADS.splice(i,1);}
+    const gone=new Set();
+    for(let i=LEADS.length-1;i>=0;i--)if(LEADS[i].pri===p){gone.add(LEADS[i].id);delete S.leads[LEADS[i].id];LEADS.splice(i,1);}
+    const evs=S.events.filter(e=>gone.has(e.id));           /* erase their ledger events too — no orphans, no id reuse bleed */
+    if(evs.length){S.events=S.events.filter(e=>!gone.has(e.id));resealCheck(evs);}
     delete SEG[p];
     if(S.segOrder)S.segOrder=S.segOrder.filter(k=>k!==p);
     if(S.focusSeg===p)S.focusSeg="";

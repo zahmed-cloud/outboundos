@@ -10,13 +10,20 @@ recruiters, consultants, anyone who needs clients and hates chaos.
 
 ## What it does
 - Import your lead lists (CSV), each list becomes a segment — or add, edit and
-  delete leads one at a time.
+  delete leads one at a time. (Leave the import name blank and it uses the file
+  name.) Rename or delete a whole list from the ⋮ menu on each segment.
+- Find leads with Apollo: describe who you want in plain English, Claude turns it
+  into an Apollo People Search, and matching people drop into a new list with
+  their LinkedIn URL and full name (and email if you ask). Bring your own Apollo
+  API key (Settings) — your account, ~1 credit per lead, de-duped against what
+  you already have.
 - Daily targets you choose: connection requests, reachouts, posts. Rings fill
   from real logged actions only.
 - Focus mode deals you one lead at a time with the message ready to copy.
 - Reply playbook: whatever they said, there's a written answer.
 - Deal pipeline with aging and chase messages. Proposals never rot quietly.
-- Client book: won deals become retainers with MRR and check-in reminders.
+- Client book: won deals become retainers with MRR and check-in reminders. Add
+  or edit clients directly (company, contact, email, LinkedIn) from the form.
 - Smart queue: Focus learns from your own accept rates (per segment and title)
   and serves the likeliest leads first, telling you why. Activates honestly at
   30 logged requests, never before.
@@ -29,8 +36,10 @@ recruiters, consultants, anyone who needs clients and hates chaos.
   owner can host it (`api/ai.js`).
 
 ## Stack
-Plain HTML, CSS and JavaScript. No frameworks, no build step. One serverless
-function (`api/ingest.js`) receives imported lead lists when deployed on Vercel.
+Plain HTML, CSS and JavaScript. No frameworks, no build step. Serverless
+functions run on Vercel: `api/ingest.js` (receives imported lead lists),
+`api/ai.js` (optional hosted Claude), `api/apollo.js` (proxies Apollo People
+Search + enrichment using the user's own key — Apollo blocks direct browser calls).
 
 ## Run locally
 Open `index.html` for the landing page, `app.html` for the OS itself, or:
@@ -51,6 +60,7 @@ js/config.js      deployment config (Supabase URL + anon key)
 js/auth.js        accounts: login gate + cloud sync (live site only)
 api/ingest.js     Vercel serverless: stores imported lists (Supabase)
 api/ai.js         Vercel serverless: hosted Claude brain (optional)
+api/apollo.js     Vercel serverless: Apollo People Search + enrichment proxy
 sample_leads.csv  demo file for testing the importer
 LAUNCH_GUIDE.md   step by step: GitHub, Vercel, backend
 ```

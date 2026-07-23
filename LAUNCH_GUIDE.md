@@ -109,6 +109,19 @@ endpoint and drain the key.
 Leave `ANTHROPIC_API_KEY` unset and Mode B simply answers "paste your own key
 in Settings" — nothing breaks.
 
+## 3.5b Find leads with Apollo (`/api/apollo`)
+The ⋯ menu → **Find leads with Apollo** lets a user describe leads in plain
+English; Claude turns it into an Apollo People Search, and the results (with
+LinkedIn URL, full name, and email if asked) drop into a new list. It runs on
+**the user's own Apollo key**, pasted in Settings — their account, their credits
+(~1 Apollo credit per lead, because Apollo only unlocks LinkedIn via enrichment).
+
+Nothing to set up: `api/apollo.js` just proxies Apollo (the browser can't call it
+directly — CORS + the key would be exposed). It never stores or logs the key.
+Optionally set `APOLLO_ALLOWED_ORIGIN` = your domain (it also honours
+`AI_ALLOWED_ORIGIN`) so other sites can't use your endpoint as a relay. There is
+no owner-hosted Apollo key — it is always bring-your-own.
+
 ## 3.6 Accounts: make login required on the live site (15 minutes)
 The app ships with a full account system — email login link (no passwords),
 and every user's pipeline saves to their account and syncs between devices.
