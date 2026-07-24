@@ -1561,8 +1561,8 @@ function openSrcSoon(tier){
   const body=encodeURIComponent("Hi, I'd like the "+(tier.name||"")+" pack"+(tier.count?" ("+tier.count+" prospects)":"")+". How do I pay?");
   ov.innerHTML=`<div class="src-soon">
     <div class="src-soon-mark">✦</div>
-    <h2>Checkout opens in a moment</h2>
-    <p>We're putting the final touches on payments. Want your ${tier.count?tier.count+" ":""}prospects <b>today</b>? Email us and we'll set you up right now.</p>
+    <h2>Online checkout isn't set up yet</h2>
+    <p>We haven't switched on card payments yet. Want your ${tier.count?tier.count+" ":""}prospects <b>today</b>? Just email us — we'll set you up manually right now.</p>
     <a class="src-soon-btn" href="mailto:${SRC_EMAIL}?subject=${subj}&body=${body}">Email us to get started →</a>
     <button class="src-soon-close" id="srcsoonx">Maybe later</button></div>`;
   document.body.append(ov);
