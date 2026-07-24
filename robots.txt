@@ -48,4 +48,4 @@ Allow: /
 User-agent: Diffbot
 Allow: /
 
-Sitemap: https://outboundos-flax.vercel.app/sitemap.xml
+Sitemap: https://os.getascent.co/sitemap.xml

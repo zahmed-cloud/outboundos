@@ -1,1 +1,11 @@
-{ "cleanUrls": true }
+{
+  "cleanUrls": true,
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "outboundos-flax.vercel.app" }],
+      "destination": "https://os.getascent.co/:path*",
+      "permanent": true
+    }
+  ]
+}
