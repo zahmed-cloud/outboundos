@@ -213,10 +213,6 @@ export default async function handler(req, res) {
   if (allowed && !okOrigin) return res.status(403).json({ error: "origin not allowed" });
 
   try {
-    const keys = await getKeys();
-    if (!keys.apollo || !keys.anthropic)
-      return res.status(200).json({ error: "Sourcing isn't switched on yet." });
-
     const token = String(req.headers.authorization || "").replace(/^Bearer\s+/i, "");
     if (!token) return res.status(401).json({ error: "Please log in." });
     const user = await verifyUser(token);
@@ -230,6 +226,9 @@ export default async function handler(req, res) {
     if (action === "balance") return res.status(200).json({ remaining });
 
     if (action === "source") {
+      const keys = await getKeys();
+      if (!keys.apollo || !keys.anthropic)
+        return res.status(200).json({ error: "Sourcing is being switched on — check back shortly.", remaining });
       if (remaining <= 0)
         return res.status(200).json({ error: "You're out of prospects. Grab a pack to keep sourcing.", remaining: 0 });
       if (!line || typeof line !== "string") return res.status(400).json({ error: "Describe who you want." });
