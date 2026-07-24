@@ -16,7 +16,7 @@ const AIMODEL = "claude-opus-4-8";
 const LOCKED = /email_not_unlocked|notunlocked|domain\.com/i;
 const MAX_PER_PULL = 600; // hard ceiling per single source request
 
-const SYS = `You turn a natural-language prospect request into Apollo People Search parameters. Reply with ONLY a JSON object, no prose, no code fences. Keys (all optional):
+const SYS_BASE = `You turn a natural-language prospect request into Apollo People Search parameters. Keys (all optional):
 - person_titles: array of job titles, e.g. ["Founder","CEO"]
 - person_seniorities: array from ["owner","founder","c_suite","partner","vp","head","director","manager"]
 - person_locations: array of the person's location, e.g. ["London, United Kingdom"]
@@ -24,8 +24,13 @@ const SYS = `You turn a natural-language prospect request into Apollo People Sea
 - organization_num_employees_ranges: array like ["1,10"],["11,50"],["51,200"]
 - q_keywords: extra keywords (industry / niche)
 - count: integer, how many prospects to source (default 25)
-- segment_name: short clean label for this list
-Return strictly valid JSON.`;
+- segment_name: short clean label for this list`;
+// when the request is vague, Claude may ask a few sharp questions first
+const SYS_ASK = SYS_BASE + `
+Apollo returns PEOPLE, not companies. If the request is missing an important targeting detail — WHICH people/roles at the companies, the company SIZE, or the location scope (one city vs a whole country) — reply with ONLY {"clarify": ["short question", ...]} with at most 3 short, specific questions. If the request is already clear enough to search well, reply with ONLY the parameters object. Reply with ONLY valid JSON, no prose, no code fences.`;
+// after the user has answered, never ask again — just build the best query
+const SYS_FORCE = SYS_BASE + `
+The user has already answered any clarifying questions. Do NOT ask anything. Reply with ONLY the parameters object, making sensible assumptions for anything still unspecified. Valid JSON only, no prose.`;
 
 function ok(res, allowed, origin, list) {
   res.setHeader("Access-Control-Allow-Origin", allowed ? origin : "*");
@@ -94,7 +99,7 @@ async function applyUsage(userId, remaining, used) {
   });
 }
 
-async function claudeParse(line, anthropicKey) {
+async function claudeParse(line, anthropicKey, canClarify) {
   const r = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
     headers: {
@@ -102,7 +107,7 @@ async function claudeParse(line, anthropicKey) {
       "x-api-key": anthropicKey,
       "anthropic-version": "2023-06-01",
     },
-    body: JSON.stringify({ model: AIMODEL, max_tokens: 500, system: SYS, messages: [{ role: "user", content: line }] }),
+    body: JSON.stringify({ model: AIMODEL, max_tokens: 500, system: canClarify ? SYS_ASK : SYS_FORCE, messages: [{ role: "user", content: line }] }),
   });
   const j = await r.json();
   if (!r.ok) throw new Error((j.error && j.error.message) || "parse failed");
@@ -233,9 +238,14 @@ export default async function handler(req, res) {
         return res.status(200).json({ error: "You're out of prospects. Grab a pack to keep sourcing.", remaining: 0 });
       if (!line || typeof line !== "string") return res.status(400).json({ error: "Describe who you want." });
 
+      const clarified = !!(req.body && req.body.clarified);
       let q;
-      try { q = await claudeParse(line, keys.anthropic); }
+      try { q = await claudeParse(line, keys.anthropic, !clarified); }
       catch (e) { return res.status(200).json({ error: "Couldn't read that request — try rephrasing.", remaining }); }
+
+      // vague request → ask a couple of sharp questions first (no credits spent)
+      if (!clarified && Array.isArray(q.clarify) && q.clarify.length)
+        return res.status(200).json({ clarify: q.clarify.slice(0, 3), remaining });
 
       const want = Math.min(remaining, MAX_PER_PULL, Math.max(1, Number(q.count) || 25));
       const excludeSet = new Set(Array.isArray(exclude) ? exclude : []);

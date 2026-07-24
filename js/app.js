@@ -1499,17 +1499,23 @@ function renderSourcingPricing(box){
   box.querySelectorAll("[data-buy]").forEach(b=>b.onclick=()=>srcCheckout(b.dataset.buy));
 }
 function srcLog(term,html,cls){const d=document.createElement("div");d.className="src-line"+(cls?" "+cls:"");d.innerHTML=html;term.append(d);term.scrollTop=term.scrollHeight;return d;}
-async function srcRun(term,line,box){
+async function srcRun(term,line,box,clarified){
   srcLog(term,`<span class="src-you">›</span> ${esc(line)}`);
-  const status=srcLog(term,`<span class="src-dim">sourcing…</span>`);
+  const status=srcLog(term,`<span class="src-dim">${clarified?"sourcing…":"reading your request…"}</span>`);
   const t=await srcToken();
-  if(!t){status.innerHTML=`<span class="src-err">Please log in to source.</span>`;return}
+  if(!t){status.innerHTML=`<span class="src-err">Please log in to source.</span>`;return null}
   const excl=LEADS.map(l=>((String(l.name||"").trim().split(/\s+/)[0]||"").toLowerCase()+"|"+String(l.co||"").trim().toLowerCase()));
   let d;
   try{const r=await fetch("/api/sourcing",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+t},
-      body:JSON.stringify({action:"source",line,exclude:excl})});
+      body:JSON.stringify({action:"source",line,exclude:excl,clarified:!!clarified})});
     d=await r.json().catch(()=>({}));if(d.error)throw new Error(d.error);}
-  catch(e){status.innerHTML=`<span class="src-err">${esc((e&&e.message)||e)}</span>`;return}
+  catch(e){status.innerHTML=`<span class="src-err">${esc((e&&e.message)||e)}</span>`;return null}
+  if(d.clarify&&d.clarify.length){
+    status.innerHTML=`<span class="src-ask">✦ A couple of things to nail this:</span>`;
+    d.clarify.forEach((qq,i)=>srcLog(term,`<span class="src-dim">   ${i+1}. ${esc(qq)}</span>`));
+    srcLog(term,`<span class="src-dim">answer above, or type “just source it”.</span>`);
+    return line;   /* caller: the next line typed is the answer to this request */
+  }
   const leads=d.leads||[];
   if(!leads.length){status.innerHTML=`<span class="src-dim">No matches — try broader targeting.</span>`;
     if(typeof d.remaining==="number"){const b=box.querySelector("#src-bal");if(b)b.textContent=d.remaining}return}
@@ -1520,6 +1526,7 @@ async function srcRun(term,line,box){
   srcCacheSet(d.remaining);
   buildSeglist();updateNav();
   if(d.remaining<=0)setTimeout(()=>renderSourcing(),1400);   /* out of prospects → back to packs */
+  return null;
 }
 function renderSourcingConsole(box,balance){
   box.innerHTML=`<div class="src-wrap">
@@ -1533,10 +1540,17 @@ function renderSourcingConsole(box,balance){
     <div class="src-fine">Sourced &amp; enriched by the Ascent engine · only fresh prospects use your balance. <a href="#" id="src-more">Need more?</a></div></div>`;
   const term=box.querySelector("#src-term"),inp=box.querySelector("#src-in"),go=box.querySelector("#src-go");
   inp.focus();let busy=false;
-  const run=async()=>{const line=inp.value.trim();if(!line||busy)return;
+  let pending=null;
+  const run=async()=>{const v=inp.value.trim();if(!v||busy)return;
     inp.value="";busy=true;go.disabled=true;go.textContent="…";
-    try{await srcRun(term,line,box);}catch(e){srcLog(term,`<span class="src-err">${esc((e&&e.message)||e)}</span>`);}
-    busy=false;go.disabled=false;go.textContent="Source →";inp.focus();};
+    try{
+      if(pending){const combined=pending+" — extra details: "+v;pending=null;await srcRun(term,combined,box,true);}
+      else{pending=await srcRun(term,v,box,false);}
+    }catch(e){srcLog(term,`<span class="src-err">${esc((e&&e.message)||e)}</span>`);}
+    busy=false;go.disabled=false;
+    go.textContent=pending?"Answer →":"Source →";
+    inp.placeholder=pending?"answer above, or type “just source it”…":"describe your ideal customer — we'll find them…";
+    inp.focus();};
   go.onclick=run;inp.addEventListener("keydown",e=>{if(e.key==="Enter")run();});
   const more=box.querySelector("#src-more");more&&(more.onclick=e=>{e.preventDefault();openSrcPacks();});
 }
