@@ -26,6 +26,25 @@ alter table sourcing_balance enable row level security;
 create policy "read own balance" on sourcing_balance
   for select using (auth.uid() = user_id);
 
+-- backfill everyone who already signed up (so they show in the table now)
+insert into sourcing_balance (user_id, email, name)
+select id, email, coalesce(raw_user_meta_data->>'full_name', raw_user_meta_data->>'name', '')
+from auth.users
+on conflict (user_id) do update set email = excluded.email, name = excluded.name;
+
+-- AUTO-ADD every new signup to the table, instantly
+create or replace function add_to_sourcing_balance()
+returns trigger language plpgsql security definer set search_path = public as $$
+begin
+  insert into sourcing_balance (user_id, email, name)
+  values (new.id, new.email, coalesce(new.raw_user_meta_data->>'full_name', new.raw_user_meta_data->>'name', ''))
+  on conflict (user_id) do nothing;
+  return new;
+end; $$;
+drop trigger if exists on_auth_user_created_sourcing on auth.users;
+create trigger on_auth_user_created_sourcing
+  after insert on auth.users for each row execute function add_to_sourcing_balance();
+
 -- owner key store: powers the in-app Admin panel (change Apollo/Claude keys with
 -- no redeploy). LOCKED to clients — only the service key (server) reads/writes it.
 create table if not exists owner_config (
