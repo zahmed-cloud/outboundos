@@ -1158,10 +1158,7 @@ function openSettings(){
     <div class="dsec"><div class="k" style="color:#C15F3C">${I("claude")} Claude</div>
       <input id="s_key" type="password" placeholder="Claude API key (sk-ant-…) — powers drafting and the coach" value="${esc(S.aiKey||"")}" style="width:100%" autocomplete="off">
       <textarea id="s_pitch" placeholder="What you sell, in your words — Claude only ever claims what you write here…" style="width:100%;min-height:64px;margin-top:8px;resize:vertical">${esc(S.aiPitch||"")}</textarea>
-      <div class="ai-note">The key lives in this browser only and is sent to Anthropic, nowhere else. Get one at console.anthropic.com.</div></div>
-    <div class="dsec"><div class="k" style="color:#6C4CF0">${I("apollo")} Apollo</div>
-      <input id="s_apollo" type="password" placeholder="Apollo API key — powers Find leads (your account, your credits)" value="${esc(S.apolloKey||"")}" style="width:100%" autocomplete="off">
-      <div class="ai-note">Stored in this browser only. With Claude, it pulls leads straight into a list. Get it in Apollo → Settings → API.</div></div>
+      <div class="ai-note">Your own key, for drafting your messages &amp; the coach. Lives in this browser only, sent to Anthropic. Get one at console.anthropic.com. (Sourcing runs on Ascent's engine — no key needed.)</div></div>
     <div class="fx-actions">
       <button class="big primary" id="s_save">SAVE</button>
       <button class="big" id="s_cancel">CANCEL</button>
@@ -1176,7 +1173,6 @@ function openSettings(){
     S.goal={rev:Math.max(0,+ov.querySelector("#s_rev").value||0)||10000,
       deal:Math.max(0,+ov.querySelector("#s_deal").value||0)||2000};
     S.aiKey=ov.querySelector("#s_key").value.trim();
-    S.apolloKey=ov.querySelector("#s_apollo").value.trim();
     S.aiPitch=ov.querySelector("#s_pitch").value.trim();
     save();_dirty=true;ov.remove();
     toast("<b>Settings saved.</b> Your targets, your rules.");
@@ -1521,7 +1517,7 @@ async function srcRun(term,line,box){
   const res=addSegmentLeads(name,leads);
   status.innerHTML=`<span class="src-ok">✓ ${res.count} prospects added to “${esc(name)}”.</span> <span class="src-dim">${d.remaining} left.</span>`;
   const bal=box.querySelector("#src-bal");if(bal)bal.textContent=d.remaining;
-  _srcCache=d.remaining;
+  srcCacheSet(d.remaining);
   buildSeglist();updateNav();
   if(d.remaining<=0)setTimeout(()=>renderSourcing(),1400);   /* out of prospects → back to packs */
 }
@@ -1534,7 +1530,7 @@ function renderSourcingConsole(box,balance){
       <div class="src-balance"><b id="src-bal">${balance}</b><span>prospects left</span></div></div>
     <div id="src-term" class="src-term"><div class="src-line src-dim">try:  “50 founders at software companies in London”   ·   “200 marketing directors in the US”</div></div>
     <div class="src-inp"><span>›</span><input id="src-in" placeholder="describe your ideal customer — we'll find them…" autocomplete="off"><button id="src-go" class="src-run">Source →</button></div>
-    <div class="src-fine">Sourced &amp; enriched by the Ascent engine · only fresh prospects use your balance. <a href="mailto:${SRC_EMAIL}?subject=More%20prospects">Need more?</a></div></div>`;
+    <div class="src-fine">Sourced &amp; enriched by the Ascent engine · only fresh prospects use your balance. <a href="#" id="src-more">Need more?</a></div></div>`;
   const term=box.querySelector("#src-term"),inp=box.querySelector("#src-in"),go=box.querySelector("#src-go");
   inp.focus();let busy=false;
   const run=async()=>{const line=inp.value.trim();if(!line||busy)return;
@@ -1542,6 +1538,23 @@ function renderSourcingConsole(box,balance){
     try{await srcRun(term,line,box);}catch(e){srcLog(term,`<span class="src-err">${esc((e&&e.message)||e)}</span>`);}
     busy=false;go.disabled=false;go.textContent="Source →";inp.focus();};
   go.onclick=run;inp.addEventListener("keydown",e=>{if(e.key==="Enter")run();});
+  const more=box.querySelector("#src-more");more&&(more.onclick=e=>{e.preventDefault();openSrcPacks();});
+}
+function openSrcPacks(){
+  if(document.getElementById("srcpacksov"))return;
+  const ov=document.createElement("div");ov.id="srcpacksov";
+  ov.style.cssText="position:fixed;inset:0;background:rgba(22,36,79,.34);backdrop-filter:blur(5px);z-index:47;display:flex;justify-content:center;align-items:flex-start;padding:6vh 16px;overflow-y:auto";
+  ov.innerHTML=`<div class="src-packs">
+    <div class="src-packs-head"><h2>Get more prospects</h2><button class="tbtn" id="srcpx">CLOSE</button></div>
+    <div class="src-tiers">${SRC_TIERS.map(srcTierCard).join("")}</div>
+    <div class="src-ent"><div><div class="src-ent-k">Enterprise &amp; custom volume</div>
+      <div class="src-ent-t">Need 1,000+, an ongoing weekly feed, or very specific targeting? We'll build a custom package.</div></div>
+      <a class="src-ent-btn" href="mailto:${SRC_EMAIL}?subject=Ascent%20Sourcing%20—%20custom%20volume">Talk to us →</a></div></div>`;
+  document.body.append(ov);
+  const close=()=>ov.remove();
+  ov.addEventListener("click",e=>{if(e.target===ov)close()});
+  ov.querySelector("#srcpx").onclick=close;
+  ov.querySelectorAll("[data-buy]").forEach(b=>b.onclick=()=>srcCheckout(b.dataset.buy));
 }
 function srcCheckout(tierKey){
   const priceId=SRC_PADDLE[tierKey];
@@ -1570,24 +1583,29 @@ function openSrcSoon(tier){
   ov.addEventListener("click",e=>{if(e.target===ov)close()});
   ov.querySelector("#srcsoonx").onclick=close;
 }
-let _srcCache=null;
+/* per-user balance cache in localStorage → returning buyers land on the console
+   instantly (no pricing-page flash); unknown users see a brief neutral loading */
+function srcCacheKey(){return "outbound_src_bal_"+((window.ascentAuth&&window.ascentAuth.uid&&window.ascentAuth.uid())||"");}
+function srcCacheGet(){try{const v=localStorage.getItem(srcCacheKey());return v===null?null:(+v||0);}catch(e){return null}}
+function srcCacheSet(v){try{localStorage.setItem(srcCacheKey(),String(v));}catch(e){}}
 async function renderSourcing(){
   const box=$("#v-sourcing");if(!box)return;
   if(!window.ascentAuth){
     box.innerHTML=`<div class="src-wrap"><div class="src-eyebrow"><span class="sm">✦</span> Ascent Sourcing</div>
       <h1 class="src-h1">Sourcing runs on your live account.</h1>
       <p class="src-lede">Open <b>os.getascent.co</b> and log in to buy prospect packs and source lists.</p></div>`;return;}
-  /* paint instantly: cached state if we have one, else the pricing packs (static) */
-  if(_srcCache!==null){if(_srcCache>0)renderSourcingConsole(box,_srcCache);else renderSourcingPricing(box);}
-  else renderSourcingPricing(box);
-  srcInjectAdmin(box);
-  /* refresh the real balance in the background and correct only if the state changed */
+  const cached=srcCacheGet();
+  if(cached!==null){                       /* we know their last state → paint the RIGHT page instantly */
+    if(cached>0)renderSourcingConsole(box,cached);else renderSourcingPricing(box);srcInjectAdmin(box);
+  }else{                                    /* unknown → neutral loading, never a wrong-page flash */
+    box.innerHTML=`<div class="src-wrap"><div class="src-loading"><span class="src-eyebrow"><span class="sm">✦</span> Ascent Sourcing</span><div class="src-dim" style="margin-top:14px">Loading…</div></div></div>`;
+  }
   const bal=await srcBalance();
-  if(bal===null){if(_srcCache===null)box.innerHTML=`<div class="src-wrap"><div class="src-eyebrow"><span class="sm">✦</span> Ascent Sourcing</div><h1 class="src-h1">Log in to start sourcing.</h1></div>`;return;}
-  _srcCache=bal;
-  const onConsole=!!box.querySelector("#src-term");
+  if(bal===null){if(cached===null)box.innerHTML=`<div class="src-wrap"><div class="src-eyebrow"><span class="sm">✦</span> Ascent Sourcing</div><h1 class="src-h1">Log in to start sourcing.</h1></div>`;return;}
+  srcCacheSet(bal);
+  const onConsole=!!box.querySelector("#src-term"),onPricing=!!box.querySelector(".src-tiers");
   if(bal>0&&!onConsole){renderSourcingConsole(box,bal);srcInjectAdmin(box);}
-  else if(bal<=0&&onConsole){renderSourcingPricing(box);srcInjectAdmin(box);}
+  else if(bal<=0&&!onPricing){renderSourcingPricing(box);srcInjectAdmin(box);}
   else{const b=box.querySelector("#src-bal");if(b)b.textContent=bal;}
 }
 async function srcAdminStatus(){
