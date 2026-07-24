@@ -1,6 +1,6 @@
 # Ascent Outbound OS
 
-> A free operating system for winning clients on LinkedIn. It tells you exactly
+> A free operating system for getting clients on LinkedIn. It tells you exactly
 > what to do today, and every number it shows is a real logged action. Built by
 > Jamil Ahmed, founder of Ascent (https://getascent.co), who uses it daily to
 > win Ascent's own clients.
