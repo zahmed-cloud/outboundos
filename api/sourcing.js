@@ -146,29 +146,46 @@ function bestLinkedIn(p) {
 }
 
 async function sourceLeads(filters, want, excludeSet, apolloKey) {
-  // 1) search (teaser) — paginate to gather enough survivors after coarse dedupe
-  const raw = [];
-  let page = 1;
-  while (raw.length < want * 1.5 && page <= 12) {
-    const r = await fetch("https://api.apollo.io/api/v1/mixed_people/api_search", {
-      method: "POST", headers: apolloHeaders(apolloKey),
-      body: JSON.stringify({ ...filters, per_page: 100, page }),
-    });
-    const j = await r.json().catch(() => ({}));
-    if (!r.ok) throw new Error((j && (j.error || j.message)) || "Apollo search failed");
-    const batch = (j.people || []).map(shallow);
-    if (!batch.length) break;
-    for (const p of batch) {
-      const co = p.organization_name || "";
-      if (excludeSet.has(coarseKey(p.first_name || p.name, co))) continue; // don't pay to enrich known people
-      raw.push(p);
-      if (raw.length >= want) break;
+  // 1) TRY HARD to hit `want`: search the precise target first, then progressively
+  // broaden (dropping the least-important filters) — keeping WHO (titles) and WHERE
+  // (person location) longest — until we've collected enough fresh people.
+  const clean = (f) => { const o = {}; for (const k in f) { const v = f[k]; if (v == null) continue; if (Array.isArray(v) && !v.length) continue; o[k] = v; } return o; };
+  const steps = [
+    (f) => f,                                                    // exact target
+    (f) => ({ ...f, organization_num_employees_ranges: null }),  // drop company size
+    (f) => ({ ...f, organization_locations: null }),             // drop company HQ (keep the person's location)
+    (f) => ({ ...f, person_seniorities: null }),                 // drop seniority (keep the titles)
+    (f) => ({ ...f, q_keywords: null }),                         // drop extra keywords
+  ];
+  const seen = new Set(), pick = [];
+  for (let s = 0; s < steps.length; s++) {
+    if (pick.length >= want) break;
+    const f = clean(steps[s]({ ...filters }));
+    if (!Object.keys(f).length) continue;                        // never search with zero filters
+    let page = 1;
+    while (pick.length < want && page <= 15) {
+      let j;
+      try {
+        const r = await fetch("https://api.apollo.io/api/v1/mixed_people/api_search", {
+          method: "POST", headers: apolloHeaders(apolloKey),
+          body: JSON.stringify({ ...f, per_page: 100, page }),
+        });
+        j = await r.json().catch(() => ({}));
+        if (!r.ok) throw new Error((j && (j.error || j.message)) || "Apollo search failed");
+      } catch (e) { if (!pick.length && s === 0 && page === 1) throw e; break; }
+      const batch = (j.people || []).map(shallow);
+      if (!batch.length) break;
+      for (const p of batch) {
+        const key = coarseKey(p.first_name || p.name, p.organization_name);
+        if (excludeSet.has(key) || seen.has(key)) continue;      // skip known + already-collected
+        seen.add(key); pick.push(p);
+        if (pick.length >= want) break;
+      }
+      const total = (j.pagination && j.pagination.total_entries) || null;
+      if (batch.length < 100 || (total && page * 100 >= total)) break;
+      page++;
     }
-    const total = (j.pagination && j.pagination.total_entries) || null;
-    if (batch.length < 100 || (total && page * 100 >= total)) break;
-    page++;
   }
-  const pick = raw.slice(0, want);
   if (!pick.length) return [];
 
   // 2) enrich (unlock LinkedIn + full name + email) in batches of 10

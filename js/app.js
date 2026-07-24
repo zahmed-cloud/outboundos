@@ -1525,7 +1525,7 @@ async function srcRun(term,line,box,clarified){
   if(typeof d.asked==="number"&&d.delivered<d.asked){
     why=d.remaining<=0
       ?` <span class="src-dim">(you asked for ${d.asked}, that used your last prospects)</span>`
-      :` <span class="src-dim">(${d.delivered} of ${d.asked} — that's every fresh match for this exact target; go a bit broader for more)</span>`;
+      :` <span class="src-dim">(${d.delivered} of ${d.asked} — that's all we could find for this, even broadening the search)</span>`;
   }
   status.innerHTML=`<span class="src-ok">✓ ${res.count} prospects added to “${esc(name)}”.</span> <span class="src-dim">${d.remaining} left.</span>${why}`;
   const bal=box.querySelector("#src-bal");if(bal)bal.textContent=d.remaining;
