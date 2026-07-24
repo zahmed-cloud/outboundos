@@ -1560,6 +1560,56 @@ async function renderSourcing(){
   if(bal===null){box.innerHTML=`<div class="src-wrap"><div class="src-eyebrow"><span class="sm">✦</span> Ascent Sourcing</div>
     <h1 class="src-h1">Log in to start sourcing.</h1></div>`;return;}
   if(bal>0)renderSourcingConsole(box,bal);else renderSourcingPricing(box);
+  srcInjectAdmin(box);
+}
+async function srcAdminStatus(){
+  const t=await srcToken();if(!t)return null;
+  try{const r=await fetch("/api/admin",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+t},body:JSON.stringify({action:"status"})});
+    if(r.status===403||r.status===401)return {isOwner:false};
+    const d=await r.json().catch(()=>({}));return d;}catch(e){return null}
+}
+function srcInjectAdmin(box){
+  if(!window.ascentAuth)return;
+  srcAdminStatus().then(st=>{
+    if(!st||!st.isOwner)return;
+    const wrap=box.querySelector(".src-wrap");if(!wrap||wrap.querySelector(".src-admin-open"))return;
+    wrap.style.position="relative";
+    const b=document.createElement("button");b.className="src-admin-open";b.innerHTML="⚙ Keys";
+    b.onclick=()=>openSourcingAdmin(st);
+    wrap.appendChild(b);
+  });
+}
+function openSourcingAdmin(st){
+  if(document.getElementById("srcadmov"))return;
+  const ov=document.createElement("div");ov.id="srcadmov";
+  ov.style.cssText="position:fixed;inset:0;background:rgba(60,60,70,.28);backdrop-filter:blur(4px);z-index:47;display:flex;justify-content:center;align-items:flex-start;padding:11vh 16px";
+  const badge=on=>on?'<span style="color:var(--good)">set ✓</span>':'<span style="color:var(--red)">not set</span>';
+  ov.innerHTML=`<div class="fx-card" style="max-width:460px;width:100%">
+    <div style="display:flex;justify-content:space-between;align-items:baseline">
+      <h2 style="font-family:var(--serif);font-size:20px">Sourcing keys · admin</h2>
+      <button class="tbtn" id="sax">CLOSE</button></div>
+    <div class="fx-sub">Only you can see this. Keys are stored server-side and never shown back — paste a new one to change it. Takes effect instantly, no redeploy.</div>
+    <div class="dsec"><div class="k">Apollo API key · ${badge(st.apolloSet)}</div>
+      <input id="adm_apollo" type="password" placeholder="${st.apolloSet?'•••• paste to change':'paste your Apollo key'}" style="width:100%" autocomplete="off"></div>
+    <div class="dsec"><div class="k">Claude API key · ${badge(st.anthropicSet)}</div>
+      <input id="adm_claude" type="password" placeholder="${st.anthropicSet?'•••• paste to change':'paste your Claude key'}" style="width:100%" autocomplete="off"></div>
+    <div id="adm_msg" class="ai-note" style="display:none"></div>
+    <div class="fx-actions"><button class="big primary" id="adm_save">SAVE KEYS</button></div></div>`;
+  document.body.append(ov);
+  const close=()=>ov.remove();
+  ov.addEventListener("click",e=>{if(e.target===ov)close()});
+  ov.querySelector("#sax").onclick=close;
+  ov.querySelector("#adm_save").onclick=async()=>{
+    const ap=ov.querySelector("#adm_apollo").value.trim(),cl=ov.querySelector("#adm_claude").value.trim();
+    const msg=ov.querySelector("#adm_msg");
+    if(!ap&&!cl){msg.textContent="Paste a key first.";msg.style.display="block";return}
+    const t=await srcToken();
+    try{const r=await fetch("/api/admin",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+t},
+        body:JSON.stringify({action:"save",apollo_key:ap,anthropic_key:cl})});
+      const d=await r.json().catch(()=>({}));if(!r.ok||d.error)throw new Error(d.error||"save failed");
+      close();toast("<b>Keys saved.</b> Sourcing is live.");renderSourcing();}
+    catch(e){msg.textContent=(e&&e.message)||"Save failed.";msg.style.display="block";}
+  };
 }
 /* ---------- MEETING PREP: everything you know, one screen ---------- */
 function openPrep(id){

@@ -17,21 +17,34 @@ alter table sourcing_balance enable row level security;
 -- users may READ their own balance; only the service key (server) ever writes it
 create policy "read own balance" on sourcing_balance
   for select using (auth.uid() = user_id);
+
+-- owner key store: powers the in-app Admin panel (change Apollo/Claude keys with
+-- no redeploy). LOCKED to clients — only the service key (server) reads/writes it.
+create table if not exists owner_config (
+  id int primary key default 1,
+  apollo_key text,
+  anthropic_key text,
+  updated_at timestamptz default now()
+);
+alter table owner_config enable row level security;   -- no policies = clients get nothing
 ```
 
 ## 2. Vercel env vars (Settings → Environment Variables, then redeploy)
 | Key | Value |
 |---|---|
-| `OWNER_APOLLO_KEY` | your Apollo API key (the account whose credits are spent) |
-| `OWNER_ANTHROPIC_KEY` | your Anthropic API key (parses each request) |
+| `OWNER_EMAIL` | the email you log into the tool with — unlocks the in-app Admin panel |
+| `OWNER_APOLLO_KEY` | *(optional)* Apollo key fallback; the Admin panel overrides this |
+| `OWNER_ANTHROPIC_KEY` | *(optional)* Claude key fallback; the Admin panel overrides this |
 | `PADDLE_WEBHOOK_SECRET` | signing secret from Paddle → Notifications |
 | `PADDLE_PRICE_MAP` | JSON: `{"pri_starter":100,"pri_growth":250,"pri_scale":600}` |
 | `SUPABASE_URL`, `SUPABASE_SERVICE_KEY` | already set |
 | `SOURCING_ALLOWED_ORIGIN` | *(optional)* `https://os.getascent.co` to lock the endpoint |
 
-Sourcing stays OFF (a friendly "not switched on yet" message) until `OWNER_APOLLO_KEY`
-and `OWNER_ANTHROPIC_KEY` are set. You can swap those keys anytime — change the env var,
-redeploy, done.
+### Admin panel (recommended way to manage keys)
+Set `OWNER_EMAIL`, log into the tool with that account, open **Sourcing**, and click
+**⚙ Keys** (only you see it). Paste your Apollo + Claude keys → Save → live instantly,
+no redeploy. The panel never shows a key back — only "set ✓". Change them anytime from
+there. `OWNER_APOLLO_KEY` / `OWNER_ANTHROPIC_KEY` env vars are just an optional fallback.
 
 ## 3. Paddle
 1. Create 3 prices (Starter / Growth / Scale) in Paddle.

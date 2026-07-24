@@ -50,6 +50,23 @@ async function getBalance(userId) {
   const rows = await r.json().catch(() => []);
   return rows && rows[0] ? Number(rows[0].prospects_remaining) || 0 : 0;
 }
+// Live keys: read from the owner_config store (set via the in-app admin panel),
+// falling back to env vars. Lets the owner swap keys instantly, no redeploy.
+async function getKeys() {
+  try {
+    const r = await fetch(`${process.env.SUPABASE_URL}/rest/v1/owner_config?id=eq.1&select=apollo_key,anthropic_key`, {
+      headers: { apikey: process.env.SUPABASE_SERVICE_KEY, Authorization: `Bearer ${process.env.SUPABASE_SERVICE_KEY}` },
+    });
+    const rows = await r.json().catch(() => []);
+    const cfg = (rows && rows[0]) || {};
+    return {
+      apollo: cfg.apollo_key || process.env.OWNER_APOLLO_KEY || "",
+      anthropic: cfg.anthropic_key || process.env.OWNER_ANTHROPIC_KEY || "",
+    };
+  } catch (_) {
+    return { apollo: process.env.OWNER_APOLLO_KEY || "", anthropic: process.env.OWNER_ANTHROPIC_KEY || "" };
+  }
+}
 async function setBalance(userId, value) {
   await fetch(`${process.env.SUPABASE_URL}/rest/v1/sourcing_balance?user_id=eq.${userId}`, {
     method: "PATCH",
@@ -63,12 +80,12 @@ async function setBalance(userId, value) {
   });
 }
 
-async function claudeParse(line) {
+async function claudeParse(line, anthropicKey) {
   const r = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
     headers: {
       "content-type": "application/json",
-      "x-api-key": process.env.OWNER_ANTHROPIC_KEY,
+      "x-api-key": anthropicKey,
       "anthropic-version": "2023-06-01",
     },
     body: JSON.stringify({ model: AIMODEL, max_tokens: 500, system: SYS, messages: [{ role: "user", content: line }] }),
@@ -81,10 +98,10 @@ async function claudeParse(line) {
   return q;
 }
 
-const apolloHeaders = () => ({
+const apolloHeaders = (key) => ({
   "Content-Type": "application/json",
   "Cache-Control": "no-cache",
-  "X-Api-Key": process.env.OWNER_APOLLO_KEY,
+  "X-Api-Key": key,
 });
 function filtersOf(q) {
   const b = {};
@@ -109,13 +126,13 @@ function bestLinkedIn(p) {
   return /linkedin\.com\//i.test(u) ? u : "";
 }
 
-async function sourceLeads(filters, want, excludeSet) {
+async function sourceLeads(filters, want, excludeSet, apolloKey) {
   // 1) search (teaser) — paginate to gather enough survivors after coarse dedupe
   const raw = [];
   let page = 1;
   while (raw.length < want * 1.5 && page <= 12) {
     const r = await fetch("https://api.apollo.io/api/v1/mixed_people/api_search", {
-      method: "POST", headers: apolloHeaders(),
+      method: "POST", headers: apolloHeaders(apolloKey),
       body: JSON.stringify({ ...filters, per_page: 100, page }),
     });
     const j = await r.json().catch(() => ({}));
@@ -142,7 +159,7 @@ async function sourceLeads(filters, want, excludeSet) {
       organization_name: p.organization_name, linkedin_url: p.linkedin_url, title: p.title,
     }));
     const r = await fetch("https://api.apollo.io/api/v1/people/bulk_match", {
-      method: "POST", headers: apolloHeaders(),
+      method: "POST", headers: apolloHeaders(apolloKey),
       body: JSON.stringify({ details, reveal_personal_emails: true }),
     });
     const j = await r.json().catch(() => ({}));
@@ -182,7 +199,8 @@ export default async function handler(req, res) {
   if (allowed && !okOrigin) return res.status(403).json({ error: "origin not allowed" });
 
   try {
-    if (!process.env.OWNER_APOLLO_KEY || !process.env.OWNER_ANTHROPIC_KEY)
+    const keys = await getKeys();
+    if (!keys.apollo || !keys.anthropic)
       return res.status(200).json({ error: "Sourcing isn't switched on yet." });
 
     const token = String(req.headers.authorization || "").replace(/^Bearer\s+/i, "");
@@ -201,12 +219,12 @@ export default async function handler(req, res) {
       if (!line || typeof line !== "string") return res.status(400).json({ error: "Describe who you want." });
 
       let q;
-      try { q = await claudeParse(line); }
+      try { q = await claudeParse(line, keys.anthropic); }
       catch (e) { return res.status(200).json({ error: "Couldn't read that request — try rephrasing.", remaining }); }
 
       const want = Math.min(remaining, MAX_PER_PULL, Math.max(1, Number(q.count) || 25));
       const excludeSet = new Set(Array.isArray(exclude) ? exclude : []);
-      const leads = await sourceLeads(filtersOf(q), want, excludeSet);
+      const leads = await sourceLeads(filtersOf(q), want, excludeSet, keys.apollo);
       const delivered = leads.length;
       if (delivered > 0) { remaining = Math.max(0, remaining - delivered); await setBalance(user.id, remaining); }
 
