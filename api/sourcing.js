@@ -247,13 +247,14 @@ export default async function handler(req, res) {
       if (!clarified && Array.isArray(q.clarify) && q.clarify.length)
         return res.status(200).json({ clarify: q.clarify.slice(0, 3), remaining });
 
-      const want = Math.min(remaining, MAX_PER_PULL, Math.max(1, Number(q.count) || 25));
+      const asked = Math.max(1, Math.min(MAX_PER_PULL, Number(q.count) || 25));
+      const want = Math.min(remaining, asked);
       const excludeSet = new Set(Array.isArray(exclude) ? exclude : []);
       const leads = await sourceLeads(filtersOf(q), want, excludeSet, keys.apollo);
       const delivered = leads.length;
       if (delivered > 0) { remaining = Math.max(0, remaining - delivered); await applyUsage(user.id, remaining, row.used + delivered); }
 
-      return res.status(200).json({ leads, delivered, remaining, segment_name: String(q.segment_name || line).slice(0, 44) });
+      return res.status(200).json({ leads, delivered, asked, remaining, segment_name: String(q.segment_name || line).slice(0, 44) });
     }
 
     return res.status(400).json({ error: "unknown action" });

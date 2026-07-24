@@ -1521,7 +1521,13 @@ async function srcRun(term,line,box,clarified){
     if(typeof d.remaining==="number"){const b=box.querySelector("#src-bal");if(b)b.textContent=d.remaining}return}
   const name=String(d.segment_name||line);
   const res=addSegmentLeads(name,leads);
-  status.innerHTML=`<span class="src-ok">✓ ${res.count} prospects added to “${esc(name)}”.</span> <span class="src-dim">${d.remaining} left.</span>`;
+  let why="";
+  if(typeof d.asked==="number"&&d.delivered<d.asked){
+    why=d.remaining<=0
+      ?` <span class="src-dim">(you asked for ${d.asked}, that used your last prospects)</span>`
+      :` <span class="src-dim">(${d.delivered} of ${d.asked} — that's every fresh match for this exact target; go a bit broader for more)</span>`;
+  }
+  status.innerHTML=`<span class="src-ok">✓ ${res.count} prospects added to “${esc(name)}”.</span> <span class="src-dim">${d.remaining} left.</span>${why}`;
   const bal=box.querySelector("#src-bal");if(bal)bal.textContent=d.remaining;
   srcCacheSet(d.remaining);
   buildSeglist();updateNav();
