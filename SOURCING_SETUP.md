@@ -29,6 +29,38 @@ create table if not exists owner_config (
 alter table owner_config enable row level security;   -- no policies = clients get nothing
 ```
 
+## 1b. Manual top-up helper (run once — lets you grant prospects by email)
+When someone pays you manually, you top up their balance with ONE line. First create
+this function (SQL editor, run once):
+```sql
+create or replace function grant_prospects(user_email text, add_count int)
+returns int language plpgsql security definer set search_path = public as $$
+declare uid uuid; newbal int;
+begin
+  select id into uid from auth.users where lower(email) = lower(trim(user_email)) limit 1;
+  if uid is null then raise exception 'No account found for email %', user_email; end if;
+  insert into sourcing_balance (user_id, prospects_remaining) values (uid, add_count)
+    on conflict (user_id) do update
+      set prospects_remaining = sourcing_balance.prospects_remaining + add_count, updated_at = now();
+  select prospects_remaining into newbal from sourcing_balance where user_id = uid;
+  return newbal;
+end; $$;
+revoke execute on function grant_prospects(text, int) from anon, authenticated;  -- keep it private
+```
+Then, whenever anyone pays, run **one line** in the SQL editor:
+```sql
+select grant_prospects('customer@email.com', 250);   -- 100 Starter · 250 Growth · 600 Scale · any number
+```
+It adds that many prospects to their account and returns the new total. They refresh
+Sourcing and see the balance, ready to use. (They must have signed up with that email
+first — no account = nothing to top up.)
+
+Check anyone's balance:
+```sql
+select u.email, b.prospects_remaining from sourcing_balance b
+  join auth.users u on u.id = b.user_id where u.email = 'customer@email.com';
+```
+
 ## 2. Vercel env vars (Settings → Environment Variables, then redeploy)
 | Key | Value |
 |---|---|
