@@ -42,13 +42,27 @@ async function verifyUser(token) {
   const u = await r.json().catch(() => null);
   return u && u.id ? u : null;
 }
-async function getBalance(userId) {
+// make sure the user has a row (with their name + email) so the owner can see and
+// manage them right in the Supabase table editor
+async function ensureRow(user) {
+  const name = (user.user_metadata && (user.user_metadata.full_name || user.user_metadata.name)) || "";
+  await fetch(`${process.env.SUPABASE_URL}/rest/v1/sourcing_balance`, {
+    method: "POST",
+    headers: {
+      apikey: process.env.SUPABASE_SERVICE_KEY, Authorization: `Bearer ${process.env.SUPABASE_SERVICE_KEY}`,
+      "Content-Type": "application/json", Prefer: "resolution=merge-duplicates,return=minimal",
+    },
+    body: JSON.stringify({ user_id: user.id, email: user.email || "", name }),
+  });
+}
+async function getRow(userId) {
   const r = await fetch(
-    `${process.env.SUPABASE_URL}/rest/v1/sourcing_balance?user_id=eq.${userId}&select=prospects_remaining`,
+    `${process.env.SUPABASE_URL}/rest/v1/sourcing_balance?user_id=eq.${userId}&select=prospects_remaining,prospects_used`,
     { headers: { apikey: process.env.SUPABASE_SERVICE_KEY, Authorization: `Bearer ${process.env.SUPABASE_SERVICE_KEY}` } }
   );
   const rows = await r.json().catch(() => []);
-  return rows && rows[0] ? Number(rows[0].prospects_remaining) || 0 : 0;
+  const row = (rows && rows[0]) || {};
+  return { remaining: Number(row.prospects_remaining) || 0, used: Number(row.prospects_used) || 0 };
 }
 // Live keys: read from the owner_config store (set via the in-app admin panel),
 // falling back to env vars. Lets the owner swap keys instantly, no redeploy.
@@ -67,7 +81,7 @@ async function getKeys() {
     return { apollo: process.env.OWNER_APOLLO_KEY || "", anthropic: process.env.OWNER_ANTHROPIC_KEY || "" };
   }
 }
-async function setBalance(userId, value) {
+async function applyUsage(userId, remaining, used) {
   await fetch(`${process.env.SUPABASE_URL}/rest/v1/sourcing_balance?user_id=eq.${userId}`, {
     method: "PATCH",
     headers: {
@@ -76,7 +90,7 @@ async function setBalance(userId, value) {
       "Content-Type": "application/json",
       Prefer: "return=minimal",
     },
-    body: JSON.stringify({ prospects_remaining: value, updated_at: new Date().toISOString() }),
+    body: JSON.stringify({ prospects_remaining: remaining, prospects_used: used, updated_at: new Date().toISOString() }),
   });
 }
 
@@ -209,7 +223,9 @@ export default async function handler(req, res) {
     if (!user) return res.status(401).json({ error: "Session expired — log in again." });
 
     const { action, line, exclude } = req.body || {};
-    let remaining = await getBalance(user.id);
+    await ensureRow(user);              // show them in the owner's table with name + email
+    const row = await getRow(user.id);
+    let remaining = row.remaining;
 
     if (action === "balance") return res.status(200).json({ remaining });
 
@@ -226,7 +242,7 @@ export default async function handler(req, res) {
       const excludeSet = new Set(Array.isArray(exclude) ? exclude : []);
       const leads = await sourceLeads(filtersOf(q), want, excludeSet, keys.apollo);
       const delivered = leads.length;
-      if (delivered > 0) { remaining = Math.max(0, remaining - delivered); await setBalance(user.id, remaining); }
+      if (delivered > 0) { remaining = Math.max(0, remaining - delivered); await applyUsage(user.id, remaining, row.used + delivered); }
 
       return res.status(200).json({ leads, delivered, remaining, segment_name: String(q.segment_name || line).slice(0, 44) });
     }

@@ -10,9 +10,17 @@ Sourcing view in `js/app.js` (`renderSourcing`), sidebar tile in `app.html`.
 ```sql
 create table if not exists sourcing_balance (
   user_id uuid primary key references auth.users(id) on delete cascade,
-  prospects_remaining int not null default 0,
+  email text,                        -- shown in the table editor so you know who is who
+  name text,
+  prospects_remaining int not null default 0,   -- edit THIS box to top someone up
+  prospects_used int not null default 0,        -- how many they've sourced so far
   updated_at timestamptz default now()
 );
+-- if the table already existed, add the new columns:
+alter table sourcing_balance add column if not exists email text;
+alter table sourcing_balance add column if not exists name text;
+alter table sourcing_balance add column if not exists prospects_used int not null default 0;
+
 alter table sourcing_balance enable row level security;
 -- users may READ their own balance; only the service key (server) ever writes it
 create policy "read own balance" on sourcing_balance
@@ -29,37 +37,26 @@ create table if not exists owner_config (
 alter table owner_config enable row level security;   -- no policies = clients get nothing
 ```
 
-## 1b. Manual top-up helper (run once — lets you grant prospects by email)
-When someone pays you manually, you top up their balance with ONE line. First create
-this function (SQL editor, run once):
-```sql
-create or replace function grant_prospects(user_email text, add_count int)
-returns int language plpgsql security definer set search_path = public as $$
-declare uid uuid; newbal int;
-begin
-  select id into uid from auth.users where lower(email) = lower(trim(user_email)) limit 1;
-  if uid is null then raise exception 'No account found for email %', user_email; end if;
-  insert into sourcing_balance (user_id, prospects_remaining) values (uid, add_count)
-    on conflict (user_id) do update
-      set prospects_remaining = sourcing_balance.prospects_remaining + add_count, updated_at = now();
-  select prospects_remaining into newbal from sourcing_balance where user_id = uid;
-  return newbal;
-end; $$;
-revoke execute on function grant_prospects(text, int) from anon, authenticated;  -- keep it private
-```
-Then, whenever anyone pays, run **one line** in the SQL editor:
-```sql
-select grant_prospects('customer@email.com', 250);   -- 100 Starter · 250 Growth · 600 Scale · any number
-```
-It adds that many prospects to their account and returns the new total. They refresh
-Sourcing and see the balance, ready to use. (They must have signed up with that email
-first — no account = nothing to top up.)
+## 1b. Managing prospects visually (no SQL — just edit the table)
+Everyone who signs up and opens **Sourcing** automatically gets a row in the
+`sourcing_balance` table, filled with their **name + email**. To manage them:
 
-Check anyone's balance:
-```sql
-select u.email, b.prospects_remaining from sourcing_balance b
-  join auth.users u on u.id = b.user_id where u.email = 'customer@email.com';
-```
+**Supabase → Table Editor → `sourcing_balance`.** You'll see a grid like:
+
+| name | email | prospects_remaining | prospects_used |
+|---|---|---|---|
+| Jane Doe | jane@acme.com | 0 | 0 |
+| Sam Ito | sam@reppy.io | 118 | 132 |
+
+- **To top someone up:** click their **`prospects_remaining`** cell, type the number
+  (e.g. `250` for Growth, or any number), press Enter. Done — they refresh Sourcing
+  and it's there. Type the total you want them to have.
+- **To see usage:** `prospects_used` shows how many they've already sourced, so you
+  know who to upsell.
+- **Adding more later:** they have `118` left, buy `250` more → set the cell to `368`.
+
+That's it — a spreadsheet you edit by hand. (They must have signed up with that email
+and opened Sourcing once for their row to appear.)
 
 ## 2. Vercel env vars (Settings → Environment Variables, then redeploy)
 | Key | Value |
