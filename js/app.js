@@ -1521,6 +1521,7 @@ async function srcRun(term,line,box){
   const res=addSegmentLeads(name,leads);
   status.innerHTML=`<span class="src-ok">✓ ${res.count} prospects added to “${esc(name)}”.</span> <span class="src-dim">${d.remaining} left.</span>`;
   const bal=box.querySelector("#src-bal");if(bal)bal.textContent=d.remaining;
+  _srcCache=d.remaining;
   buildSeglist();updateNav();
   if(d.remaining<=0)setTimeout(()=>renderSourcing(),1400);   /* out of prospects → back to packs */
 }
@@ -1544,23 +1545,50 @@ function renderSourcingConsole(box,balance){
 }
 function srcCheckout(tierKey){
   const priceId=SRC_PADDLE[tierKey];
-  if(typeof Paddle==="undefined"||!priceId){toast("<b>Checkout opens soon.</b> Payment isn't wired up yet.");return;}
-  const uid=window.ascentAuth&&window.ascentAuth.uid&&window.ascentAuth.uid();
-  Paddle.Checkout.open({items:[{priceId,quantity:1}],customData:{user_id:uid,tier:tierKey},
-    customer:{email:(window.ascentAuth&&window.ascentAuth.email())||""}});
+  if(typeof Paddle!=="undefined"&&priceId){
+    const uid=window.ascentAuth&&window.ascentAuth.uid&&window.ascentAuth.uid();
+    Paddle.Checkout.open({items:[{priceId,quantity:1}],customData:{user_id:uid,tier:tierKey},
+      customer:{email:(window.ascentAuth&&window.ascentAuth.email())||""}});
+    return;
+  }
+  openSrcSoon(SRC_TIERS.find(t=>t.key===tierKey)||{});
 }
+function openSrcSoon(tier){
+  if(document.getElementById("srcsoonov"))return;
+  const ov=document.createElement("div");ov.id="srcsoonov";
+  ov.style.cssText="position:fixed;inset:0;background:rgba(22,36,79,.32);backdrop-filter:blur(5px);z-index:47;display:flex;justify-content:center;align-items:center;padding:16px";
+  const subj=encodeURIComponent("Ascent Sourcing — "+(tier.name||"")+" pack");
+  const body=encodeURIComponent("Hi, I'd like the "+(tier.name||"")+" pack"+(tier.count?" ("+tier.count+" prospects)":"")+". How do I pay?");
+  ov.innerHTML=`<div class="src-soon">
+    <div class="src-soon-mark">✦</div>
+    <h2>Checkout opens in a moment</h2>
+    <p>We're putting the final touches on payments. Want your ${tier.count?tier.count+" ":""}prospects <b>today</b>? Email us and we'll set you up right now.</p>
+    <a class="src-soon-btn" href="mailto:${SRC_EMAIL}?subject=${subj}&body=${body}">Email us to get started →</a>
+    <button class="src-soon-close" id="srcsoonx">Maybe later</button></div>`;
+  document.body.append(ov);
+  const close=()=>ov.remove();
+  ov.addEventListener("click",e=>{if(e.target===ov)close()});
+  ov.querySelector("#srcsoonx").onclick=close;
+}
+let _srcCache=null;
 async function renderSourcing(){
   const box=$("#v-sourcing");if(!box)return;
-  box.innerHTML=`<div class="src-wrap"><div class="src-dim" style="padding:40px 0">Loading Sourcing…</div></div>`;
   if(!window.ascentAuth){
     box.innerHTML=`<div class="src-wrap"><div class="src-eyebrow"><span class="sm">✦</span> Ascent Sourcing</div>
       <h1 class="src-h1">Sourcing runs on your live account.</h1>
       <p class="src-lede">Open <b>os.getascent.co</b> and log in to buy prospect packs and source lists.</p></div>`;return;}
-  const bal=await srcBalance();
-  if(bal===null){box.innerHTML=`<div class="src-wrap"><div class="src-eyebrow"><span class="sm">✦</span> Ascent Sourcing</div>
-    <h1 class="src-h1">Log in to start sourcing.</h1></div>`;return;}
-  if(bal>0)renderSourcingConsole(box,bal);else renderSourcingPricing(box);
+  /* paint instantly: cached state if we have one, else the pricing packs (static) */
+  if(_srcCache!==null){if(_srcCache>0)renderSourcingConsole(box,_srcCache);else renderSourcingPricing(box);}
+  else renderSourcingPricing(box);
   srcInjectAdmin(box);
+  /* refresh the real balance in the background and correct only if the state changed */
+  const bal=await srcBalance();
+  if(bal===null){if(_srcCache===null)box.innerHTML=`<div class="src-wrap"><div class="src-eyebrow"><span class="sm">✦</span> Ascent Sourcing</div><h1 class="src-h1">Log in to start sourcing.</h1></div>`;return;}
+  _srcCache=bal;
+  const onConsole=!!box.querySelector("#src-term");
+  if(bal>0&&!onConsole){renderSourcingConsole(box,bal);srcInjectAdmin(box);}
+  else if(bal<=0&&onConsole){renderSourcingPricing(box);srcInjectAdmin(box);}
+  else{const b=box.querySelector("#src-bal");if(b)b.textContent=bal;}
 }
 async function srcAdminStatus(){
   const t=await srcToken();if(!t)return null;
