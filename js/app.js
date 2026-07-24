@@ -1492,7 +1492,7 @@ function srcTierCard(t){
     <button class="src-cta" data-buy="${t.key}">Get ${t.count} prospects</button></div>`;
 }
 function renderSourcingPricing(box){
-  box.innerHTML=`<div class="src-wrap">
+  box.innerHTML=`<div class="src-wrap src-pricing">
     <div class="src-eyebrow"><span class="sm">✦</span> Ascent Sourcing</div>
     <h1 class="src-h1">Real prospects, matched to you and ready to work.</h1>
     <p class="src-lede">Full profile, LinkedIn and verified email on every one — delivered straight into your pipeline. Pick a pack to get started.</p>

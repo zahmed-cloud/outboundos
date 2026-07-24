@@ -678,25 +678,25 @@ tr.flash td{animation:rowflash 1.1s ease}
 .src-eyebrow .sm{color:#b98a3e}
 .src-h1{font-family:var(--serif);font-size:27px;line-height:1.08;color:#16244f;letter-spacing:-.8px;font-weight:700}
 .src-lede{margin-top:7px;font-size:14.5px;color:#3a4356;max-width:56ch}
-.src-tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}
-.src-tier{background:#fff;border:1px solid #e3e8f1;border-radius:16px;padding:16px 18px;display:flex;flex-direction:column;position:relative}
+.src-tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:22px}
+.src-tier{background:#fff;border:1px solid #e3e8f1;border-radius:16px;padding:20px 20px;display:flex;flex-direction:column;position:relative}
 .src-tier.pop{background:linear-gradient(160deg,#1d3068,#16244f);border-color:transparent;color:#fff;box-shadow:0 24px 50px -22px rgba(22,36,79,.4);transform:translateY(-6px)}
 .src-badge{position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:#d7ab63;color:#1c130a;font-size:10.5px;font-weight:800;letter-spacing:.8px;padding:4px 12px;border-radius:999px;text-transform:uppercase;white-space:nowrap}
 .src-tag{font-size:12.5px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#6b7488}
 .src-tier.pop .src-tag{color:#e6c07a}
 .src-price{display:flex;align-items:baseline;gap:3px;margin:8px 0 2px}
 .src-price .cur{font-size:19px;font-weight:700;color:#16244f}
-.src-price .amt{font-size:34px;font-weight:800;letter-spacing:-1.5px;color:#16244f;font-variant-numeric:tabular-nums}
+.src-price .amt{font-size:38px;font-weight:800;letter-spacing:-1.5px;color:#16244f;font-variant-numeric:tabular-nums}
 .src-tier.pop .src-price .cur,.src-tier.pop .src-price .amt{color:#fff}
 .src-count{font-size:14px;color:#3a4356;font-weight:600}
 .src-per{font-size:12px;color:#6b7488;margin-top:3px;font-variant-numeric:tabular-nums}
 .src-tier.pop .src-count{color:#dbe4fb}.src-tier.pop .src-per{color:#9fb2e6}
-.src-feats{list-style:none;margin:11px 0 13px;display:flex;flex-direction:column;gap:6px;padding:0}
-.src-feats li{display:flex;gap:9px;font-size:12.5px;color:#3a4356;line-height:1.4}
+.src-feats{list-style:none;margin:15px 0 16px;display:flex;flex-direction:column;gap:8px;padding:0}
+.src-feats li{display:flex;gap:9px;font-size:13px;color:#3a4356;line-height:1.4}
 .src-tier.pop .src-feats li{color:#e6ecfb}
 .src-feats .ck{flex:none;width:17px;height:17px;border-radius:50%;background:rgba(47,107,240,.1);color:#2f6bf0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;margin-top:1px}
 .src-tier.pop .src-feats .ck{background:rgba(215,171,99,.2);color:#e6c07a}
-.src-cta{margin-top:auto;display:block;text-align:center;padding:10px;border-radius:11px;font-weight:700;font-size:14px;cursor:pointer;border:1px solid #e3e8f1;color:#16244f;background:transparent;transition:.15s}
+.src-cta{margin-top:auto;display:block;text-align:center;padding:12px;border-radius:11px;font-weight:700;font-size:14px;cursor:pointer;border:1px solid #e3e8f1;color:#16244f;background:transparent;transition:.15s}
 .src-cta:hover{border-color:#2f6bf0;color:#2f6bf0}
 .src-tier.pop .src-cta{background:#d7ab63;border-color:#d7ab63;color:#1c130a}
 .src-tier.pop .src-cta:hover{filter:brightness(1.06)}
@@ -730,3 +730,17 @@ tr.flash td{animation:rowflash 1.1s ease}
 .src-soon-btn:hover{filter:brightness(1.15)}
 .src-soon-close{margin-top:12px;background:none;border:none;color:#86868b;font-size:13px;cursor:pointer}
 .src-soon-close:hover{color:#16244f}
+/* pricing fills the page: content column grows, enterprise gets breathing room below */
+#v-sourcing:not(.hidden){min-height:100%;display:flex}
+#v-sourcing .src-wrap{display:flex;flex-direction:column;flex:1;min-height:100%}
+.src-wrap .src-tiers{flex:0 0 auto}
+/* Enterprise — more focus: bolder gold card, sits with even space above */
+.src-ent{margin-top:26px !important;padding:22px 28px !important;
+  background:linear-gradient(135deg,rgba(185,138,62,.14),rgba(185,138,62,.05) 60%),var(--card) !important;
+  border:1px solid rgba(185,138,62,.4) !important;border-left:4px solid #b98a3e !important;
+  box-shadow:0 12px 34px -20px rgba(185,138,62,.6)}
+.src-ent-k{font-size:12.5px !important;color:#a5762e !important}
+.src-ent-t{font-size:15px !important}
+.src-ent-btn{padding:13px 26px !important;font-size:15px !important}
+
+.src-pricing{justify-content:safe center}
