@@ -162,10 +162,10 @@ function refresh(id){
 }
 
 /* ---------- views ---------- */
-const VIEWS=["dash","leads","pipe","focus","clients","help"];
+const VIEWS=["dash","leads","pipe","focus","clients","sourcing","help"];
 const TITLES={dash:["Today","#007AFF"],leads:["Leads","#1d1d1f"],
   pipe:["Pipeline","#9741C4"],focus:["Focus","#5856D6"],
-  clients:["Clients","#1E9B4A"],help:["Help","#86868b"]};
+  clients:["Clients","#1E9B4A"],sourcing:["Sourcing","#16244f"],help:["Help","#86868b"]};
 function show(v){VIEWS.forEach(x=>{$("#v-"+x).classList.toggle("hidden",x!==v);
   document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("on",t.dataset.v===v))});
   const ti=TITLES[v]||["",""];$("#bigtitle").textContent=ti[0];$("#bigtitle").style.color=ti[1];
@@ -173,6 +173,7 @@ function show(v){VIEWS.forEach(x=>{$("#v-"+x).classList.toggle("hidden",x!==v);
   if(v==="dash"){chartAnimated=false;missionAnimated=false;dash()}
   if(v==="leads")renderRows(true); if(v==="pipe")pipe();
   if(v==="clients")renderClients();
+  if(v==="sourcing")renderSourcing();
   focusActive=(v==="focus"); if(focusActive)focusStart();}
 document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>show(t.dataset.v));
 
@@ -1467,6 +1468,99 @@ function makeClient(id){
   toast(`<span style="color:#1E9B4A">${I("bank")}</span> <b>${esc(l.co)}</b> is now a client. Set the retainer.`);
   show("clients");}
 
+/* ---------- ASCENT SOURCING: premium, paid, done-for-you prospect lists ---------- */
+const SRC_TIERS=[
+  {key:"starter",name:"Starter",price:59,count:100,per:"$0.59",feats:["Matched to your exact target","Name, title & company","LinkedIn on every prospect","Verified work email","Delivered to your pipeline"]},
+  {key:"growth",name:"Growth",price:119,count:250,per:"$0.48 · best value",pop:true,feats:["Everything in Starter","Priority matching queue","Swap out weak matches free","Filter by seniority & size","Delivered within minutes"]},
+  {key:"scale",name:"Scale",price:249,count:600,per:"$0.42",feats:["Everything in Growth","Large-volume targeting","Custom filters (geo, industry)","Priority support","Split across multiple lists"]}
+];
+const SRC_PADDLE={starter:"",growth:"",scale:""};   /* fill with your Paddle price IDs */
+const SRC_EMAIL="jamil@getascent.co";
+async function srcToken(){return window.ascentAuth?await window.ascentAuth.token():null}
+async function srcBalance(){
+  const t=await srcToken();if(!t)return null;
+  try{const r=await fetch("/api/sourcing",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+t},
+      body:JSON.stringify({action:"balance"})});const d=await r.json().catch(()=>({}));
+    return typeof d.remaining==="number"?d.remaining:0;}catch(e){return 0}
+}
+function srcTierCard(t){
+  return `<div class="src-tier${t.pop?" pop":""}">${t.pop?'<span class="src-badge">Most popular</span>':''}
+    <div class="src-tag">${esc(t.name)}</div>
+    <div class="src-price"><span class="cur">$</span><span class="amt">${t.price}</span></div>
+    <div class="src-count">${t.count} prospects</div><div class="src-per">${esc(t.per)} / prospect</div>
+    <ul class="src-feats">${t.feats.map(f=>`<li><span class="ck">✓</span>${esc(f)}</li>`).join("")}</ul>
+    <button class="src-cta" data-buy="${t.key}">Get ${t.count} prospects</button></div>`;
+}
+function renderSourcingPricing(box){
+  box.innerHTML=`<div class="src-wrap">
+    <div class="src-eyebrow"><span class="sm">✦</span> Ascent Sourcing</div>
+    <h1 class="src-h1">Real prospects, matched to you and ready to work.</h1>
+    <p class="src-lede">Full profile, LinkedIn and verified email on every one — delivered straight into your pipeline. Pick a pack to get started.</p>
+    <div class="src-tiers">${SRC_TIERS.map(srcTierCard).join("")}</div>
+    <div class="src-ent"><div><div class="src-ent-k">Enterprise &amp; custom volume</div>
+      <div class="src-ent-t">Need 1,000+, an ongoing weekly feed, or very specific targeting? We'll build a custom package for you.</div></div>
+      <a class="src-ent-btn" href="mailto:${SRC_EMAIL}?subject=Ascent%20Sourcing%20—%20custom%20volume">Talk to us →</a></div></div>`;
+  box.querySelectorAll("[data-buy]").forEach(b=>b.onclick=()=>srcCheckout(b.dataset.buy));
+}
+function srcLog(term,html,cls){const d=document.createElement("div");d.className="src-line"+(cls?" "+cls:"");d.innerHTML=html;term.append(d);term.scrollTop=term.scrollHeight;return d;}
+async function srcRun(term,line,box){
+  srcLog(term,`<span class="src-you">›</span> ${esc(line)}`);
+  const status=srcLog(term,`<span class="src-dim">sourcing…</span>`);
+  const t=await srcToken();
+  if(!t){status.innerHTML=`<span class="src-err">Please log in to source.</span>`;return}
+  const excl=LEADS.map(l=>((String(l.name||"").trim().split(/\s+/)[0]||"").toLowerCase()+"|"+String(l.co||"").trim().toLowerCase()));
+  let d;
+  try{const r=await fetch("/api/sourcing",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+t},
+      body:JSON.stringify({action:"source",line,exclude:excl})});
+    d=await r.json().catch(()=>({}));if(d.error)throw new Error(d.error);}
+  catch(e){status.innerHTML=`<span class="src-err">${esc((e&&e.message)||e)}</span>`;return}
+  const leads=d.leads||[];
+  if(!leads.length){status.innerHTML=`<span class="src-dim">No matches — try broader targeting.</span>`;
+    if(typeof d.remaining==="number"){const b=box.querySelector("#src-bal");if(b)b.textContent=d.remaining}return}
+  const name=String(d.segment_name||line);
+  const res=addSegmentLeads(name,leads);
+  status.innerHTML=`<span class="src-ok">✓ ${res.count} prospects added to “${esc(name)}”.</span> <span class="src-dim">${d.remaining} left.</span>`;
+  const bal=box.querySelector("#src-bal");if(bal)bal.textContent=d.remaining;
+  buildSeglist();updateNav();
+  if(d.remaining<=0)setTimeout(()=>renderSourcing(),1400);   /* out of prospects → back to packs */
+}
+function renderSourcingConsole(box,balance){
+  box.innerHTML=`<div class="src-wrap">
+    <div class="src-chead">
+      <div><div class="src-eyebrow"><span class="sm">✦</span> Ascent Sourcing</div>
+        <h1 class="src-h1">Source your list</h1>
+        <p class="src-lede">Describe your ideal customer in plain words. We match, enrich and drop the list into your pipeline.</p></div>
+      <div class="src-balance"><b id="src-bal">${balance}</b><span>prospects left</span></div></div>
+    <div id="src-term" class="src-term"><div class="src-line src-dim">try:  “50 founders at software companies in London”   ·   “200 marketing directors in the US”</div></div>
+    <div class="src-inp"><span>›</span><input id="src-in" placeholder="describe your ideal customer — we'll find them…" autocomplete="off"><button id="src-go" class="src-run">Source →</button></div>
+    <div class="src-fine">Sourced &amp; enriched by the Ascent engine · only fresh prospects use your balance. <a href="mailto:${SRC_EMAIL}?subject=More%20prospects">Need more?</a></div></div>`;
+  const term=box.querySelector("#src-term"),inp=box.querySelector("#src-in"),go=box.querySelector("#src-go");
+  inp.focus();let busy=false;
+  const run=async()=>{const line=inp.value.trim();if(!line||busy)return;
+    inp.value="";busy=true;go.disabled=true;go.textContent="…";
+    try{await srcRun(term,line,box);}catch(e){srcLog(term,`<span class="src-err">${esc((e&&e.message)||e)}</span>`);}
+    busy=false;go.disabled=false;go.textContent="Source →";inp.focus();};
+  go.onclick=run;inp.addEventListener("keydown",e=>{if(e.key==="Enter")run();});
+}
+function srcCheckout(tierKey){
+  const priceId=SRC_PADDLE[tierKey];
+  if(typeof Paddle==="undefined"||!priceId){toast("<b>Checkout opens soon.</b> Payment isn't wired up yet.");return;}
+  const uid=window.ascentAuth&&window.ascentAuth.uid&&window.ascentAuth.uid();
+  Paddle.Checkout.open({items:[{priceId,quantity:1}],customData:{user_id:uid,tier:tierKey},
+    customer:{email:(window.ascentAuth&&window.ascentAuth.email())||""}});
+}
+async function renderSourcing(){
+  const box=$("#v-sourcing");if(!box)return;
+  box.innerHTML=`<div class="src-wrap"><div class="src-dim" style="padding:40px 0">Loading Sourcing…</div></div>`;
+  if(!window.ascentAuth){
+    box.innerHTML=`<div class="src-wrap"><div class="src-eyebrow"><span class="sm">✦</span> Ascent Sourcing</div>
+      <h1 class="src-h1">Sourcing runs on your live account.</h1>
+      <p class="src-lede">Open <b>os.getascent.co</b> and log in to buy prospect packs and source lists.</p></div>`;return;}
+  const bal=await srcBalance();
+  if(bal===null){box.innerHTML=`<div class="src-wrap"><div class="src-eyebrow"><span class="sm">✦</span> Ascent Sourcing</div>
+    <h1 class="src-h1">Log in to start sourcing.</h1></div>`;return;}
+  if(bal>0)renderSourcingConsole(box,bal);else renderSourcingPricing(box);
+}
 /* ---------- MEETING PREP: everything you know, one screen ---------- */
 function openPrep(id){
   const l=byId[id],s=RS(id);if(!l)return;

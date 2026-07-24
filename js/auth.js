@@ -13,6 +13,14 @@ const REQUIRED=location.protocol.startsWith("http")
 if(!REQUIRED)return;                          /* local mode: no gate, no sync */
 const sb=supabase.createClient(AUTH_CFG.url,AUTH_CFG.anon);
 
+/* expose read-only session access for gated features (Sourcing calls /api/sourcing with this token) */
+window.ascentAuth={
+  token:async()=>{try{const {data}=await sb.auth.getSession();return (data&&data.session&&data.session.access_token)||null}catch(_){return null}},
+  email:()=>((typeof user!=="undefined"&&user&&user.email)||""),
+  uid:()=>((typeof user!=="undefined"&&user&&user.id)||""),
+  loggedIn:()=>(typeof user!=="undefined"&&!!user)
+};
+
 /* ---- gate ---- */
 const ov=document.createElement("div");
 ov.id="authov";
