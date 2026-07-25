@@ -55,8 +55,6 @@ ov.innerHTML=`<div class="auth-card">
       <option>Freelancer / Solo</option>
       <option>Other</option>
     </select>
-    <div class="auth-note auth-savage">Make up a fresh password, don't reuse your
-    bank one. We're a lean free tool — we don't exactly have the budget for Z+ data security.</div>
     <button id="auth-new">CREATE FREE ACCOUNT</button>
     <div class="auth-note">Creating an account means you're good with the
     <a href="/terms" target="_blank" rel="noopener">terms</a>
