@@ -40,10 +40,10 @@
 <link rel="icon" href="assets/favicon.svg">
 <style>
   :root{
-    --green:#16244f; --green2:#1d3068; --cream:#f2ede2; --cream2:#cdd6ea;
-    --orange:#2f6bf0; --ink:#1d1d1f; --ink2:#48484d; --ink3:#86868b; --line:#e6e6ec;
-    --blue:#2f6bf0; --emerald:#2aa6c9; --purple:#7c74e8; --pink:#5f7bff;
-    --indigo:#5856D6; --teal:#30B0C7; --brand:#e8501f;
+    --green:#4a1226; --green2:#1d3068; --cream:#f2ede2; --cream2:#cdd6ea;
+    --orange:#8d1c3d; --ink:#1d1d1f; --ink2:#48484d; --ink3:#86868b; --line:#e6e6ec;
+    --blue:#8d1c3d; --emerald:#2aa6c9; --purple:#7c74e8; --pink:#5f7bff;
+    --indigo:#5856D6; --teal:#30B0C7; --brand:#8d1c3d;
     --band:#eef1f5; --bandink:#1d2330; --bandsub:#5a6270; --bandline:#dde2ea;
     --serif:Georgia,"Times New Roman",serif;
     --ui:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;
@@ -78,7 +78,7 @@
     padding:5px 14px;font-size:13px;font-weight:700;letter-spacing:1.5px;margin-bottom:22px}
   h1{font-family:var(--serif);font-size:clamp(38px,6vw,64px);line-height:1.12;
     font-weight:700;max-width:820px}
-  h1 b{color:#b79cff}
+  h1 b{color:#e79cb4}
   .hero p{color:var(--cream2);font-size:clamp(17px,2.2vw,21px);max-width:640px;
     margin:22px 0 30px}
   .hero .ctas{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
@@ -99,10 +99,10 @@
   /* flow */
   .flow{display:flex;gap:0;margin:38px 0 18px}
   .node{flex:1;text-align:center;padding:20px 10px;border-radius:16px;color:#fff;
-    position:relative;margin-right:30px;box-shadow:0 10px 26px rgba(20,30,80,.16)}
+    position:relative;margin-right:30px;box-shadow:0 10px 26px rgba(80,20,40,.16)}
   .node:last-child{margin-right:0}
   .node::after{content:"";position:absolute;right:-23px;top:50%;margin-top:-8px;
-    border-left:14px solid #ccd4e4;border-top:8px solid transparent;
+    border-left:14px solid #dccdd3;border-top:8px solid transparent;
     border-bottom:8px solid transparent}
   .node:last-child::after{display:none}
   .node .nt{font-weight:700;font-size:16px}
@@ -134,7 +134,7 @@
   .vs-h{font-weight:800;letter-spacing:2px;font-size:12px;text-transform:uppercase;
     margin-bottom:8px}
   .them .vs-h{color:#97a1b3}
-  .us .vs-h{color:#8fb0ff}
+  .us .vs-h{color:#e79cb4}
   .vs-row{padding:13px 0;border-bottom:1px solid rgba(0,0,0,.06);font-size:15px;
     line-height:1.45}
   .us .vs-row{border-bottom-color:rgba(242,237,226,.12);font-weight:600}
@@ -189,13 +189,13 @@
     flex-wrap:wrap}
   .ftlinks a{color:var(--bandsub)}
   .ftlinks a:hover{color:var(--bandink)}
-  .ftlinks .o{color:#2f6bf0;letter-spacing:2px;font-weight:700}
+  .ftlinks .o{color:#8d1c3d;letter-spacing:2px;font-weight:700}
 
   /* ===== glass depth: ambient glow + frosted cards ===== */
   body{position:relative}
   body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
     background:
-      radial-gradient(840px 620px at 12% 2%, rgba(47,107,240,.06), transparent 60%),
+      radial-gradient(840px 620px at 12% 2%, rgba(141,28,61,.06), transparent 60%),
       radial-gradient(780px 640px at 92% 22%, rgba(86,120,210,.06), transparent 62%),
       radial-gradient(920px 720px at 50% 102%, rgba(110,140,225,.055), transparent 60%);}
 
@@ -228,8 +228,8 @@
   .hero::after{content:"";position:absolute;inset:0;
     pointer-events:none;z-index:0;
     background:
-      radial-gradient(720px 400px at 80% -6%, rgba(183,156,255,.18), transparent 60%),
-      radial-gradient(640px 380px at 6% 108%, rgba(48,176,199,.13), transparent 62%);}
+      radial-gradient(720px 400px at 80% -6%, rgba(231,156,180,.18), transparent 60%),
+      radial-gradient(640px 380px at 6% 108%, rgba(201,83,111,.13), transparent 62%);}
   .hero .wrap,.dark .wrap,footer .wrap{position:relative;z-index:1}
 
   /* ===== floating hero card (premium SaaS shell, Ascent green) ===== */
@@ -237,8 +237,8 @@
   .navlinks a{font-size:14px;color:var(--ink2);font-weight:500;transition:color .15s}
   .navlinks a:hover{color:var(--ink)}
   .btn.pill{border-radius:999px}
-  .btn.dark.pill{background:#16244f;border-color:#16244f;color:#fff}
-  .btn.dark.pill:hover{background:#0f1a3a}
+  .btn.dark.pill{background:#4a1226;border-color:#4a1226;color:#fff}
+  .btn.dark.pill:hover{background:#380e1d}
 
   .herowrap{padding:0 24px}
   .herocard{position:relative;max-width:1320px;margin:20px auto 0;border-radius:30px;
@@ -246,16 +246,16 @@
     min-height:calc(100vh - 104px);
     display:flex;flex-direction:column;align-items:center;justify-content:center;
     background:
-      radial-gradient(1200px 720px at 80% 0%, #4a68c0 0%, transparent 56%),
-      radial-gradient(1000px 820px at 12% 112%, #0a1636 0%, transparent 60%),
-      linear-gradient(140deg,#131f45 0%, #1c2c63 55%, #141d40 100%);
+      radial-gradient(1200px 720px at 80% 0%, #a4405e 0%, transparent 56%),
+      radial-gradient(1000px 820px at 12% 112%, #2a0a18 0%, transparent 60%),
+      linear-gradient(140deg,#3a1024 0%, #571731 55%, #330d1d 100%);
     box-shadow:0 40px 90px rgba(10,20,54,.35)}
   .herocard h1{max-width:900px;margin:0 auto;font-size:clamp(38px,5.6vw,62px);line-height:1.07}
   .herocard h1 b{color:#ffffff}
   .herocard p{color:rgba(255,255,255,.85);font-size:clamp(16px,1.9vw,20px);max-width:600px;
     margin:22px auto 0;line-height:1.55}
   .hero-ctas{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:34px}
-  .btn.white{background:#fff;color:#2551d8;border:1px solid #fff;padding:14px 28px}
+  .btn.white{background:#fff;color:#8d1c3d;border:1px solid #fff;padding:14px 28px}
   .btn.white:hover{background:#eef2ff;transform:translateY(-1px)}
   .btn.glass{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.4);
     padding:14px 28px;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
@@ -275,7 +275,7 @@
   }
   /* ============ product-demo hero (scoped under .mh) ============ */
   .mh{--ink:#0f1626;--soft:#556074;--mute:#98a0b3;--line:#eef0f5;--line2:#e3e7ef;
-    --navy:#14224a;--blue:#2f6bf0;--green:#12a862;--greenbg:#e7f7ef;--purple:#8a5cf6;--amber:#f59e2b;--pink:#ff5a8a;--teal:#1fb6cf;
+    --navy:#4a1226;--blue:#8d1c3d;--green:#12a862;--greenbg:#e7f7ef;--purple:#8a5cf6;--amber:#f59e2b;--pink:#ff5a8a;--teal:#1fb6cf;
     --serif:Georgia,"Times New Roman",serif;--sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;--mono:ui-monospace,"SF Mono",Menlo,monospace;
     --eo:cubic-bezier(.16,1,.3,1);--ei:cubic-bezier(.4,0,1,1);
     --sh:0 1px 2px hsl(224 40% 20% / .04),0 4px 10px hsl(224 40% 20% / .05),0 14px 30px hsl(224 40% 20% / .07);
@@ -292,7 +292,7 @@
   .mh .app{position:relative;width:100%;max-width:512px;height:456px;margin-left:auto;background:#fff;border:1px solid var(--line2);border-radius:20px;box-shadow:var(--sh);overflow:hidden;transition:transform .4s var(--eo)}
   .mh .bar{display:flex;align-items:center;gap:8px;padding:13px 18px 0}
   .mh .bar .wm{font-family:var(--serif);font-weight:700;font-size:15px}
-  .mh .bar .wm i{color:#e8501f;font-style:normal}
+  .mh .bar .wm i{color:#8d1c3d;font-style:normal}
   .mh .tabs{position:relative;display:flex;margin:12px 16px 0;background:#f4f5f9;border-radius:12px;padding:4px}
   .mh .tab{flex:1;text-align:center;font-size:12.5px;font-weight:600;color:var(--soft);padding:8px 0;z-index:2;transition:color .3s}
   .mh .tab.on{color:var(--ink)}
@@ -393,13 +393,13 @@
       <div class="screens" id="screens">
         <div class="screen on" data-t="0">
           <div class="targets">
-            <div class="tg"><div class="ringwrap"><svg viewBox="0 0 120 120"><circle class="bgc" cx="60" cy="60" r="50"/><circle class="fg" id="t1" cx="60" cy="60" r="50" stroke="#2f6bf0" stroke-dashoffset="31"/></svg><span class="num" id="n1">19</span></div><span class="lb">Requests</span></div>
+            <div class="tg"><div class="ringwrap"><svg viewBox="0 0 120 120"><circle class="bgc" cx="60" cy="60" r="50"/><circle class="fg" id="t1" cx="60" cy="60" r="50" stroke="#8d1c3d" stroke-dashoffset="31"/></svg><span class="num" id="n1">19</span></div><span class="lb">Requests</span></div>
             <div class="tg"><div class="ringwrap"><svg viewBox="0 0 120 120"><circle class="bgc" cx="60" cy="60" r="50"/><circle class="fg" cx="60" cy="60" r="50" stroke="#12a862" stroke-dashoffset="0"/></svg><span class="num">15</span></div><span class="lb">Reachouts</span></div>
             <div class="tg"><div class="ringwrap"><svg viewBox="0 0 120 120"><circle class="bgc" cx="60" cy="60" r="50"/><circle class="fg" cx="60" cy="60" r="50" stroke="#f59e2b" stroke-dashoffset="0"/></svg><span class="num">✓</span></div><span class="lb">Post</span></div>
           </div>
           <div class="lbl">Due now</div>
           <div class="rows">
-            <div class="r"><span class="av" style="background:#2f6bf0">S</span><span><div class="nm">Sophie Turner</div><div class="co">Northline · connection request</div></span><span class="act" id="actA">Send request</span></div>
+            <div class="r"><span class="av" style="background:#8d1c3d">S</span><span><div class="nm">Sophie Turner</div><div class="co">Northline · connection request</div></span><span class="act" id="actA">Send request</span></div>
             <div class="r"><span class="av" style="background:#8a5cf6">B</span><span><div class="nm">Ben Carter</div><div class="co">Summit · follow-up due</div></span><span class="act ghost">Follow up</span></div>
             <div class="r"><span class="av" style="background:#12a862">E</span><span><div class="nm">Emma Hughes</div><div class="co">Brightwork · replied</div></span><span class="pill rep">Reply</span></div>
           </div>
@@ -407,7 +407,7 @@
         <div class="screen" data-t="1">
           <div class="fx-meta"><span>Focus mode · one at a time</span><span><b id="fdone">12</b> done today</span></div>
           <div class="fx" id="fxcard">
-            <div class="who"><span class="av" style="background:#2f6bf0" id="fav">G</span><span><div class="nm" id="fnm">Grace Bennett</div><div class="role" id="frole">Founder · Loop HQ</div></span><span class="seg" id="fseg">SaaS Founders</span></div>
+            <div class="who"><span class="av" style="background:#8d1c3d" id="fav">G</span><span><div class="nm" id="fnm">Grace Bennett</div><div class="role" id="frole">Founder · Loop HQ</div></span><span class="seg" id="fseg">SaaS Founders</span></div>
             <div class="btns"><span class="fb li">Open LinkedIn ↗</span><span class="fb">Copy message</span><span class="fb prim" id="fxdone">✓ Request sent</span><span class="fb">Skip</span></div>
           </div>
         </div>
@@ -415,7 +415,7 @@
           <div class="lbl">Deals · chased automatically</div>
           <div class="rows">
             <div class="r"><span class="av" style="background:#8a5cf6">N</span><span><div class="nm">Northline</div><div class="co">Proposal sent <span class="age warn" id="page">3d · chase or close</span></div></span><span class="act" id="actWon">Mark won</span></div>
-            <div class="r"><span class="av" style="background:#2f6bf0">S</span><span><div class="nm">Summit</div><div class="co">Call booked <span class="age">tomorrow</span></div></span><span class="pill call">Call</span></div>
+            <div class="r"><span class="av" style="background:#8d1c3d">S</span><span><div class="nm">Summit</div><div class="co">Call booked <span class="age">tomorrow</span></div></span><span class="pill call">Call</span></div>
             <div class="r"><span class="av" style="background:#1fb6cf">A</span><span><div class="nm">Atlas</div><div class="co">Replied · new</div></span><span class="pill rep">Reply</span></div>
             <div class="r"><span class="av" style="background:#ff5a8a">F</span><span><div class="nm">Foundry</div><div class="co">Agreement sent <span class="age">1d</span></div></span><span class="pill prop">Signing</span></div>
           </div>
@@ -423,7 +423,7 @@
         <div class="screen" data-t="3">
           <div class="lbl">Every number is a logged action</div>
           <div class="funnel">
-            <div class="fr"><span class="fl">Leads</span><span class="track"><span class="bar" data-w="100" style="background:#5fa0ff"></span></span><span class="fv" data-n="120">0</span></div>
+            <div class="fr"><span class="fl">Leads</span><span class="track"><span class="bar" data-w="100" style="background:#c9536f"></span></span><span class="fv" data-n="120">0</span></div>
             <div class="fr"><span class="fl">Requests</span><span class="track"><span class="bar" data-w="80" style="background:#8a5cf6"></span></span><span class="fv" data-n="96">0</span></div>
             <div class="fr"><span class="fl">Accepted</span><span class="track"><span class="bar" data-w="42" style="background:#1fb6cf"></span></span><span class="fv" data-n="41">0</span></div>
             <div class="fr"><span class="fl">Replied</span><span class="track"><span class="bar" data-w="15" style="background:#12a862"></span></span><span class="fv" data-n="14">0</span></div>
@@ -451,15 +451,15 @@
   <div class="kick">The system</div>
   <h2>One flow, cold stranger to monthly client.</h2>
   <div class="flow">
-    <div class="node" style="background:linear-gradient(140deg,#5B7CBE,#4C6AAC)"><div class="nt">Your leads</div>
+    <div class="node" style="background:linear-gradient(140deg,#B25C77,#A4405E)"><div class="nt">Your leads</div>
       <div class="ns">bring your own list, or have Ascent source it</div></div>
-    <div class="node" style="background:linear-gradient(140deg,#48649E,#3C5590)"><div class="nt">Daily reps</div>
+    <div class="node" style="background:linear-gradient(140deg,#9E3A59,#8D1C3D)"><div class="nt">Daily reps</div>
       <div class="ns">requests, reachouts, a post, one person at a time</div></div>
-    <div class="node" style="background:linear-gradient(140deg,#374F86,#2D4478)"><div class="nt">Replies</div>
+    <div class="node" style="background:linear-gradient(140deg,#832443,#731A37)"><div class="nt">Replies</div>
       <div class="ns">whatever they said, the playbook hands you the answer</div></div>
-    <div class="node" style="background:linear-gradient(140deg,#273D6E,#1F3562)"><div class="nt">Deals</div>
+    <div class="node" style="background:linear-gradient(140deg,#6B1832,#5C142B)"><div class="nt">Deals</div>
       <div class="ns">proposals age in front of you and get chased</div></div>
-    <div class="node" style="background:linear-gradient(140deg,#182B57,#14224A)"><div class="nt">Clients</div>
+    <div class="node" style="background:linear-gradient(140deg,#4E1225,#420F1F)"><div class="nt">Clients</div>
       <div class="ns">wins become retainers, MRR, check-ins</div></div>
   </div>
   <div class="foundation">Each stat is an action you
@@ -482,16 +482,16 @@
   <div class="kick">What it kills</div>
   <h2>The four ways outbound quietly dies.</h2>
   <div class="kills">
-    <div class="kill"><div class="kt"><span class="dot" style="background:#3f6fc4"></span>The 9am question</div>
+    <div class="kill"><div class="kt"><span class="dot" style="background:#a4405e"></span>The 9am question</div>
       <p>"What do I actually do now?" is answered before you ask. Due list first,
       then the reps. Zero decisions, just work.</p></div>
-    <div class="kill"><div class="kt"><span class="dot" style="background:#5b63c0"></span>The consistency collapse</div>
+    <div class="kill"><div class="kt"><span class="dot" style="background:#8d1c3d"></span>The consistency collapse</div>
       <p>Daily targets you choose, a streak, and a Focus mode that deals you one
       person at a time. Consistency stops being willpower.</p></div>
-    <div class="kill"><div class="kt"><span class="dot" style="background:#3f8fb0"></span>The fumbled reply</div>
+    <div class="kill"><div class="kt"><span class="dot" style="background:#c9536f"></span>The fumbled reply</div>
       <p>Price question, "not now", ghosting. There's a written answer for each,
       one click to copy, at the exact moment it counts.</p></div>
-    <div class="kill"><div class="kt"><span class="dot" style="background:#7079c8"></span>The quiet deal death</div>
+    <div class="kill"><div class="kt"><span class="dot" style="background:#b06078"></span>The quiet deal death</div>
       <p>Day three it says chase. Day seven it says chase or close. Signatures get
       hunted, not hoped for.</p></div>
   </div>
@@ -667,7 +667,7 @@
     document.getElementById('t1').style.strokeDashoffset='31';document.getElementById('n1').textContent='19';
     var A=document.getElementById('actA');A.textContent='Send request';A.className='act';
     var fx=document.getElementById('fxcard');fx.className='fx';document.getElementById('fdone').textContent='12';
-    document.getElementById('fnm').textContent='Grace Bennett';document.getElementById('frole').textContent='Founder · Loop HQ';document.getElementById('fseg').textContent='SaaS Founders';document.getElementById('fav').textContent='G';document.getElementById('fav').style.background='#2f6bf0';
+    document.getElementById('fnm').textContent='Grace Bennett';document.getElementById('frole').textContent='Founder · Loop HQ';document.getElementById('fseg').textContent='SaaS Founders';document.getElementById('fav').textContent='G';document.getElementById('fav').style.background='#8d1c3d';
     var W=document.getElementById('actWon');W.textContent='Mark won';W.className='act';document.getElementById('page').textContent='3d · chase or close';document.getElementById('page').className='age warn';
     screens[3].querySelectorAll('.bar').forEach(function(b){b.style.width='0';});
     screens[3].querySelectorAll('.fv').forEach(function(n){n.textContent='0';});
