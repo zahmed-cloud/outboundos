@@ -13,7 +13,7 @@ try{S=JSON.parse(localStorage.getItem(KEY))||{}}catch(e){S={}}
 S.leads=S.leads||{}; S.events=S.events||[];
 S.segs=S.segs||{};
 let SEG=S.segs;
-const SEGPAL=["#007AFF","#34C759","#AF52DE","#FF2D55","#5856D6","#30B0C7","#64D2FF","#8E8E93"];
+const SEGPAL=["#8d1c3d","#34C759","#AF52DE","#FF2D55","#5856D6","#30B0C7","#64D2FF","#8E8E93"];
 function renderSegCss(){let el=document.getElementById("segcss");
   if(!el){el=document.createElement("style");el.id="segcss";document.head.append(el)}
   el.textContent=Object.keys(SEG).map(k=>
@@ -163,9 +163,9 @@ function refresh(id){
 
 /* ---------- views ---------- */
 const VIEWS=["dash","leads","pipe","focus","clients","sourcing","help"];
-const TITLES={dash:["Today","#007AFF"],leads:["Leads","#1d1d1f"],
+const TITLES={dash:["Today","#8d1c3d"],leads:["Leads","#1d1d1f"],
   pipe:["Pipeline","#9741C4"],focus:["Focus","#5856D6"],
-  clients:["Clients","#1E9B4A"],sourcing:["Sourcing","#16244f"],help:["Help","#86868b"]};
+  clients:["Clients","#1E9B4A"],sourcing:["Sourcing","#4a1226"],help:["Help","#86868b"]};
 function show(v){VIEWS.forEach(x=>{$("#v-"+x).classList.toggle("hidden",x!==v);
   document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("on",t.dataset.v===v))});
   const ti=TITLES[v]||["",""];$("#bigtitle").textContent=ti[0];$("#bigtitle").style.color=ti[1];
@@ -231,7 +231,7 @@ function dash(){
   const c=countsCached();
   const pct=(a,b)=>b?(" · "+(100*a/b).toFixed(1)+"%"):"";
   $("#tiles").innerHTML=[
-    ["Leads",c.total,"across "+Object.keys(SEG).length+" segments","","users","#4BA3FF","#0A6AE8"],
+    ["Leads",c.total,"across "+Object.keys(SEG).length+" segments","","users","#c9536f","#8d1c3d"],
     ["Requests",c.conn,"of "+c.total,"","send","#8183F4","#5155D6"],
     ["Accepted",c.acc,"accept rate"+pct(c.acc,c.conn),"","check","#4FC8F0","#1FA0D6"],
     ["Replied",c.rep,c.msg1>=10?((100*c.repMsg/c.msg1).toFixed(1)+"% of "+c.msg1+" messaged"):"reply rate"+pct(c.repMsg,c.msg1),"","chat","#46D66C","#1F9D44"],
@@ -242,7 +242,7 @@ function dash(){
   ].map(t=>`<div class="tile" style="--tg1:${t[5]};--tg2:${t[6]}">
     <div class="trow"><span class="ti">${I(t[4])}</span><span class="v ${t[3]}">${t[1]}</span></div>
     <div><div class="k">${t[0]}</div><div class="s">${t[2]}</div></div></div>`).join("");
-  const ramp=["#8FC4FF","#63ADFF","#3F97FF","#1F84FF","#007AFF","#0058C7"];
+  const ramp=["#E3A5B8","#C9536F","#A93A59","#8D1C3D","#6F1530","#4A1226"];
   const steps=[["Leads",c.total],["Requests",c.conn],["Accepted",c.acc],
                ["Replied",c.rep],["Meetings",c.meet],["Won",c.won]];
   const mx=Math.max(1,c.total);
@@ -262,7 +262,7 @@ function dash(){
 /* Recent activity lives in the ⋯ menu, off the dashboard */
 function feedHTML(n){return S.events.slice(0,n).map(e=>{
     const l=byId[e.id];
-    const dc=e.k==="reply"?"#34C759":e.a==="req"?"#007AFF":e.a==="reach"?"#AF52DE":e.a==="post"?"#FF2D55":"#c7c7cc";
+    const dc=e.k==="reply"?"#34C759":e.a==="req"?"#8d1c3d":e.a==="reach"?"#AF52DE":e.a==="post"?"#FF2D55":"#c7c7cc";
     return `<div class="fitem" data-id="${e.id}">
       <span class="fdot" style="background:${dc}"></span>
       <span class="fco">${esc(l?l.co:"You")}</span>
@@ -424,7 +424,7 @@ function renderMission(){
   const hit=req>=TGT().req&&reach>=effReach;
   const stk=streakCount();
   $("#mission").innerHTML=
-    ring(req,TGT().req,"#007AFF","Requests")+
+    ring(req,TGT().req,"#8d1c3d","Requests")+
     `<div class="ringbox"><div id="reachtap" data-tip="tap = one reachout done on LinkedIn">${
       ring(reach,Math.max(1,effReach),"#34C759","")}</div>
       <span class="rk">Reachouts</span>
@@ -670,7 +670,7 @@ function pipe(){
   const cols=STAGES.map(st=>({st,cards:[]}));
   LEADS.forEach(l=>{const s=S.leads[l.id]||{};
     if(s.stage){const c=cols.find(c=>c.st===s.stage);c&&c.cards.push(l)}});
-  const SC={"Replied":"#34C759","Call booked":"#007AFF","Meeting done":"#32ADE6",
+  const SC={"Replied":"#34C759","Call booked":"#8d1c3d","Meeting done":"#32ADE6",
     "Proposal sent":"#AF52DE","Agreement sent":"#5856D6","Won":"#FF2D55","Lost":"#8e8e93"};
   $("#board").innerHTML=cols.map((c,ci)=>{
     const v=c.cards.reduce((a,l)=>a+(+((S.leads[l.id]||{}).val)||0),0);
@@ -985,7 +985,7 @@ function openImportModal(){
     <div class="fx-sub">One CSV file. These columns are understood, in any order, extras are ignored:</div>
     <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px">
       ${["Name","Title","Company","Country","Location","LinkedIn","Email"].map(c=>
-        `<span class="chip" style="background:rgba(0,122,255,.1);color:#0068DF">${c}</span>`).join("")}
+        `<span class="chip" style="background:rgba(141,28,61,.1);color:#0068DF">${c}</span>`).join("")}
     </div>
     <div class="dsec"><div class="k">Step 1 · Name this list (leave blank to use the file name)</div>
       <input id="impseg" placeholder="e.g. UK Recruiters" value="" style="width:100%"></div>
@@ -1375,7 +1375,7 @@ function renderClients(){
   $("#ctiles").innerHTML=[
     ["Active clients",st.n,"onboarding counts too","users","#46D66C","#1F9D44"],
     ["MRR",money(st.mrr),"monthly recurring","dollar","#35D07A","#0E9E5C"],
-    ["MRR vs goal",Math.min(999,Math.round(100*st.mrr/goal))+"%","of "+money(goal)+"/mo","trend","#4BA3FF","#0A6AE8"],
+    ["MRR vs goal",Math.min(999,Math.round(100*st.mrr/goal))+"%","of "+money(goal)+"/mo","trend","#c9536f","#8d1c3d"],
     ["Churned",st.churned,"keep this at zero","clock","#6A6A72","#44444B"],
   ].map(t=>`<div class="tile" style="--tg1:${t[4]};--tg2:${t[5]}">
     <div class="trow"><span class="ti">${I(t[3])}</span><span class="v">${t[1]}</span></div>
