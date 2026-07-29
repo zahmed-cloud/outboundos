@@ -38,6 +38,8 @@
 ]}
 </script>
 <link rel="icon" href="assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@900&display=swap" rel="stylesheet">
 <style>
   :root{
     --green:#16244f; --green2:#1d3068; --cream:#f2ede2; --cream2:#cdd6ea;
@@ -59,8 +61,8 @@
   nav{position:sticky;top:0;z-index:10;background:rgba(253,252,249,.85);
     backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
   .navin{display:flex;align-items:center;justify-content:space-between;padding:14px 28px}
-  .brand{font-family:var(--serif);font-size:24px;font-weight:700}
-  .brand i{color:var(--brand);font-style:normal}
+  .brand{font-family:'Archivo',var(--ui);font-size:22px;font-weight:900;letter-spacing:-.02em;display:inline-flex;align-items:center}
+  .asq{display:inline-block;width:.6em;height:.6em;background:#8d1c3d;margin-left:.16em;flex:none}
   .brand small{font-family:var(--ui);font-size:11px;letter-spacing:3px;
     color:var(--ink3);margin-left:10px;font-weight:600}
   .navcta{display:flex;gap:10px;align-items:center}
@@ -150,10 +152,10 @@
 
   /* Ascent brand signature (before footer) */
   .asig{background:var(--band);border-top:1px solid var(--bandline);text-align:center}
-  .asig-mark{font-family:var(--serif);font-weight:700;font-size:30px;color:var(--bandink);letter-spacing:-.01em}
+  .asig-mark{font-family:'Archivo',var(--ui);font-weight:900;font-size:26px;color:var(--bandink);letter-spacing:-.02em;display:inline-flex;align-items:center}
   .asig-mark i{color:var(--orange);font-style:normal}
-  .asig h3{font-family:var(--serif);font-weight:700;font-size:clamp(23px,3vw,33px);line-height:1.18;
-    color:var(--bandink);max-width:720px;margin:20px auto 0}
+  .asig h3{font-family:var(--serif);font-weight:700;font-size:clamp(24px,3vw,34px);line-height:1.18;
+    color:var(--bandink);max-width:900px;margin:20px auto 0;text-wrap:balance}
   .asig p{color:var(--bandsub);font-size:17px;max-width:600px;margin:18px auto 0;line-height:1.6}
   .asig .alink{display:inline-block;margin-top:28px;font-weight:700;font-size:15px;color:var(--orange);
     border:1.5px solid var(--bandline);border-radius:999px;padding:11px 26px;background:#fff;transition:transform .15s var(--eo),border-color .15s}
@@ -302,8 +304,7 @@
   .mh .stage{perspective:1200px}
   .mh .app{position:relative;width:100%;max-width:512px;height:456px;margin-left:auto;background:#fff;border:1px solid var(--line2);border-radius:20px;box-shadow:var(--sh);overflow:hidden;transition:transform .4s var(--eo)}
   .mh .bar{display:flex;align-items:center;gap:8px;padding:13px 18px 0}
-  .mh .bar .wm{font-family:var(--serif);font-weight:700;font-size:15px}
-  .mh .bar .wm i{color:#e8501f;font-style:normal}
+  .mh .bar .wm{font-family:'Archivo',var(--ui);font-weight:900;font-size:15px;letter-spacing:-.02em;display:inline-flex;align-items:center}
   .mh .tabs{position:relative;display:flex;margin:12px 16px 0;background:#f4f5f9;border-radius:12px;padding:4px}
   .mh .tab{flex:1;text-align:center;font-size:12.5px;font-weight:600;color:var(--soft);padding:8px 0;z-index:2;transition:color .3s}
   .mh .tab.on{color:var(--ink)}
@@ -375,7 +376,7 @@
 <body>
 
 <nav><div class="wrap navin">
-  <span class="brand">Ascent<i>.</i><small>OUTBOUND OS</small></span>
+  <span class="brand">Ascent<span class="asq"></span><small>OUTBOUND OS</small></span>
   <span class="navlinks">
     <a href="#how">How it works</a>
     <a href="#useful">Why it's useful</a>
@@ -398,7 +399,7 @@
   </div>
   <div class="hR"><div class="stage" id="stage">
     <div class="app" id="app">
-      <div class="bar"><span class="wm">Ascent<i>.</i></span></div>
+      <div class="bar"><span class="wm">Ascent<span class="asq"></span></span></div>
       <div class="tabs"><span class="tabind" id="tabind"></span>
         <span class="tab on">Today</span><span class="tab">Focus</span><span class="tab">Pipeline</span><span class="tab">Numbers</span>
       </div>
@@ -649,7 +650,7 @@
 </div></section>
 
 <section class="asig"><div class="wrap">
-  <div class="asig-mark">Ascent<i>.</i></div>
+  <div class="asig-mark">Ascent<span class="asq"></span></div>
   <h3>The growth partner behind B2B companies that want pipeline, not promises.</h3>
   <p>Strategy, outbound, founder brand, paid, and the systems beneath it, run as one
   for teams from the USA to the UAE to Europe. Outbound OS is one small piece of that,
