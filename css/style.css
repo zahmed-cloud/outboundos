@@ -37,10 +37,10 @@ a{color:var(--accent);text-decoration:none}
 /* segments scroll in their own lane; the month bar + founder card stay locked at the bottom */
 #seglist{flex:1 1 auto;min-height:0;overflow-y:auto}
 #sidefoot,#founder{flex:none}
-#brand{display:flex;align-items:baseline;gap:7px;padding:2px 6px 14px;transition:opacity .15s}
+#brand{display:flex;align-items:center;gap:7px;padding:2px 6px 14px;transition:opacity .15s}
 #brand:hover{opacity:.65}
-.bword{font-family:var(--serif);font-size:21px;font-weight:700;color:var(--ink)}
-.bdot{color:#e8501f}
+.bword{font-family:'Archivo',-apple-system,"Helvetica Neue",sans-serif;font-size:20px;font-weight:900;letter-spacing:-.02em;color:var(--ink);display:inline-flex;align-items:center}
+.bdot{display:inline-block;width:.58em;height:.58em;background:#8d1c3d;margin-left:.16em}
 #brand small{color:var(--ink3);font-size:9px;letter-spacing:2px}
 #navtiles{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .tab{position:relative;border-radius:14px;padding:9px 10px;height:76px;text-align:left;
